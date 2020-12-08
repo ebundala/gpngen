@@ -180,30 +180,11 @@ export class SdlGeneratorService extends Generators {
   }
 
   private createTypes(fileContent: string, model: string) {
-    /*if (this.isJS) {
-      fileContent = `const { default: gql } = require('graphql-tag');\n
-    const ${model} = gql\`\n${fileContent}\n\`;\n
-    module.exports = { 
-      ${model}
-      }`;
-    } else {
-      fileContent = `
-    export default gql\`\n${fileContent}\n\`;\n`;
-    }*/
-    //this.withExtension('typeDefs')
+
     writeFileSync(
       this.output(model, `${model}.graphql`),
       fileContent,
-      //this.formation(fileContent),
     );
-
-    /* if (!this.typeDefsExport.includes(model)) {
-       this.typeDefsExport.push(model);
-       this.typeDefsIndex = `${this.getImport(
-         this.isJS ? `{ ${model} }` : model,
-         `./${model}/typeDefs`,
-       )}\n${this.typeDefsIndex}`;
-     }*/
   }
 
   private createMaster() {

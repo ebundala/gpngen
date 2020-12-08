@@ -3,9 +3,9 @@ import { DMMF } from '@prisma/client/runtime';
 import { getDMMF } from '@prisma/sdk';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-//import pkgDir from 'pkg-dir';
+import pkgDir from 'pkg-dir';
 import { format, Options as PrettierOptions } from 'prettier';
-const projectRoot = /*pkgDir.sync() ||*/ process.cwd();
+const projectRoot = pkgDir.sync() || process.cwd();
 
 export class Generators {
   protected options: Options = {

@@ -12,7 +12,7 @@
     "start:dev": "yarn gen && nest start --watch",
     "start:debug": "yarn gen && nest start --debug --watch",
     "start:prod": "node dist/main",
-    "gen": "npx ts-node src/gen.ts",
+    "gen": "rimraf src/schemas && npx ts-node src/gen.ts",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
     "test:watch": "jest --watch",
