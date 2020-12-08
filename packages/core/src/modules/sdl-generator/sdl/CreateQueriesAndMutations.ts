@@ -9,11 +9,11 @@ export function createQueriesAndMutations(
   const operations = {
     queries: {
       type: 'extend type Query {',
-      resolver: '', //'Query: {',
+      resolver: '',
     },
     mutations: {
       type: '\nextend type Mutation {',
-      resolver: '', //'Mutation: {',
+      resolver: '',
     },
   };
 
@@ -23,7 +23,8 @@ export function createQueriesAndMutations(
     operations.queries.resolver += `
     @Query((returns)=>${name})
     findUnique${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.findUnique(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.findUnique({...args,...select})
     }`;
   }
 
@@ -40,7 +41,8 @@ export function createQueriesAndMutations(
     operations.queries.resolver += `
     @Query((returns)=>${name})
     findFirst${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.findFirst(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.findFirst({...args,...select})
     }`;
   }
 
@@ -57,7 +59,8 @@ export function createQueriesAndMutations(
     operations.queries.resolver += `
     @Query((returns)=>${name})
     findMany${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.findMany(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.findMany({...args,...select})
     }`;
   }
 
@@ -74,7 +77,8 @@ export function createQueriesAndMutations(
     operations.queries.resolver += `
     @Query((returns)=>${name})
     findMany${name}Count(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.count(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.count({...args,...select})
     }`;
   }
 
@@ -101,7 +105,8 @@ export function createQueriesAndMutations(
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
     createOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.create(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.create({...args,...select})
     }`;
   }
 
@@ -114,7 +119,8 @@ export function createQueriesAndMutations(
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
     updateOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.update(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.update({...args,...select})
     }`;
   }
 
@@ -142,7 +148,8 @@ export function createQueriesAndMutations(
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
     async upsertOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.upsert(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.upsert({...args,...select})
     }`;
   }
 
@@ -169,7 +176,8 @@ export function createQueriesAndMutations(
     operations.mutations.resolver += `
     @Mutation((returns)=>BatchPayload)
     updateMany${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.updateMany(args)
+      const select = this.prisma.getSelection(info).value;
+      return this.prisma.${model}.updateMany({...args,...select})
     }`;
   }
 
