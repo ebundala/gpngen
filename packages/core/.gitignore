@@ -37,3 +37,4 @@ src/models
 .env
 prisma/.env
 .vscode
+prisma/migrations
