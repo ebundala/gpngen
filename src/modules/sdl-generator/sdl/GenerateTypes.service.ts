@@ -11,6 +11,7 @@ export class GenerateTypings {
   }
   async run() {
     const definitionsFactory = new GraphQLDefinitionsFactory();
+
     await definitionsFactory.generate({
       typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
       path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),

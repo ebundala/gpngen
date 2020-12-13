@@ -11,7 +11,7 @@ generator client {
 }
 
 model User {
-  id            String        @default(cuid()) @id
+  id            String        @id @default(cuid())
   email         String        @unique
   displayName   String
   phoneNumber   String?
@@ -31,7 +31,7 @@ model User {
 }
 
 model Attachment {
-  id               String          @default(cuid()) @id
+  id               String          @id @default(cuid())
   path             String
   filename         String?
   mimetype         String?
@@ -66,7 +66,7 @@ model Attachment {
 }
 
 model FormCategory {
-  id           String      @default(cuid()) @id
+  id           String      @id @default(cuid())
   name         String
   description  String?
   image        Attachment? @relation(fields: [attachmentId], references: [id])
@@ -78,7 +78,7 @@ model FormCategory {
 }
 
 model Form {
-  id             String        @default(cuid()) @id
+  id             String        @id @default(cuid())
   title          String
   description    String?
   state          State         @default(PENDING)
@@ -95,7 +95,7 @@ model Form {
 }
 
 model Grade {
-  id              String           @default(cuid()) @id
+  id              String           @id @default(cuid())
   name            String
   description     String
   form            Form             @relation(fields: [formId], references: [id])
@@ -113,7 +113,7 @@ model Grade {
 }
 
 model Response {
-  id          String       @default(cuid()) @id
+  id          String       @id @default(cuid())
   author      User         @relation(fields: [authorId], references: [id])
   authorId    String
   form        Form         @relation(fields: [formId], references: [id])
@@ -128,7 +128,7 @@ model Response {
 }
 
 model Question {
-  id             String       @default(cuid()) @id
+  id             String       @id @default(cuid())
   questionNumber Int
   question       String
   weight         Float        @default(0.0)
@@ -145,7 +145,7 @@ model Question {
 }
 
 model Answer {
-  id           String       @default(cuid()) @id
+  id           String       @id @default(cuid())
   response     Response     @relation(fields: [responseId], references: [id])
   responseId   String
   question     Question     @relation(fields: [questionId], references: [id])
@@ -158,7 +158,7 @@ model Answer {
 }
 
 model Recommendation {
-  id          String       @default(cuid()) @id
+  id          String       @id @default(cuid())
   content     String
   attachments Attachment[]
   grade       Grade        @relation(fields: [gradeId], references: [id])
@@ -199,7 +199,7 @@ enum AttachmentType {
 // forum part
 
 model Forum {
-  id              String        @default(cuid()) @id
+  id              String        @id @default(cuid())
   question        String
   description     String
   author          User          @relation(fields: [authorId], references: [id])
@@ -214,7 +214,7 @@ model Forum {
 }
 
 model ForumAnswer {
-  id              String       @default(cuid()) @id
+  id              String       @id @default(cuid())
   author          User         @relation(fields: [authorId], references: [id])
   authorId        String
   forum           Forum        @relation(fields: [forumId], references: [id])
@@ -229,7 +229,7 @@ model ForumAnswer {
 }
 
 model Comment {
-  id              String       @default(cuid()) @id
+  id              String       @id @default(cuid())
   author          User         @relation(fields: [authorId], references: [id])
   authorId        String
   attachments     Attachment[]
@@ -245,4 +245,19 @@ model Comment {
   forumAnswerId   String?
   comment         Comment?     @relation("CommentToComment", fields: [commentId], references: [id])
   commentId       String?
+}
+
+//casbin table
+
+model CasbinRule {
+  id    Int     @id @default(autoincrement())
+  ptype String
+  v0    String?
+  v1    String?
+  v2    String?
+  v3    String?
+  v4    String?
+  v5    String?
+
+  @@map("casbin_rule")
 }
