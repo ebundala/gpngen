@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { sdlInputs } from '@paljs/plugins';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { print } from 'graphql/language/printer';
+import { AppLogger } from '../../app-logger/app-logger.module';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions } from './config.options';
 import { createQueriesAndMutations } from './CreateQueriesAndMutations';
 import { Generators } from './Generators';
@@ -16,14 +17,23 @@ export class SdlGeneratorService extends Generators {
       customOptions,
 
     }: SdlGeneratorServiceOptions,
+    private readonly logger: AppLogger
   ) {
     super(schemaPath, customOptions);
+    this.logger.setContext(SdlGeneratorService.name);
   }
 
   async run() {
+    this.logger.log("creating models begin")
     await this.createModels();
+    this.logger.log("creating models finish")
+    this.logger.log("creating inputs begin")
     this.createInputsTypes();
+    this.logger.log("creating inputs finish")
+    this.logger.log("creating modules begin")
     await this.createModulesIndex();
+    this.logger.log("creating modules finish")
+
     //this.createMaster();
 
     /* if (!this.isJS) {
@@ -47,10 +57,15 @@ export class SdlGeneratorService extends Generators {
 
   private async createModels() {
     (await this.models()).forEach((model) => {
+      this.logger.log(`creating ${model.name} model begin`)
       let fileContent = `type ${model.name} {`;
       const excludeFields = this.excludeFields(model.name);
       model.fields.forEach((field) => {
-        if (!excludeFields.includes(field.name)) {
+        // if (!excludeFields.includes(field.name)) {
+
+        //TODO add enforcer directives to field level
+        if (!excludeFields.find((v, i) => (new RegExp(v)).test(field.name))) {
+          this.logger.log(`creating field ${model.name}:${field.name} `)
           fileContent += `
           ${field.name}`;
           if (field.args.length > 0) {
@@ -65,28 +80,42 @@ export class SdlGeneratorService extends Generators {
             ? `[${field.outputType.type}!]!`
             : field.outputType.type + (field.isRequired ? '!' : '')
             }`;
+        } else {
+          this.logger.log(`skipping field ${model.name}:${field.name} `)
         }
       });
 
       fileContent += `}\n\n`;
+      this.logger.log(`writing to files ${model.name} start`)
       this.createFiles(model.name, fileContent);
+      this.logger.log(`writing to files for ${model.name} finish`)
+
+      this.logger.log(`creating ${model.name} model finish`)
+
     });
   }
 
   private createInputsTypes() {
-    const typeDefs = `${print(mergeTypeDefs([sdlInputs()]))}
+    const typeDefs = `
+     directive @auth on FIELD_DEFINITION | INPUT_FIELD_DEFINITION 
+    ${print(mergeTypeDefs([sdlInputs()]))}
      type Query{
        version:String
      }
      type Mutation{
       version:String
     }
+
     `;
+    this.logger.log(`writing inputs to files begin`)
+
     this.mkdir(this.output("common"));
     writeFileSync(
       this.output("common", `common.graphql`),
       typeDefs,
     );
+    this.logger.log(`writing inputs to files end`)
+
 
   }
   private getOperations(model: string) {
@@ -129,6 +158,7 @@ export class SdlGeneratorService extends Generators {
     })
     export class ${model}Module{}
     `;
+
     writeFileSync(
       this.output(model, this.withExtension(`${model}Module`)),
       content,
@@ -146,9 +176,9 @@ export class SdlGeneratorService extends Generators {
     );
   }
   private createResolvers(resolvers: string, model: string) {
-    if (resolvers) {
+    //if (resolvers) {
 
-      resolvers = `
+    resolvers = `
       import { Resolver, Mutation,Query,Info, Args, Context, ResolveField, Parent } from '@nestjs/graphql';
       import { 
       ${model},
@@ -163,6 +193,7 @@ export class SdlGeneratorService extends Generators {
       
     } from '../../models/graphql';
       import {PrismaClient } from '../../modules/prisma-client/prisma-client-service'
+      import { TenantContext } from 'src/context';
 
       @Resolver((of)=>${model})
       export class ${model}Resolver {
@@ -171,12 +202,12 @@ export class SdlGeneratorService extends Generators {
             ){}
          ${resolvers}
         }`;
-      writeFileSync(
-        this.output(model, this.withExtension(`${model}Resolvers`)),
-        resolvers,
-      );
+    writeFileSync(
+      this.output(model, this.withExtension(`${model}Resolvers`)),
+      resolvers,
+    );
 
-    }
+    // }
   }
 
   private createTypes(fileContent: string, model: string) {

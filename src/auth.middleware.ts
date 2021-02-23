@@ -11,13 +11,13 @@ export class AuthMiddleware implements NestMiddleware {
     this.logger.setContext(AuthMiddleware.name);
   }
   async use(req: any, res: any, next: () => void) {
-
+    // debugger
     const { headers } = req;
+    req.enforcer = this.enforcer;
+
     if (headers && headers.authorization) {
       const [realm, token] = headers.authorization.split(' ');
-      //  await this.enforcer.addPolicy("alice", "data1", "read");
-      //  const test = await this.enforcer.enforce("alice", "data1", "write")
-
+      req.auth = token;
 
       //  await this.app.admin.auth().verifySessionCookie(token,false)//TODO set true to verify revoked tokens
       //   .then((claims)=>{
@@ -30,6 +30,7 @@ export class AuthMiddleware implements NestMiddleware {
       //   }).finally(()=>{
       //     next();
       //   })
+      next();
     } else {
       next();
     }

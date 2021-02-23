@@ -1,4 +1,4 @@
-import { Mutation, Options, Query } from '@paljs/types';
+import { Mutation, QueriesAndMutations, Query } from '@paljs/types';
 import { DMMF } from '@prisma/client/runtime';
 import { getDMMF } from '@prisma/sdk';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
@@ -7,6 +7,29 @@ import pkgDir from 'pkg-dir';
 import { format, Options as PrettierOptions } from 'prettier';
 const projectRoot = pkgDir.sync() || process.cwd();
 
+export interface Options {
+  models?: string[];
+  output: string;
+  javaScript?: boolean;
+  excludeFields: string[];
+  excludeModels: {
+    name: string;
+    queries?: boolean;
+    mutations?: boolean;
+  }[];
+  disableQueries?: boolean;
+  disableMutations?: boolean;
+  excludeFieldsByModel: {
+    [modelName: string]: string[];
+  };
+  onDelete?: boolean;
+  genTypes?: boolean,
+  excludeQueriesAndMutationsByModel: {
+    [modelName: string]: QueriesAndMutations[];
+  };
+  excludeQueriesAndMutations: QueriesAndMutations[];
+  doNotUseFieldUpdateOperationsInput?: boolean;
+}
 export class Generators {
   protected options: Options = {
     output: join(projectRoot, 'src/graphql'),
@@ -67,7 +90,9 @@ export class Generators {
       this.options.excludeFieldsByModel[model],
     );
   }
-
+  /*protected excludeModels(model: string){
+    return this.options.excludeModels[model]
+  }*/
   protected disableQueries(model: string) {
     return (
       this.options.disableQueries ||
