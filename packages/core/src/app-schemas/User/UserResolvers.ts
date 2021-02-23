@@ -1,5 +1,6 @@
 
 import { Args, Context, Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { TenantContext } from 'src/context';
 import {
   User
 } from '../../models/graphql';
@@ -11,10 +12,21 @@ export class UserResolver {
     private readonly prisma: PrismaClient
   ) { }
   @ResolveField((returns) => String)
-  fullName(@Parent() parent: User, @Args() args, @Context() ctx, @Info() info) {
+  fullName(@Parent() parent: User, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     // const select = this.prisma.getSelection(info).value;
     // return this.prisma.user.findUnique({...args,...select})
 
+    /* this.prisma.user.update({where:{id:""},data:{forms:{
+      create:{title:"",id:""},
+      delete,
+      deleteMany,
+      disconnect,
+      update,
+      updateMany,
+      connect,
+      connectOrCreate,
+      
+    }}}).forms({where:{id:""},select:{}})[0]; */
     return `${parent.displayName || ''}  ${parent.email || ''}`;
   }
   /*@Query((returns) => User)

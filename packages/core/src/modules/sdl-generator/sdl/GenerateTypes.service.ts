@@ -1,22 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
 import { join } from 'path';
+import { AppLogger } from '../../app-logger/app-logger.module';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions, TypingsGeneratorOptions } from './config.options';
+import { Options } from './Generators';
 
 @Injectable()
 export class GenerateTypings {
   private generator: TypingsGeneratorOptions;
-  constructor(@Inject(CONFIG_OPTIONS) { generator }: SdlGeneratorServiceOptions) {
+  private options: Partial<Options>;
+  constructor(@Inject(CONFIG_OPTIONS) { generator, customOptions }: SdlGeneratorServiceOptions,
+    private readonly logger: AppLogger) {
     this.generator = generator;
+    this.options = customOptions;
+    this.logger.setContext(GenerateTypings.name)
   }
   async run() {
-    const definitionsFactory = new GraphQLDefinitionsFactory();
-
-    await definitionsFactory.generate({
-      typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
-      path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
-      outputAs: this.generator.outputAs || 'class',
-    });
+    if (this.options.genTypes) {
+      const definitionsFactory = new GraphQLDefinitionsFactory();
+      this.logger.debug('generating types ')
+      await definitionsFactory.generate({
+        typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
+        path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
+        outputAs: this.generator.outputAs || 'class',
+      });
+    }
   }
 }
 

@@ -22,9 +22,9 @@ export function createQueriesAndMutations(
     findUnique${name}(where: ${name}WhereUniqueInput!): ${name}`;
     operations.queries.resolver += `
     @Query((returns)=>${name})
-    findUnique${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.findUnique({...args,...select})
+    findUnique${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.findUnique({...args,...select})
     }`;
   }
 
@@ -40,9 +40,10 @@ export function createQueriesAndMutations(
     ): [${name}!]`;
     operations.queries.resolver += `
     @Query((returns)=>${name})
-    findFirst${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.findFirst({...args,...select})
+    findFirst${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.findFirst({...args,...select});
+      
     }`;
   }
 
@@ -58,9 +59,10 @@ export function createQueriesAndMutations(
     ): [${name}!]`;
     operations.queries.resolver += `
     @Query((returns)=>${name})
-    findMany${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.findMany({...args,...select})
+    findMany${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.findMany({...args,...select});
+      
     }`;
   }
 
@@ -76,9 +78,9 @@ export function createQueriesAndMutations(
     ): Int!`;
     operations.queries.resolver += `
     @Query((returns)=>${name})
-    findMany${name}Count(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.count({...args,...select})
+    findMany${name}Count(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.count({...args,...select})
     }`;
   }
 
@@ -94,8 +96,8 @@ export function createQueriesAndMutations(
     ): Aggregate${name}`;
     operations.queries.resolver += `
     @Query((returns)=>${name})
-    aggregate${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      return this.prisma.${model}.aggregate(args)
+    aggregate${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      return ctx.prisma.${model}.aggregate(args)
     }`;
   }
 
@@ -104,9 +106,9 @@ export function createQueriesAndMutations(
     createOne${name}(data: ${name}CreateInput!): ${name}!`;
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
-    createOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.create({...args,...select})
+    createOne${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.create({...args,...select})
     }`;
   }
 
@@ -118,9 +120,9 @@ export function createQueriesAndMutations(
     ): ${name}!`;
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
-    updateOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.update({...args,...select})
+    updateOne${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.update({...args,...select})
     }`;
   }
 
@@ -129,12 +131,12 @@ export function createQueriesAndMutations(
     deleteOne${name}(where: ${name}WhereUniqueInput!): ${name}`;
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
-    async deleteOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
+    async deleteOne${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
       ${onDelete
-        ? `await this.prisma.onDelete({ model: '${name}', where: args.where })`
+        ? `await ctx.prisma.onDelete({ model: '${name}', where: args.where })`
         : ''
       }
-      return this.prisma.${model}.delete(args)
+      return ctx.prisma.${model}.delete(args)
     }`;
   }
 
@@ -147,37 +149,37 @@ export function createQueriesAndMutations(
     ): ${name}`;
     operations.mutations.resolver += `
     @Mutation((returns)=>${name})
-    async upsertOne${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.upsert({...args,...select})
+    async upsertOne${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.upsert({...args,...select})
     }`;
   }
 
   if (!exclude.includes('deleteMany')) {
     operations.mutations.type += `
-    deleteMany${name}(where: ${name}WhereInput): BatchPayload`;
+    deleteMany${name}(where: ${name}WhereInput!): BatchPayload`;
     operations.mutations.resolver += `
     @Mutation((returns)=>BatchPayload)
-   async deleteMany${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
+   async deleteMany${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
       ${onDelete
-        ? `await this.prisma.onDelete({ model: '${name}', where: args.where })`
+        ? `await ctx.prisma.onDelete({ model: '${name}', where: args.where })`
         : ''
       }
-      return this.prisma.${model}.deleteMany(args)
+      return ctx.prisma.${model}.deleteMany(args)
     }`;
   }
 
   if (!exclude.includes('updateMany')) {
     operations.mutations.type += `
     updateMany${name}(
-      where: ${name}WhereInput
-      data: ${name}UpdateManyMutationInput
+      where: ${name}WhereInput!
+      data: ${name}UpdateManyMutationInput!
     ): BatchPayload`;
     operations.mutations.resolver += `
     @Mutation((returns)=>BatchPayload)
-    updateMany${name}(@Parent() parent, @Args() args, @Context() ctx, @Info() info){
-      const select = this.prisma.getSelection(info).value;
-      return this.prisma.${model}.updateMany({...args,...select})
+    updateMany${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
+      const select = ctx.prisma.getSelection(info).value;
+      return ctx.prisma.${model}.updateMany({...args,...select})
     }`;
   }
 

@@ -78,7 +78,7 @@ export class PrismaAdapter implements Adapter {
         ptype: string,
         rule: string[]
     ): Promise<void> {
-        const line = this.#savePolicyLine(ptype, rule);
+        const line = this.#savePolicyLine(ptype, rule) as Prisma.CasbinRuleWhereInput;
         await this.#prisma.casbinRule.deleteMany({ where: line });
     }
 
@@ -89,7 +89,7 @@ export class PrismaAdapter implements Adapter {
     ): Promise<void> {
         const processes: Array<Promise<Prisma.BatchPayload>> = [];
         for (const rule of rules) {
-            const line = this.#savePolicyLine(ptype, rule);
+            const line = this.#savePolicyLine(ptype, rule) as Prisma.CasbinRuleWhereInput;
             const p = this.#prisma.casbinRule.deleteMany({ where: line });
             processes.push(p);
         }
@@ -104,7 +104,7 @@ export class PrismaAdapter implements Adapter {
         fieldIndex: number,
         ...fieldValues: string[]
     ): Promise<void> {
-        const line: Prisma.CasbinRuleCreateInput = { ptype };
+        const line: Prisma.CasbinRuleWhereInput = { ptype };
 
         const idx = fieldIndex + fieldValues.length;
         if (fieldIndex <= 0 && 0 < idx) {

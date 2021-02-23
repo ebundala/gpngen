@@ -1,4 +1,5 @@
-import { Options } from "@paljs/types";
+import { Options } from "./Generators";
+
 
 export const CONFIG_OPTIONS = 'CONFIG_OPTIONS';
 

@@ -1,4 +1,5 @@
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
+import { AppLoggerModule } from '../app-logger/app-logger.module';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions } from './sdl/config.options';
 import { GenerateTypings } from './sdl/GenerateTypes.service';
 import { SdlGeneratorService } from './sdl/sdl-generator.service';
@@ -14,8 +15,9 @@ export class SdlGeneratorModule implements OnModuleInit {
   }
   async run() {
 
-    console.log("............generating files............")
+    console.log("............Generating files............")
     await this.sdlgen.run();
+
     await this.typings.run();
   }
   static forRoot({
@@ -26,6 +28,7 @@ export class SdlGeneratorModule implements OnModuleInit {
 
     return {
       module: SdlGeneratorModule,
+      imports: [AppLoggerModule],
       providers: [
         {
           provide: CONFIG_OPTIONS,

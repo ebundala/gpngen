@@ -4,6 +4,6 @@ import { CasbinAdminService } from './casbin-admin.service';
 @Module({
   //  imports: [CasbinModule],
   providers: [CasbinAdminService],
-  controllers: [CasbinAdminController]
+  // controllers: [CasbinAdminController]
 })
 export class CasbinAdminModule { }

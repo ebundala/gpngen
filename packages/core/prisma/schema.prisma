@@ -10,6 +10,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Tenant {
+  id   String  @id @default(cuid())
+  name String?
+  url  String
+}
+
 model User {
   id            String        @id @default(cuid())
   email         String        @unique
@@ -28,6 +34,7 @@ model User {
   forums        Forum[]
   forumAnswers  ForumAnswer[]
   comments      Comment[]
+
 }
 
 model Attachment {
@@ -63,6 +70,7 @@ model Attachment {
   Comment          Comment?        @relation(fields: [commentId], references: [id])
   commentId        String?
   FormCategory     FormCategory[]
+
 }
 
 model FormCategory {
@@ -74,7 +82,8 @@ model FormCategory {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   attachmentId String?
-  Form         Form[]
+  form         Form[]
+
 }
 
 model Form {
@@ -92,6 +101,7 @@ model Form {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   formCategoryId String?
+
 }
 
 model Grade {
@@ -110,6 +120,7 @@ model Grade {
   attachments     Attachment[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+
 }
 
 model Response {
@@ -125,6 +136,7 @@ model Response {
   state       State        @default(PENDING)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
 }
 
 model Question {
@@ -142,6 +154,7 @@ model Question {
   attachments    Attachment[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+
 }
 
 model Answer {
@@ -155,6 +168,7 @@ model Answer {
   textValue    String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+
 }
 
 model Recommendation {
@@ -165,6 +179,7 @@ model Recommendation {
   gradeId     String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
 }
 
 // use boolean and text question first for POC
@@ -211,6 +226,7 @@ model Forum {
   attachments     Attachment[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
 }
 
 model ForumAnswer {
@@ -226,6 +242,7 @@ model ForumAnswer {
   content         String
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+
 }
 
 model Comment {
@@ -245,6 +262,7 @@ model Comment {
   forumAnswerId   String?
   comment         Comment?     @relation("CommentToComment", fields: [commentId], references: [id])
   commentId       String?
+
 }
 
 //casbin table
