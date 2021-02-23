@@ -78,7 +78,7 @@ export class SdlGeneratorService extends Generators {
           }
           fileContent += `: ${field.outputType.isList
             ? `[${field.outputType.type}!]!`
-            : field.outputType.type + (field.isRequired ? '!' : '')
+            : field.outputType.type + (field?.isNullable ? '!' : '')
             }`;
         } else {
           this.logger.log(`skipping field ${model.name}:${field.name} `)
