@@ -42,7 +42,7 @@ export function createQueriesAndMutations(
     @Query((returns)=>${name})
     findFirst${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info){
       const select = ctx.prisma.getSelection(info).value;
-      return ctx.prisma.${model}.findFirst({...args,...select});
+      return ctx.prisma.${model}.findMany({...args,...select});
       
     }`;
   }

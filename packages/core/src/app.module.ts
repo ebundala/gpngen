@@ -34,6 +34,7 @@ import modules from './schemas';
           token: req.token,
           enforcer: req.enforcer,
           prisma: new PrismaClient({
+
             datasources: {
               db: {
                 url: tenant.url

@@ -49,7 +49,7 @@ export class PrismaClient extends _PrismaClient {
           throw new GraphQLError('Unauthorized')
       }
 
-      const allow = await this.enforce([model, dataPath.join('.'), tenantId, token, action]);
+      const allow = this.enforce([model, dataPath.join('.'), tenantId, token, action]);
       if (!allow)
         throw new GraphQLError('Unauthorized')
       else
