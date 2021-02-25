@@ -34,7 +34,7 @@ export function createQueriesAndMutations(
       where: ${name}WhereInput
       orderBy: [${name}OrderByInput!]
       cursor: ${name}WhereUniqueInput
-      distinct: ${name}DistinctFieldEnum
+      distinct: [${name}ScalarFieldEnum!]
       skip: Int
       take: Int
     ): [${name}!]`;
@@ -53,7 +53,7 @@ export function createQueriesAndMutations(
       where: ${name}WhereInput
       orderBy: [${name}OrderByInput!]
       cursor: ${name}WhereUniqueInput
-      distinct: ${name}DistinctFieldEnum
+      distinct: [${name}ScalarFieldEnum!]
       skip: Int
       take: Int
     ): [${name}!]`;
@@ -72,7 +72,7 @@ export function createQueriesAndMutations(
       where: ${name}WhereInput
       orderBy: [${name}OrderByInput!]
       cursor: ${name}WhereUniqueInput
-      distinct: ${name}DistinctFieldEnum
+      distinct: [${name}ScalarFieldEnum!]
       skip: Int
       take: Int
     ): Int!`;
@@ -90,7 +90,7 @@ export function createQueriesAndMutations(
       where: ${name}WhereInput
       orderBy: [${name}OrderByInput!]
       cursor: ${name}WhereUniqueInput
-      distinct: ${name}DistinctFieldEnum
+      distinct: [${name}ScalarFieldEnum!]
       skip: Int
       take: Int
     ): Aggregate${name}`;

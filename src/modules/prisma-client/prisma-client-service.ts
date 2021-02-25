@@ -8,6 +8,9 @@ export class PrismaClient extends _PrismaClient {
   constructor(options: Prisma.PrismaClientOptions, context: TenantContext) {
     super(options);
     this.ctx = context;
+    this.$on('beforeExit', () => {
+      console.log("exiting prisma")
+    })
     this.$use(async (params, next) => {
       const {
         model,

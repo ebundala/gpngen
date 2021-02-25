@@ -38,3 +38,4 @@ src/models
 prisma/.env
 .vscode
 prisma/migrations
+pgbouncer/conf/userlist.txt

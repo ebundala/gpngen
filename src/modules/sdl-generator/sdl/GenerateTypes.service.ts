@@ -23,7 +23,12 @@ export class GenerateTypings {
         typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
         path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
         outputAs: this.generator.outputAs || 'class',
-      });
+        watch: false,
+        debug: true,
+        federation: false
+      })
+      this.logger.debug("finished generating types");
+
     }
   }
 }
