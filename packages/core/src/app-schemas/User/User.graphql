@@ -2,11 +2,3 @@ extend type User {
 	fullName: String! 
 	email: String! 
 }
-
-extend input UserWhereInput {
-	email: StringFilter 
-}
-
-extend input AttachmentCreateOneWithoutFormCategoryInput {
-	create: AttachmentCreateWithoutFormCategoryInput 
-}

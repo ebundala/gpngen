@@ -26,13 +26,13 @@ export class SdlGeneratorService extends Generators {
   async run() {
     this.logger.log("creating models begin")
     await this.createModels();
-    this.logger.log("creating models finish")
+    this.logger.log("creating models finish\n")
     this.logger.log("creating inputs begin")
     this.createInputsTypes();
-    this.logger.log("creating inputs finish")
+    this.logger.log("creating inputs finish\n")
     this.logger.log("creating modules begin")
     await this.createModulesIndex();
-    this.logger.log("creating modules finish")
+    this.logger.log("creating modules finish\n")
 
     //this.createMaster();
 
@@ -71,14 +71,23 @@ export class SdlGeneratorService extends Generators {
           if (field.args.length > 0) {
             fileContent += '(';
             field.args.forEach((arg) => {
-              fileContent += `${arg.name}: ${arg.inputTypes[0].type}
+              const isNullable = arg.isNullable ? "" : "!";
+              const isRequired = arg.isRequired ? "!" : "";
+              const name = arg.name;
+              //Todo handle unions if applicable
+              const i = arg.inputTypes[0];
+              const isList = i.isList;
+              const type = i.type
+              const v = isList ? `[${type}${isNullable}]${isRequired}` : `${type}${isRequired}`;
+
+              fileContent += `${arg.name}: ${v}
               `;
             });
             fileContent += ')';
           }
           fileContent += `: ${field.outputType.isList
             ? `[${field.outputType.type}!]!`
-            : field.outputType.type + (field?.isNullable ? '!' : '')
+            : field.outputType.type + (field?.isNullable ? '' : '!')
             }`;
         } else {
           this.logger.log(`skipping field ${model.name}:${field.name} `)
@@ -188,7 +197,7 @@ export class SdlGeneratorService extends Generators {
       ${model}WhereUniqueInput,
       ${model}WhereInput,
       ${model}OrderByInput,
-      ${model}DistinctFieldEnum,
+      ${model}ScalarFieldEnum,
       BatchPayload,
       
     } from '../../models/graphql';

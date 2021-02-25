@@ -13,20 +13,7 @@ export class UserResolver {
   ) { }
   @ResolveField((returns) => String)
   fullName(@Parent() parent: User, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    // const select = this.prisma.getSelection(info).value;
-    // return this.prisma.user.findUnique({...args,...select})
 
-    /* this.prisma.user.update({where:{id:""},data:{forms:{
-      create:{title:"",id:""},
-      delete,
-      deleteMany,
-      disconnect,
-      update,
-      updateMany,
-      connect,
-      connectOrCreate,
-      
-    }}}).forms({where:{id:""},select:{}})[0]; */
     return `${parent.displayName || ''}  ${parent.email || ''}`;
   }
   /*@Query((returns) => User)

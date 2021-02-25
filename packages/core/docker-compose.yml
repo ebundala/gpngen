@@ -40,18 +40,18 @@ services:
       resources:
         limits:
           cpus: "0.05"
-          memory: 128m
+          memory: 512m
       restart_policy:
         condition: on-failure
     ports:
-      - "6432:6432"
+      - 6432:6432
     volumes:
-      - ./pgbouncer/conf/:/bitnami/pgbouncer/conf/
+      - ./pgbouncer/:/bitnami/pgbouncer/
   adminer:
     image: ${ADMINER_TAG}
-    environment:
-      ADMINER_PLUGINS: "tables-filter tinymce"
-      ADMINER_DEFAULT_SERVER: "pgbouncer:6432"
+    # environment:
+    #  ADMINER_PLUGINS: "tables-filter tinymce"
+    # ADMINER_DEFAULT_SERVER: "pgbouncer:6432"
     ports:
       - ${ADMINER_PORT}:8080
     networks:
@@ -67,7 +67,7 @@ services:
   app:
     image: ${NODE_TAG}
     working_dir: /home/app
-    command: yarn run start:docker:debug
+    command: yarn run start:docker:prod
     depends_on:
       - db
     ports:
