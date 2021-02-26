@@ -1,4 +1,4 @@
-schema: "src/models/*.graphql"
+schema: "packages/**/src/models/*.graphql"
 #- "http://localhost:3000/graphql"
 #documents: './operations/**/*.graphql'
 extensions:
