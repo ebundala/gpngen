@@ -1,4 +1,0 @@
-extend type User {
-	fullName: String! 
-	email: String! 
-}

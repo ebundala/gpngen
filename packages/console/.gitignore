@@ -32,10 +32,6 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
 src/schemas
 src/models
-.env
-prisma/.env
-.vscode
-prisma/migrations
-pgbouncer/conf/userlist.txt

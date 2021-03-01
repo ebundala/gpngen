@@ -1,32 +1,36 @@
-import { join } from "path";
-import { SdlGeneratorServiceOptions } from "./modules/sdl-generator/sdl/config.options";
+import { SdlGeneratorServiceOptions } from '@mechsoft/apigen/dist/sdl/config.options';
+import { join } from 'path';
 
-export const options: Partial<SdlGeneratorServiceOptions> = {
-    schemaPath: './prisma/schema.prisma',
-    customOptions: {
-        onDelete: true,
-        genTypes: true,
-        excludeFields: [
-            "Id", 'tenantId', 'tenant'
+const options: Partial<SdlGeneratorServiceOptions> = {
+  schemaPath: './prisma/schema.prisma',
+  customOptions: {
+    onDelete: true,
+    genTypes: true,
+      excludeFields: ['Id', 'tenantId', 'tenant'],
+    excludeQueriesAndMutationsByModel: {
+        User: ['createOne', 'deleteMany', 'deleteOne', 'updateMany', 'upsertOne'],
+        Tenant: [
+            'deleteMany',
+            'deleteOne',
+            'updateMany',
+            'upsertOne',
+            'findMany',
+            'aggregate',
         ],
-        excludeQueriesAndMutationsByModel: {
-            "User": ['createOne', "deleteMany", "deleteOne", 'updateMany', 'upsertOne',],
-            "Tenant": ["deleteMany", "deleteOne", 'updateMany', 'upsertOne', 'findMany', 'aggregate',
-            ]
+    },
+    excludeModels: [
+      {
+        name: 'CasbinRule',
+        queries: true,
+            mutations: true,
         },
-        excludeModels: [
-            {
-                name: 'CasbinRule',
-                queries: true,
-                mutations: true
-            }
-        ],
-        output: './src/schemas',
-    },
-    generator: {
-        typePaths: ['./src/schemas/**/*.graphql'],
-        path: join(process.cwd(), 'src/models/graphql.ts'),
-        outputAs: 'class',
-    },
-
-}
+    ],
+    output: './src/schemas',
+  },
+  generator: {
+    typePaths: ['./src/schemas/**/*.graphql'],
+    path: join(process.cwd(), 'src/models/graphql.ts'),
+    outputAs: 'class',
+  },
+};
+export default options;
