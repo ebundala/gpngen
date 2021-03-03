@@ -1,4 +1,4 @@
-import { Module, Injectable, Logger, Global } from '@nestjs/common';
+import { Global, Injectable, Logger, Module } from '@nestjs/common';
 
 @Injectable()
 export class AppLogger extends Logger {}
@@ -9,3 +9,4 @@ export class AppLogger extends Logger {}
   exports: [AppLogger],
 })
 export class AppLoggerModule {}
+

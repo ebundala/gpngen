@@ -8,9 +8,12 @@ export class PrismaAdapter implements Adapter {
     constructor(option?: Prisma.PrismaClientOptions) {
         this.#option = option;
     }
-
+    setAdapter(prisma:PrismaClient){
+        this.#prisma=prisma;
+        return this;
+    }
     async loadPolicy(model: Model): Promise<void> {
-        const lines = await this.#prisma.casbinRule.findMany();
+        const lines = await this.#prisma.casbinRule.findMany()??[];
 
         for (const line of lines) {
             this.#loadPolicyLine(line, model);

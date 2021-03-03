@@ -32,15 +32,5 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-core.zip
-
-packages/apigen/test/prisma/.env
-.env
-packages/console/packaged.json
-packages/console/prisma/.env
-packages/console/prisma/.env
-pgbouncer/conf/userlist.txt
-pgbouncer/conf/userlist.txt.template
-pgbouncer/tmp/pgbouncer.pid
-packages/console/prisma/.env
+src/schemas
+src/models

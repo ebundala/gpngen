@@ -6,30 +6,24 @@ const options: Partial<SdlGeneratorServiceOptions> = {
   customOptions: {
     onDelete: true,
     genTypes: true,
-    excludeFields: ['Id', 'tenantId', 'tenant'],
+      excludeFields: ['Id', 'tenantId', 'tenant'],
     excludeQueriesAndMutationsByModel: {
-      User: [
-      //   'createOne', 
-      // 'deleteMany', 
-      // 'deleteOne', 
-      // 'updateMany', 
-      // 'upsertOne'
-    ],
-      Tenant: [
-        // 'deleteMany',
-        // 'deleteOne',
-        // 'updateMany',
-        // 'upsertOne',
-        // 'findMany',
-        // 'aggregate',
-      ],
+        User: ['createOne', 'deleteMany', 'deleteOne', 'updateMany', 'upsertOne'],
+        Tenant: [
+            'deleteMany',
+            'deleteOne',
+            'updateMany',
+            'upsertOne',
+            'findMany',
+            'aggregate',
+        ],
     },
     excludeModels: [
       {
         name: 'CasbinRule',
         queries: true,
-        mutations: true,
-      },
+            mutations: true,
+        },
     ],
     output: './src/schemas',
   },

@@ -77,7 +77,7 @@ export class SdlGeneratorService extends Generators {
                 ? `[${type}${isNullable}]${isRequired}`
                 : `${type}${isRequired}`;
 
-              fileContent += `${arg.name}: ${v}
+              fileContent += `${name}: ${v}
               `;
             });
             fileContent += ')';
@@ -91,7 +91,38 @@ export class SdlGeneratorService extends Generators {
         }
       });
 
-      fileContent += `}\n\n`;
+      fileContent += `
+    }
+
+      type ${model.name}ListResponse {
+        status: Boolean!
+        data: [${model.name}!]
+        message: String!
+      }
+     
+
+      type ${model.name}Response {
+        status: Boolean!
+        data: ${model.name}
+        message: String!
+      }
+      
+      type ${model.name}BatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type Aggregate${model.name}Response {
+        status: Boolean!
+        data: Aggregate${model.name}
+        message: String!
+      }
+      type ${model.name}CountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      `;
       this.logger.log(`writing to files ${model.name} start`);
       this.createFiles(model.name, fileContent);
       this.logger.log(`writing to files for ${model.name} finish`);
@@ -148,11 +179,11 @@ export class SdlGeneratorService extends Generators {
   private createModule(model) {
     const content = `
     import { Module } from '@nestjs/common';
-    import { PrismaClientModule } from '@mechsoft/prisma-client';
+    //import { PrismaClientModule } from '@mechsoft/prisma-client';
     import { ${model}Resolver } from './${model}Resolvers';
 
     @Module({
-      imports:[PrismaClientModule],
+      //imports:[PrismaClientModule],
       providers:[${model}Resolver]
     })
     export class ${model}Module{}
@@ -181,14 +212,19 @@ export class SdlGeneratorService extends Generators {
       import { Resolver, Mutation,Query,Info, Args, Context, ResolveField, Parent } from '@nestjs/graphql';
       import { 
       ${model},
-      ${model}CreateInput,
-      ${model}UpdateInput,
-      ${model}UpdateManyMutationInput,
-      ${model}WhereUniqueInput,
-      ${model}WhereInput,
-      ${model}OrderByInput,
-      ${model}ScalarFieldEnum,
-      BatchPayload,
+      ${model}Response,
+      ${model}BatchResponse,
+      ${model}CountResponse,
+      ${model}ListResponse,
+      Aggregate${model}Response,
+    //  ${model}CreateInput,
+    //  ${model}UpdateInput,
+     // ${model}UpdateManyMutationInput,
+     // ${model}WhereUniqueInput,
+     // ${model}WhereInput,
+     // ${model}OrderByInput,
+     // ${model}ScalarFieldEnum,
+     // BatchPayload,
       
     } from '../../models/graphql';
       import {PrismaClient } from '@mechsoft/prisma-client'
@@ -196,9 +232,7 @@ export class SdlGeneratorService extends Generators {
 
       @Resolver((of)=>${model})
       export class ${model}Resolver {
-          constructor(
-            private readonly prisma: PrismaClient
-            ){}
+          
          ${resolvers}
         }`;
     writeFileSync(

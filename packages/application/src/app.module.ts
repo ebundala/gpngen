@@ -1,9 +1,11 @@
 import { AppLoggerModule } from '@mechsoft/app-logger';
 import { TenantContext } from '@mechsoft/common';
-import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
-import { PrismaClient } from '@mechsoft/prisma-client';
+//import { CasbinAdminModule } from './modules/casbin-admin/casbin-admin.module';
+import { CasbinModule } from '@mechsoft/enforcer';
+import { PrismaClient, PrismaClientModule } from '@mechsoft/prisma-client';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { PrismaClient as PC } from '@prisma/client';
 import {
   GraphQLRequestContext,
   GraphQLRequestContextWillSendResponse,
@@ -14,10 +16,7 @@ import { printSchema } from 'graphql';
 import { join } from 'path';
 //import { AppUserModule } from './app-schemas/User/UserModule';
 import { AuthMiddleware } from './auth.middleware';
-import { authorizationManager, AuthorizerOptions } from './authorization';
 import modules from './schemas';
-
-
 
 type ClientValue = {
   k: string;
@@ -63,17 +62,14 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
   async willSendResponse(
     requestContext: GraphQLRequestContextWillSendResponse<TenantContext>,
   ) {
-    //debugger;
+    debugger;
     //console.log('willSendResponse');
     const { context, request, response } = requestContext;
-    const { tenantId, prisma, logger,auth } = context;
+    const { tenantId, prisma, logger } = context;
     // const client = clients.get(tenantId);
     // const expired = Date.now() - client.start.getTime() >= 60000;
     // if (clients.size > 1 || expired) {
-      
-       await (context.enforcer.getAdapter() as PrismaAdapter).close()      
-       await prisma.$disconnect();
-      
+    await prisma.$disconnect();
     //   clients.delete(tenantId);
     //   // const arr:ClientValue[] = []
     //   //  clients.forEach((v, k) => {
@@ -85,7 +81,6 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
       `Disconected from prisma server tenantId:${tenantId}`,
       'PrismaConnectionManager',
     );
-   
     // }
   },
 };
@@ -110,63 +105,53 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         },
       ],
       context: async ({ req }): Promise<TenantContext> => {
-        // const p = new PC({
-        //   log: ['error', 'warn'],
-        // });
-        
+        const p = new PC({
+          log: ['error', 'warn'],
+        });
         const { token, logger } = req;
-
         let client: PrismaClient;
-
-        // if (token) {
-        //   logger?.debug(`token ${token}`, GraphQLModule.name);
-        //   const tenant = await p.tenant.findUnique({ where: { id: token } });
-        //   await p.$disconnect();
-        //   if (tenant && tenant.url) {
-        //     //throw new GraphQLError(`Invalid tenant ${token}`);
-        //     client = new PrismaClient({
-        //       datasources: {
-        //         db: {
-        //           url: tenant.url,
-        //         },
-        //       },
-        //       log: ['error', 'warn'],
-        //     });
-        //   }
-        // }
+        if (token) {
+          logger?.debug(`token token`, GraphQLModule.name);
+          const tenant = await p.tenant.findUnique({ where: { id: token } });
+          await p.$disconnect();
+          if (tenant && tenant.url) {
+            //throw new GraphQLError(`Invalid tenant ${token}`);
+            client = new PrismaClient({
+              datasources: {
+                db: {
+                  url: tenant.url,
+                },
+              },
+              log: ['error', 'warn'],
+              tenantId: tenant.id,
+              enforcer: req.enforcer,
+              token: req.token,
+              auth: req.auth,
+              logger,
+            });
+          }
+        }
 
         if (!client) {
           client = new PrismaClient({
-            log: ['error', 'warn','query','info'],
+            log: ['error', 'warn'],
+            tenantId: 'tenant.id',
+            enforcer: req.enforcer,
+            token: req.token,
+            auth: req.auth,
+            logger,
           });
         }
-        const enforcerOptions={
-          path:'./src/authorization/rbac_model.conf',
-          adapter: await PrismaAdapter.newAdapter({
-              log: ['error', 'warn'],
-            }) //(new PrismaAdapter()).setAdapter(client)
-        }
 
-       const enforcer = new CasbinService(enforcerOptions);
-        const authOptions:AuthorizerOptions={
+        const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
           auth: req.auth,
           token: req.token,
-          enforcer: enforcer,
-          prisma: client,
-          logger,
-        }
-        authorizationManager(authOptions);      
-        
-        const ctx: TenantContext = {
-          tenantId: token ?? 'tenant.id',
-          auth: req,
-          token: req.token,
-          enforcer: enforcer,
+          enforcer: req.enforcer,
           prisma: client,
           logger,
         };
-        
+
         return ctx;
       },
       transformSchema: (schema) => {
@@ -175,7 +160,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         writeFileSync(join(process.cwd(), 'src/models/schema.g.graphql'), txt);
         return schema;
       },
-      debug: true,
+      debug: false,
 
       playground: true,
     }),
@@ -184,14 +169,18 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
        exclude: ['/graphql', '/casbin-admin'],
  
      }),*/
+    PrismaClientModule,
     AppLoggerModule,
-    // CasbinModule.forRootAsync({
-    //   model: './src/authorization/rbac_model.conf',
-    // }),
+    CasbinModule.forRootAsync({
+      model: './src/authorization/rbac_model.conf',
+    }),
+
+    //CasbinAdminModule,
    ...modules,
+    //  AppUserModule,
+    //  CasbinAdminModule
   ],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('/graphql');

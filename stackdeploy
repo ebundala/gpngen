@@ -1,0 +1,3 @@
+#! /bin/bash
+docker-compose config > stack.yml
+docker stack deploy --compose-file stack.yml app

@@ -1,11 +1,10 @@
 {
-  "name": "@mechsoft/console",
+  "name": "application",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -14,7 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "api:gen": "rimraf src/schemas && ts-node --script-mode src/api.gen.ts",
+    "gen:api": "rimraf src/schemas && ts-node src/api.gen.ts",
     "dependencies": "yarn install",
     "migrate": "yarn run migrate:save && yarn run migrate:up",
     "start:docker:debug": "yarn run dependencies && yarn run prisma:generate && nest start --debug 0.0.0.0:9229 --watch",
@@ -34,20 +33,21 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/common": "^7.5.1",
+    "@nestjs/core": "^7.5.1",
+    "@nestjs/platform-express": "^7.5.1",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^3.0.2",
+    "rxjs": "^6.6.3",
     "@mechsoft/apigen": "^0.0.1",
     "@mechsoft/app-logger": "^0.0.1",
     "@mechsoft/enforcer": "^0.0.1",
     "@mechsoft/prisma-client": "^0.0.1",
     "@nestjs/graphql": "^7.9.10",
-    "@nestjs/common": "^7.5.1",
-    "@nestjs/core": "^7.5.1",
-    "@nestjs/platform-express": "^7.5.1",
-    "apollo-server-express": "^2.21.0",
     "@prisma/client": "^2.17.0",
     "prisma": "^2.17.0",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3"
+    "apollo-server-express": "^2.21.0",
+    "apollo-server-plugin-base": "^0.10.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",

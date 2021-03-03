@@ -22,7 +22,7 @@ export class CasbinModule {
             providers: [
                 {
                     provide: CASBIN_CONFIG,
-                    useValue: [join(process.cwd(), model), adapter],
+                    useValue: {path:join(process.cwd(), model), adapter},
                 },
                 CasbinService,
             ],
