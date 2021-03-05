@@ -12,6 +12,9 @@ export class PrismaAdapter implements Adapter {
         this.#prisma=prisma;
         return this;
     }
+    get prisma():PrismaClient{
+        return this.#prisma
+    }
     async loadPolicy(model: Model): Promise<void> {
         const lines = await this.#prisma.casbinRule.findMany()??[];
 

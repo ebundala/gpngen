@@ -29,6 +29,7 @@ type ClientsList = Map<string, ClientValue>;
 const clients: ClientsList = new Map();
 
 const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
+  
   /* didResolveSource?(
      requestContext: GraphQLRequestContextDidResolveSource<TenantContext>,
    ): ValueOrPromise<void>;
@@ -143,7 +144,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         const enforcerOptions={
           path:'./src/authorization/rbac_model.conf',
           adapter: await PrismaAdapter.newAdapter({
-              log: ['error', 'warn'],
+              log: ['error', 'warn','query','info'],
             }) //(new PrismaAdapter()).setAdapter(client)
         }
 
@@ -151,7 +152,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         const authOptions:AuthorizerOptions={
           tenantId: token ?? 'tenant.id',
           auth: req.auth,
-          token: req.token,
+          token: token,
           enforcer: enforcer,
           prisma: client,
           logger,
@@ -161,11 +162,12 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
           auth: req,
-          token: req.token,
+          token: token,
           enforcer: enforcer,
           prisma: client,
           logger,
         };
+        
         
         return ctx;
       },

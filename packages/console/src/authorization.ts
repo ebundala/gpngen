@@ -14,8 +14,8 @@ export interface AuthorizerOptions{
 export function authorizationManager (options:AuthorizerOptions){
       const {logger, enforcer, tenantId, token, prisma, auth}=options;
       logger.setContext(authorizationManager.name)
-    const enforce=(args): Promise<boolean> =>{
-      return enforcer.enforce(args);
+    const enforce=(...args): Promise<boolean> =>{
+      return enforcer.enforce(...args);
     } 
      prisma.$on('beforeExit', () => {
        logger.log(`Exiting prisma tenant:${tenantId}`);
@@ -33,9 +33,7 @@ export function authorizationManager (options:AuthorizerOptions){
         case 'findMany':
           break;
         case 'findFirst':
-          break;
-        case 'create':
-          break;
+          break;        
         case 'update':
           break;
         case 'updateMany':
@@ -55,19 +53,20 @@ export function authorizationManager (options:AuthorizerOptions){
         default:
           throw new GraphQLError('Unauthorized operation');
       }
-
-      const allow =  await enforce([
-        model,
-        dataPath.join('.'),
-        tenantId,
+      
+      enforcer.enableLog(true);
+      await enforcer.loadPolicy();
+     // await enforcer.buildRoleLinks();
+      const allow =  await enforce(
         token,
+        model,
         action,
-      ]);
+      );
+      
       logger.log(`Enforcer:${token} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
 
-     // if (!allow&&) throw new GraphQLError('Unauthorized');
-     // else 
-     
+      if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
+      else
       return next(params);
     });
   }
