@@ -44,3 +44,6 @@ pgbouncer/conf/userlist.txt
 pgbouncer/conf/userlist.txt.template
 pgbouncer/tmp/pgbouncer.pid
 packages/console/prisma/.env
+packages/console/prisma/model2-policies.json
+packages/console/prisma/model-policies.json
+packages/console/prisma/model-policies.json
