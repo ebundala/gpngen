@@ -2,27 +2,28 @@ import { DMMF, getDMMF } from '@mechsoft/apigen';
 import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { Admin, Editor, getRoleGrouping, getRolePolicies, Viewer } from './roles';
 
 
-const dmmf = async (schemaPath): Promise<DMMF.Document> => {
+export const dmmf = async (schemaPath): Promise<DMMF.Document> => {
     const schema = readFileSync(schemaPath, 'utf-8');
     return await getDMMF({ datamodel: schema });
 }
 const schemaPath = './prisma/schema.prisma';
 
 
-const datamodel = async (path) => {
+export const datamodel = async (path) => {
     const { datamodel }: { datamodel: DMMF.Datamodel, schema: DMMF.Schema } = await dmmf(path);
 
     return datamodel;
 }
 
-const modelTypes = async (path) => {
+export const modelTypes = async (path) => {
     const { schema }: { schema: DMMF.Schema } = await dmmf(path);
 
     return schema.outputObjectTypes.model;
 }
-const inputTypes = async (path) => {
+export const inputTypes = async (path) => {
 
     const { schema }: { schema: DMMF.Schema } = await dmmf(path);
 
@@ -188,7 +189,7 @@ const roles: Role[] = [
             queryRaw: true,
             aggregate: true
         },
-        
+
     },
     {
         name: 'editor',
@@ -347,58 +348,70 @@ const generateInputPolicy = (inputs: DMMF.InputType[]) => {
         `
     }).join(',')}]`
 }
-
 const createDefaultPolicies = async () => {
-    const models = await modelTypes(schemaPath);
-    const inputs = await inputTypes(schemaPath)
-    debugger
-    const p = generateModelPolicy(models);
-    // const p2 = generateInputPolicy(inputs);
-    const pAst: ModelPolicyAst[] = JSON.parse(p);
-    const policies = pAst.map((i) => {
-        const obj = Object.keys(i)[0];
-        const { actions, fields } = i[obj];
-        const a = Object.entries(actions)
-        const p: string[][] = []
-        for (let s = 0; s < a.length; s++) {
-            const [kAction, v] = a[s];
-            const r = Object.entries(v)
-            for (let j = 0; j < r.length; j++) {
+    
+    const admin=getRolePolicies(new Admin())
+    const editor= getRolePolicies(new Editor())
+    const viewer = getRolePolicies(new Viewer())
+    const adminRoleGroups=getRoleGrouping(new Admin());
+    const editorRoleGrouping = getRoleGrouping(new Editor())
+    const viewerRoleGrouping = getRoleGrouping(new Viewer());
+     adminRoleGroups.push(...editorRoleGrouping,...viewerRoleGrouping);
 
-                const [sub, allow] = r[j];
-                if (allow)
-                    p.push([sub, obj, kAction])
-            }
+     admin.push(...editor,...viewer);
+     return {roleGroups:adminRoleGroups,policies:admin};
+    // const models = await modelTypes(schemaPath);
+    // const inputs = await inputTypes(schemaPath)
+    // debugger
+    // const p = generateModelPolicy(models);
+    // // const p2 = generateInputPolicy(inputs);
+    // const pAst: ModelPolicyAst[] = JSON.parse(p);
+    // const policies = pAst.map((i) => {
+    //     const obj = Object.keys(i)[0];
+    //     const { actions, fields } = i[obj];
+    //     const a = Object.entries(actions)
+    //     const p: string[][] = []
+    //     for (let s = 0; s < a.length; s++) {
+    //         const [kAction, v] = a[s];
+    //         const r = Object.entries(v)
+    //         for (let j = 0; j < r.length; j++) {
 
-        }
-        const values = Object.entries(fields);
-        for (let s = 0; s < values.length; s++) {
-            const [k, v] = values[s];
-            const a = Object.entries(v.actions);
-            for (let s1 = 0; s1 < a.length; s1++) {
-                const [k1, v1] = a[s1];
-                const a2 = Object.entries(v1);
-                for (let s2 = 0; s2 < a2.length; s2++) {
-                    const [role, v2] = a2[s2];
-                    if (v2) {
-                        p.push([role, v.path, k1])
-                    }
-                }
-            }
-        }
-        return p
-    }).reduce((ac, v) => ac.concat(v))
-    writeFileSync(join(process.cwd(), './prisma/model-policies.json'), JSON.stringify(policies));
+    //             const [sub, allow] = r[j];
+    //             if (allow)
+    //                 p.push([sub, obj, kAction])
+    //         }
 
-    writeFileSync(join(process.cwd(), './prisma/model2-policies.json'), p);
-    //  writeFileSync(join(process.cwd(),'./prisma/input-policies.json'),p2);
-    return policies;
+    //     }
+    //     const values = Object.entries(fields);
+    //     for (let s = 0; s < values.length; s++) {
+    //         const [k, v] = values[s];
+    //         const a = Object.entries(v.actions);
+    //         for (let s1 = 0; s1 < a.length; s1++) {
+    //             const [k1, v1] = a[s1];
+    //             const a2 = Object.entries(v1);
+    //             for (let s2 = 0; s2 < a2.length; s2++) {
+    //                 const [role, v2] = a2[s2];
+    //                 if (v2) {
+    //                     p.push([role, v.path, k1])
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return p
+    // }).reduce((ac, v) => ac.concat(v))
+    // writeFileSync(join(process.cwd(), './prisma/model-policies.json'), JSON.stringify(policies));
+
+    // writeFileSync(join(process.cwd(), './prisma/model2-policies.json'), p);
+    // // writeFileSync(join(process.cwd(),'./prisma/input-policies.json'),p2);
+    // const dm = await dmmf(schemaPath);
+    // writeFileSync(join(process.cwd(), './prisma/dmmf.json'), JSON.stringify(dm))
+    //return policies;
 }
 //createDefaultPolicies()
 
 const createRoles = async () => {
     const options = {
-        path: './src/authorization/rbac_model.conf',
+        path: join(process.cwd(), 'packages/console/src/authorization/rbac_model.conf'),
         adapter: await PrismaAdapter.newAdapter({
             datasources: {
                 db: {
@@ -409,18 +422,20 @@ const createRoles = async () => {
 
     }
     const casbin = new CasbinService(options)
-
-    const policies = await createDefaultPolicies();
-    await (casbin.getAdapter() as PrismaAdapter)
-        .prisma.casbinRule.deleteMany({
-            where:{
-                v2:{
-                    not:{
-                        equals:null
+    debugger
+    const {policies,roleGroups} = await createDefaultPolicies();
+    const cl= (casbin.getAdapter() as PrismaAdapter);
+        await cl.prisma.casbinRule.deleteMany(
+         /*    {
+            where: {
+                v2: {
+                    not: {
+                        equals: null
                     }
                 }
-            }  
-        })
+            }
+        } */
+        )
     /*  await casbin.removePolicies(policies)
      await casbin.removeGroupingPolicies([
          ['user1', 'admin'],
@@ -431,6 +446,11 @@ const createRoles = async () => {
          ['admin', 'editor'],
          ['editor', 'viewer']
      ]) */
+    roleGroups.push(['user1', 'Admin'],
+         ['user2', 'Editor'],
+         ['user3', 'Viewer']);
+         
+    await casbin.addGroupingPolicies(roleGroups)
     await casbin.addPolicies(policies);
 
     //  debugger
@@ -456,3 +476,85 @@ const createRoles = async () => {
 }
 
 createRoles().then(console.log).catch(console.error)
+
+const getResourcesPaths = async (depth=5) => {
+
+    const dm = await dmmf(join(process.cwd(), 'packages/console/prisma/schema.prisma'));
+    const { datamodel, schema, mappings } = dm
+    const { enums, models } = datamodel
+    const { modelOperations } = mappings;
+    const { inputObjectTypes, outputObjectTypes, enumTypes } = schema;
+    const queries = outputObjectTypes.prisma.find((v) => v.name == 'Query')
+    const mutations = outputObjectTypes.prisma.find((v) => v.name == 'Mutation')
+    const inputs: Map<string,DMMF.InputType>=new Map();
+    inputObjectTypes.prisma.forEach((v)=>{
+         inputs.set(v.name,v);
+     });
+    debugger;
+    const findPaths = (data: DMMF.OutputType) => {
+        const N = data.name;
+        const a = data.fields;
+        const r = new Set<string>();
+        for (let i = 0; i < a.length; i++) {
+            const v = a[i];
+            const path = `${v.name}` //${v.outputType.type}
+            r.add(path);
+            if (v.args.length) {
+                for (let i1 = 0; i1 < v.args.length; i1++) {
+                    const { name, inputTypes } = v.args[i1];
+                    const path2 = `${path}.${name}`
+                    r.add(path2);
+                    if (inputTypes.length) {
+                        //todo find input fields resources
+                        findInputResources(inputTypes, path2,r,depth)
+
+                    }
+
+                }
+            }
+        }
+        return r;
+    }
+
+    const findInputResources = (inputTypes, path,p:Set<string>,depth) => {
+       
+        for (let i2 = 0; i2 < inputTypes.length; i2++) {
+            const { type, namespace, location, isList } = inputTypes[i2];
+            let input: DMMF.InputType;
+            if (location === 'inputObjectTypes' && namespace === 'prisma') {
+                input=  inputs.get(type);
+                for (let s3 = 0; s3 < input.fields.length; s3++) {
+                    const v2 = input.fields[s3]
+                    const path2=`${path}.${v2.name}`
+                    p.add(path2)
+                    if(path2.split(".").length<depth)
+                    if (v2.inputTypes.length) {
+                            findInputResources(v2.inputTypes,path2,p,depth)
+                       
+                        
+                    }
+                }
+            }
+            
+        }
+        return p;
+    }
+    
+    const resources = findPaths(mutations);
+    const resources2 = findPaths(queries);
+     const items=[];
+    resources.forEach((v)=>{
+        items.push(`'${v}'`)
+    })
+    const items2=[]
+    resources2.forEach((v)=>{
+        items2.push(`'${v}'`)
+    })
+  const rules=  `export type MutationRules = ${items.join(" | ")};\n`;
+  const rules2=  `export type QueriesRules = ${items2.join(" | ")};\n`;
+
+  writeFileSync(join(process.cwd(),'packages/console/prisma/rules.ts'),`${rules}${rules2}`)
+        
+}
+
+//getResourcesPaths();
