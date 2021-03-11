@@ -24,6 +24,10 @@ export interface Options {
   };
   onDelete?: boolean;
   genTypes?: boolean;
+  authorization?:{
+    depth?:number
+    rulesDir?:string
+  }
   excludeQueriesAndMutationsByModel: {
     [modelName: string]: QueriesAndMutations[];
   };

@@ -5,7 +5,12 @@ const options: Partial<SdlGeneratorServiceOptions> = {
   schemaPath: './prisma/schema.prisma',
   customOptions: {
     onDelete: true,
-    genTypes: true,
+    genTypes: false,
+    authorization:{
+      depth:5,
+      rulesDir:'./src/models'
+      
+  },
     excludeFields: ['Id', 'tenantId', 'tenant'],
     excludeQueriesAndMutationsByModel: {
       User: [

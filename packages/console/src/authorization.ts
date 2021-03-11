@@ -27,7 +27,7 @@ export function authorizationManager(options: AuthorizerOptions) {
 
     debugger;
     logger.log(`Prisma tenant:${token} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
-    const { data } = args;
+    const { data,where, } = args;
 
     const r = [];
     let path = "";
@@ -81,11 +81,13 @@ export function authorizationManager(options: AuthorizerOptions) {
         throw new GraphQLError('Unauthorized operation');
     }
     debugger
-    r.push(...getRulesFromInput(token, data, `${path}.data`, rw))
+    if(args)
+    r.push(...getRulesFromInput(token, args, `${path}`, rw))
+   // if(where)
+   // r.push(...getRulesFromInput(token, data, `${path}.where`, rw))
     
     enforcer.enableLog(true);
     await enforcer.loadPolicy();
-    // await enforcer.buildRoleLinks();
     r.push([token,
       path,
       rw])

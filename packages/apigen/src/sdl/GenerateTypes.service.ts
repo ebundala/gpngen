@@ -2,6 +2,7 @@ import { AppLogger } from '@mechsoft/app-logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
 import { join } from 'path';
+import { generateResourcesRules } from 'src/gen.resources.rules';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions, TypingsGeneratorOptions } from './config.options';
 import { Options } from './Generators';
 
@@ -9,20 +10,30 @@ import { Options } from './Generators';
 export class GenerateTypings {
   private generator: TypingsGeneratorOptions;
   private options: Partial<Options>;
+  private schemaPath: string;
   constructor(
     @Inject(CONFIG_OPTIONS)
-    { generator, customOptions }: SdlGeneratorServiceOptions,
+    { generator, customOptions,schemaPath }: SdlGeneratorServiceOptions,
     private readonly logger: AppLogger,
   ) {
     this.generator = generator;
     this.options = customOptions;
+    this.schemaPath=schemaPath;
     this.logger.setContext(GenerateTypings.name);
   }
   async run():Promise<void> {
+    if(this.options.authorization){
+      const {depth,rulesDir} = this.options.authorization;
+      this.logger.debug('Generating Auth rules type ');
+
+     await generateResourcesRules(this.schemaPath,rulesDir,depth??5)
+     this.logger.debug('Finished Generating Auth rules type ');
+
+    }
     if (this.options.genTypes) {
 
       const definitionsFactory = new GraphQLDefinitionsFactory();
-      this.logger.debug('generating types ');
+      this.logger.debug('Generating TS type ');
       await definitionsFactory.generate({
         typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
         path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
@@ -31,7 +42,7 @@ export class GenerateTypings {
         debug: true,
         federation: false,
       });
-      this.logger.debug('finished generating types');
+      this.logger.debug('Finished generating TS types');
     }
   }
 }

@@ -21,7 +21,7 @@ export class SdlGeneratorModule implements OnModuleInit {
     this.logger.log("............Generating files............")
     await this.sdlgen.run();
 
-   // await this.typings.run();
+    await this.typings.run();
   }
   static forRoot({
     schemaPath,
@@ -35,7 +35,7 @@ export class SdlGeneratorModule implements OnModuleInit {
       providers: [
         {
           provide: CONFIG_OPTIONS,
-          useValue: { schemaPath, customOptions, generator } as Partial<SdlGeneratorServiceOptions>,
+          useValue: { schemaPath, customOptions, generator} as Partial<SdlGeneratorServiceOptions>,
         },
         SdlGeneratorService,
         GenerateTypings
