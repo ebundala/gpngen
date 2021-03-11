@@ -2,7 +2,7 @@ import { writeFileSync } from "fs";
 import { join } from "path";
 import { dmmf, DMMF } from "./sdl/schema";
 
-export const generateResourcesRules = async (schemaPath:string, rulesPath:string, depth = 5) => {
+export const generateResourcesRules = async (schemaPath: string, rulesPath: string, depth = 5) => {
 
     const dm = await dmmf(join(process.cwd(), schemaPath));
     const { datamodel, schema, mappings } = dm
@@ -15,7 +15,11 @@ export const generateResourcesRules = async (schemaPath:string, rulesPath:string
     inputObjectTypes.prisma.forEach((v) => {
         inputs.set(v.name, v);
     });
-    debugger;
+    const outputs: Map<string, DMMF.OutputType> = new Map();
+    outputObjectTypes.model.forEach((v) => {
+        outputs.set(v.name, v);
+    });
+    
     const findPaths = (data: DMMF.OutputType) => {
         const N = data.name;
         const a = data.fields;
@@ -36,12 +40,15 @@ export const generateResourcesRules = async (schemaPath:string, rulesPath:string
 
                 }
             }
+            
+            findOutputResources(v.outputType,`${path}.select`,r,depth);
+
         }
         return r;
     }
 
     const findInputResources = (inputTypes, path, p: Set<string>, depth) => {
-
+          // debugger
         for (let i2 = 0; i2 < inputTypes.length; i2++) {
             const { type, namespace, location, isList } = inputTypes[i2];
             let input: DMMF.InputType;
@@ -54,8 +61,6 @@ export const generateResourcesRules = async (schemaPath:string, rulesPath:string
                     if (path2.split(".").length < depth)
                         if (v2.inputTypes.length) {
                             findInputResources(v2.inputTypes, path2, p, depth)
-
-
                         }
                 }
             }
@@ -64,6 +69,22 @@ export const generateResourcesRules = async (schemaPath:string, rulesPath:string
         return p;
     }
 
+    const findOutputResources = (outputType, path, p: Set<string>, depth = 5) => {
+        const { type, namespace, location } = outputType
+        let item: DMMF.OutputType;
+        if (location === 'outputObjectTypes' && namespace === 'model') {
+            item = outputs.get(type);
+            for (let s3 = 0; s3 < item.fields.length; s3++) {
+                const v2 = item.fields[s3]
+                const path2 = `${path}.${v2.name}`
+                p.add(path2)
+                if (path2.split(".").length < depth)
+
+                    findOutputResources(v2.outputType, path2, p, depth)
+            }
+        }
+        return p;
+    }
     const resources = findPaths(mutations);
     const resources2 = findPaths(queries);
     const items = [];
@@ -76,7 +97,6 @@ export const generateResourcesRules = async (schemaPath:string, rulesPath:string
     })
     const rules = `export type MutationRules = ${items.join(" | ")};\n`;
     const rules2 = `export type QueriesRules = ${items2.join(" | ")};\n`;
-
     writeFileSync(join(process.cwd(), rulesPath, 'rules.ts'), `${rules}${rules2}`)
 
 }

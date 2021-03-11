@@ -47,3 +47,4 @@ packages/console/prisma/.env
 packages/console/prisma/model2-policies.json
 packages/console/prisma/model-policies.json
 packages/console/prisma/model-policies.json
+packages/apigen/test/prisma/rules.ts

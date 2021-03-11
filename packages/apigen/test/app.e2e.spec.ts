@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SdlGeneratorModule } from 'apigen/src/sdl-generator.module';
 import { generate, options } from '../src/index';
+import { SdlGeneratorModule } from '../src/sdl-generator.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
    let config;

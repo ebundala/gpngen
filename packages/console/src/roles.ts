@@ -2,6 +2,7 @@ import { Role } from "@mechsoft/apigen";
 import { MutationRules, QueriesRules } from "./models/rules";
 
 export class Viewer extends Role<MutationRules, QueriesRules>{
+    
     constructor(){
         super();
         this.addReadRule([
