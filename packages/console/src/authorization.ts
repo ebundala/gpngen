@@ -93,7 +93,7 @@ export function authorizationManager(options: AuthorizerOptions) {
       rw])
     const res = await Promise
       .all(r.map((v) => reflect(enforce(...v))))
-    logger.debug(res);
+    //logger.debug(res);
     const allow = res.reduce((p, c) => p.v && c.v ? p : { v: false }).v
     logger.log(`Enforcer:${token} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
 
@@ -107,7 +107,7 @@ export function authorizationManager(options: AuthorizerOptions) {
 const reflect = (p) => p.then((v) => ({ v, status: true }),
   (e) => ({ e, status: false }));
 
-const getRulesFromInput = (token, data, path, action) => {
+const getRulesFromInput = (token:string, data, path:string, action:string) => {
   debugger
   const r: string[][] = [];
   if (data instanceof Array) {
@@ -120,7 +120,14 @@ const getRulesFromInput = (token, data, path, action) => {
     for (let i = 0; i < v.length; i++) {
       const [k1, v1] = v[i];
       const t = typeof v1;
-      if (t !== 'object') {
+      if(k1 === 'select' && /select/.test(path)) {
+        if (t !== 'object') {
+          r.push([token, `${path}`, action])
+        }
+        else {
+          r.push(...getRulesFromInput(token, v1, `${path}`, action))
+        }
+      }else if (t !== 'object') {
         r.push([token, `${path}.${k1}`, action])
       }
       else {

@@ -71,3 +71,17 @@ export const getRoleGrouping = (role:Role<any,any>)=>{
   }
   return []
 }
+
+export const ruleGroup=<T extends string>(rules:string[],group,filterBy:{include?:string[],exclude?:string[]},includeDefault=false):T[]=>{
+  const {include,exclude}=filterBy;
+  return rules
+  .filter((g)=>g===group||g.startsWith(`${group}.`))
+  .filter((g1)=>{
+     if(g1===group) return true;
+     else{
+         if(include&&include.filter((i)=>`${group}.${i}`===g1).length>0) return true;
+         else if(exclude&&exclude.filter((i)=>g1.startsWith(`${group}.${i}`)).length>0) return false;
+         else return includeDefault;
+     }
+  }) as T[]
+}

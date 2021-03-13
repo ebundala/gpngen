@@ -5,30 +5,16 @@ const options: Partial<SdlGeneratorServiceOptions> = {
   schemaPath: './prisma/schema.prisma',
   customOptions: {
     onDelete: true,
-    genTypes: false,
+    genTypes: true,
     authorization:{
-      depth:5,
+      depth:6,
       rulesDir:'./src/models'
       
   },
-    excludeFields: ['Id', 'tenantId', 'tenant'],
-    excludeQueriesAndMutationsByModel: {
-      User: [
-      //   'createOne', 
-      // 'deleteMany', 
-      // 'deleteOne', 
-      // 'updateMany', 
-      // 'upsertOne'
-    ],
-      Tenant: [
-        // 'deleteMany',
-        // 'deleteOne',
-        // 'updateMany',
-        // 'upsertOne',
-        // 'findMany',
-        // 'aggregate',
-      ],
-    },
+    excludeFields: ['Id'],
+ //   excludeQueriesAndMutationsByModel: {
+    
+ //   },
     excludeModels: [
       {
         name: 'CasbinRule',
