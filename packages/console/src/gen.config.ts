@@ -25,7 +25,7 @@ const options: Partial<SdlGeneratorServiceOptions> = {
     output: './src/schemas',
   },
   generator: {
-    typePaths: ['./src/schemas/**/*.graphql'],
+    typePaths: ['./src/schemas/**/*.graphql','./src/app-schemas/**/*.graphql'],
     path: join(process.cwd(), 'src/models/graphql.ts'),
     outputAs: 'class',
   },

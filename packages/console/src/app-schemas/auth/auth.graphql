@@ -1,0 +1,25 @@
+
+
+input AuthInput {
+	email: String!
+	password: String!
+	displayName: String
+}
+type AuthResult {
+	token: String
+	error: Boolean!
+	message: String!
+	user: User 
+}
+type SignOutResult {
+	status: Boolean
+	message: String
+
+}
+
+extend type Mutation {
+	signup(credentials: AuthInput!): AuthResult!
+	signin(credentials: AuthInput!): AuthResult!
+	recoverAccount(email: String!): AuthResult!
+	signout: SignOutResult!	
+}

@@ -50,3 +50,5 @@ packages/console/prisma/model-policies.json
 packages/apigen/test/prisma/rules.ts
 packages/apigen/test/prisma/mutationRuleslist.ts
 packages/apigen/test/prisma/queriesRuleslist.ts
+packages/console/serviceAccount.json
+packages/console/src/app-schemas/auth.zip

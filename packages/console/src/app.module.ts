@@ -1,8 +1,11 @@
 import { AppLoggerModule } from '@mechsoft/app-logger';
 import { TenantContext } from '@mechsoft/common';
 import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
+import { FirebaseModule } from '@mechsoft/firebase-admin';
+import { MailModule } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import {
   GraphQLRequestContext,
@@ -12,6 +15,7 @@ import {
 import { writeFileSync } from 'fs';
 import { printSchema } from 'graphql';
 import { join } from 'path';
+import { AuthModule } from './app-schemas/auth/auth.module';
 //import { AppUserModule } from './app-schemas/User/UserModule';
 import { AuthMiddleware } from './auth.middleware';
 import { authorizationManager, AuthorizerOptions } from './authorization';
@@ -19,14 +23,7 @@ import modules from './schemas';
 
 
 
-type ClientValue = {
-  k: string;
-  start: Date;
-  lastUsed: Date;
-  client: PrismaClient;
-};
-type ClientsList = Map<string, ClientValue>;
-const clients: ClientsList = new Map();
+
 
 const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
   
@@ -93,6 +90,10 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
 
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal:true}),
+    FirebaseModule,
+    MailModule.forRoot({apikey:process.env.SENDGRID_API_KEY}),
+    
     GraphQLModule.forRoot({
       typePaths: [
         './src/schemas/**/*.graphql',
@@ -181,6 +182,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
 
       playground: true,
     }),
+    
     /* ServeStaticModule.forRoot({
        rootPath: join(__dirname, '../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],
@@ -191,6 +193,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
     //   model: './src/authorization/rbac_model.conf',
     // }),
    ...modules,
+  AuthModule
   ],
 })
 

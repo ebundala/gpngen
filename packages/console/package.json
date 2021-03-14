@@ -5,7 +5,6 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -41,17 +40,22 @@
     "@mechsoft/apigen": "^0.0.1",
     "@mechsoft/app-logger": "^0.0.1",
     "@mechsoft/enforcer": "^0.0.1",
+    "@mechsoft/firebase-admin": "^0.0.1",
+    "@mechsoft/mailer": "^0.0.1",
     "@mechsoft/prisma-client": "^0.0.1",
-    "@nestjs/graphql": "^7.9.10",
     "@nestjs/common": "^7.5.1",
+    "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.5.1",
+    "@nestjs/graphql": "^7.9.10",
     "@nestjs/platform-express": "^7.5.1",
-    "apollo-server-express": "^2.21.0",
     "@prisma/client": "^2.17.0",
+    "apollo-server-express": "^2.21.0",
+    "graphql": "^15.5.0",
     "prisma": "^2.17.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3"
+    "rxjs": "^6.6.3",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",

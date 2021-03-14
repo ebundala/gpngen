@@ -43,6 +43,7 @@
     "@mechsoft/app-logger": "^0.0.1",
     "@mechsoft/enforcer": "^0.0.1",
     "@mechsoft/prisma-client": "^0.0.1",
+    "@mechsoft/common": "^0.0.1",
     "@nestjs/graphql": "^7.9.10",
     "@prisma/client": "^2.17.0",
     "prisma": "^2.17.0",
