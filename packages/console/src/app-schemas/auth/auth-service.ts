@@ -4,34 +4,52 @@ import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
 import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
+import { BusinessRules } from 'src/businesrules';
+import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
   AuthResult,
   Role,
   SignOutResult,
-  State
+  State,
+  User
 } from '../../models/graphql';
-//import {}from 'validator';
 @Injectable()
 export class AuthService {
-
   constructor(
     private readonly firebaseApp: FirebaseService,
     private readonly httpService: HttpService,
     private readonly logger: AppLogger,
-    private readonly mail: MailService
+    private readonly mail: MailService,
+    private readonly bloc: BusinessRules
   ) {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
+    this.bloc.on("findUniqueUser.where.email",async (v,next)=>{
+      
+      const {params,authorization,rules,allow,}=v;
+      const {action,args}=params
+      const {where}=args;
+      const {prisma,auth,logger} = authorization;
+     logger.debug("validating business rule findUniqueUser");
+     //  prisma.overrideRole=Role.SUPERUSER
+   // const user= await prisma.user.findUnique({where:{id:auth.id}});
+    if(auth?.id!==where?.id || auth.role!==Role.SUPERUSER){
+      logger.warn("Access violation non admin can access user data")
+      throw new GraphQLError("Access violation on findUniqueUser")
+    }
+    // prisma.resetRole();
+    })
   }
 
 
-  async signup(credentials: AuthInput, prisma: PrismaClient): Promise<AuthResult> {
-    const res = await this.signupWithEmail(credentials, prisma);
+  async signup(credentials: AuthInput, prisma: PrismaClient,select): Promise<AuthResult> {
+    
+    const res = await this.signupWithEmail(credentials, prisma,select);
     if (!res.error) {
       const link = await this.firebaseApp.admin.auth().generateEmailVerificationLink(credentials.email);
-      await this.mail.sendWelcomeEmail(credentials.email, link).catch((e) => { this.logger.debug(e) });
+      await this.mail.sendWelcomeEmail(res.user, link).catch((e) => { this.logger.debug(e) });
     }
     return res;
   }
@@ -54,29 +72,29 @@ export class AuthService {
     }
   }
 
-  async signupWithEmail(data: AuthInput, prisma: PrismaClient): Promise<AuthResult> {
-    const { email, password, displayName } = data;
+  async signupWithEmail(data: AuthInput, prisma: PrismaClient,select): Promise<AuthResult> {
+    const { email, password, displayName, phoneNumber } = data;
+    let user;
+    try{
+    if (!isEmail(email)) {
+      throw new GraphQLError('Invalid Email');
+    } else if (!isLength(password, 6)) {
+      throw new GraphQLError('Password must be atleast 6 characters long');
+    } else if (!isLength(displayName, 3)) {
+      throw new GraphQLError('Username must be 3 characters or more');
+    }
 
-    // if (!isEmail(email)) {
-    //   throw new GraphQLError('Invalid Email');
-    // } else if (!isLength(password, 6)) {
-    //   throw new GraphQLError('Password must be atleast 6 characters long');
-    // } else if (!isLength(displayName, 3)) {
-    //   throw new GraphQLError('Username must be 3 characters or more');
-    // } else {
+      prisma.overrideRole=Role.SUPERUSER;
     const users = prisma.user;
-    const exist = await users
-      .findUnique({ where: { email } })
-      .catch(() => false);
-    if (exist) {
-      throw new GraphQLError(
-        'The email address is already in use by another account',
-      );
-    } else {
-
-      return this._createUserWithEmail(email, password, displayName)
-        .then((user) =>
-          users.create({
+    const exist = await users.findUnique({ where: { email }});
+      debugger
+    if (exist&&exist.id) {
+      throw new GraphQLError('The email address is already in use by another account');
+    } 
+      try{
+     user= await  this._createUserWithEmail(email, password, displayName,phoneNumber);
+        
+    const u2= (await users.create({
             data: {
               id: user.uid,
               displayName: user.displayName,
@@ -85,74 +103,65 @@ export class AuthService {
               emailVerified: user.emailVerified,
               role: Role.CONSUMER,
             },
-          }).catch(async ({ message }) => {
-            await users.delete({ where: { email } });
-            throw new GraphQLError(message || "Failed to create user account");
-          })
-        )
-        .then(async (user) => {
-          const setClaims = await this._setUserClaims(user, Role.CONSUMER);
-          if (setClaims) {
-            /*const session = await this.signInWithEmail({ email, password })
-               .catch((e) => e);
- 
-             if (session instanceof Error) {
-               await this.cleanUpOnSignUpFailure(user);
-               throw session;
-             }
-             return session;*/
-            // return {
-            //  error:false,
-
-            // };
-
-            return {
-              error: false,
-              message: "Thank you for registering\n you will receive a confimation email when your account is ready",
-            }
+            select
+          })) as User;
+          const setClaims = await this._setUserClaims(user.id, Role.CONSUMER);
+         prisma.resetRole();
+          return {
+            error: false,
+            user: u2,
+            message: "Thank you for registering\n you will receive a confimation email when your account is ready",
           }
-
-          if (!await this.cleanUpOnSignUpFailure(user, prisma)) {
+        }catch({message}){
+          debugger;
+          if (user&&user.uid&&!await this.cleanUpOnSignUpFailure(user.uid, prisma)){          
+            prisma.resetRole();
             throw new GraphQLError('Failed to cleanup user signup errors')
           };
-          throw new GraphQLError('Failed to create user account')
+          
+        }
+        }catch({message}){
+          debugger
+          prisma.resetRole();
+          throw new GraphQLError(message)
+        }
 
-        })
-        .then((session) => session);
-    }
-    //}
+      
   }
 
-  private async cleanUpOnSignUpFailure(user, prisma: PrismaClient) {
-
+  private async cleanUpOnSignUpFailure(uid:string, prisma: PrismaClient) {
+    debugger
     const remove1 = await this.firebaseApp.admin
       .auth()
-      .deleteUser(user.id)
+      .deleteUser(uid)
       .then(() => true)
       .catch(() => false);
     const remove2 = await prisma.user
-      .delete({ where: { id: user.id } })
+      .delete({ where: { id: uid } })
       .then(() => true)
       .catch(() => false);
     return remove1 && remove2;
   }
 
-  async signInWithEmail({ email, password }, prisma: PrismaClient) {
-
+  async signInWithEmail(credentials:Partial<AuthInput>, prisma: PrismaClient,select) {
+    try{
+    const { email ,password } = credentials;
+     prisma.overrideRole=Role.SUPERUSER
     const user = await prisma.user
       .findUnique({ where: { email }, select: { id: true, state: true, role: true } });
+      prisma.resetRole();
     if (!user) {
       throw new GraphQLError('Signin failed user does not exist');
     }
     if (user.state === State.ARCHIVED || user.state === State.REJECTED || user.state === State.COMPLETED) {
       throw new GraphQLError("Your account is deactivated")
     }
-    if (user.state === State.PENDING || user.state === State.REVIEW) {
-      throw new GraphQLError("Your account is under review please try again later")
-    }
-    if (user.role === Role.PROVIDER || user.role === Role.MANAGER || user.role === Role.SUPERUSER) {
+    // if (user.state === State.PENDING || user.state === State.REVIEW) {
+    //   throw new GraphQLError("Your account is under review please try again later")
+    // }
+    if (user.role === Role.CONSUMER || user.role === Role.PROVIDER || user.role === Role.MANAGER || user.role === Role.SUPERUSER) {
 
-      await this._setUserClaims(user, user.role);
+      await this._setUserClaims(user.id, user.role);
     }
     const returnSecureToken = true;
     const buffer = Buffer.from(
@@ -165,58 +174,57 @@ export class AuthService {
 
         if (status === 200) {
           const { idToken } = data;
-
-          debugger;
-          const session = await this.createSessionToken(idToken, prisma).catch(
+          const session = await this.createSessionToken(idToken, prisma,select).catch(
             (e) => e,
           );
           if (session instanceof Error) {
             const { message } = session;
-            throw new Error(message || 'Signin failed something went wrong');
+            throw new GraphQLError(message || 'Signin failed something went wrong');
           }
           return session;
         }
-        throw Error(`network error code ${status}`);
+        throw new GraphQLError(`Network error code ${status}`);
 
-      }).catch(({ message }) => {
-        throw Error(`Invalid credentials: ${message}`);
-      });
+      })
+    }catch({ message }){
+        throw new GraphQLError(`${message}`);
+      }
   }
 
-  async _createUserWithEmail(email, password, displayName) {
+  async _createUserWithEmail(email, password, displayName,phoneNumber?:string,photoURL?:string) {
     return this.firebaseApp.admin.auth().createUser({
       email,
       emailVerified: false,
-      // phoneNumber: '+11234567890',
+      phoneNumber,
       password,
       displayName,
-      // photoURL: 'http://www.example.com/12345678/photo.png',
+      photoURL,
       disabled: false,
     });
   }
 
-  async _setUserClaims(user, role: string) {
+  async _setUserClaims(id:string, role: string) {
     return this.firebaseApp.admin
       .auth()
-      .setCustomUserClaims(user.id, { role: role })
+      .setCustomUserClaims(id, { role: role })
       .then(() => true)
       .catch(() => false);
   }
 
-  async createSessionToken(idToken:string, prisma: PrismaClient, expiresIn = 60 * 60 * 5 * 24 * 1000):Promise<any> {
+  async createSessionToken(idToken:string, prisma: PrismaClient, select,expiresIn = 60 * 60 * 5 * 24 * 1000):Promise<any> {
     try {
       const decodedIdToken = await this.firebaseApp.admin
         .auth()
         .verifyIdToken(idToken, true);
-
       // Only process if the user just signed in in the last 5 minutes.
       if (new Date().getTime() / 1000 - decodedIdToken.auth_time < 5 * 60) {
         //   // Create session cookie and return it.
         const token = await this.firebaseApp.admin.auth()
           .createSessionCookie(idToken, { expiresIn });
-
-
-        const user = await prisma.user.findUnique({ where: { id: decodedIdToken.uid } });
+        debugger
+        prisma.overrideRole=decodedIdToken.role;
+        const user = await prisma.user.findUnique({ where: { id: decodedIdToken.uid },select });
+        prisma.resetRole();
 
         return {
           user,

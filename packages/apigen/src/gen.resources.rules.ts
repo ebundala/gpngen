@@ -96,10 +96,10 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
         items2.push(`'${v}'`)
     })
     
-    const rules = `export type MutationRules = ${items.join(" | ")};\n`;
-    const rules2 = `export type QueriesRules = ${items2.join(" | ")};\n`;
-    const list1=`export const MutationsRulesList=[${items.join(',')}]`
-    const list2=`export const QueriesRulesList=[${items2.join(',')}]`
+    const rules = `export type MutationRules = ${items.join(" | \n")};\n`;
+    const rules2 = `export type QueriesRules = ${items2.join(" | \n")};\n`;
+    const list1=`export const MutationsRulesList=[\n${items.join(',\n')}\n]`
+    const list2=`export const QueriesRulesList=[\n${items2.join(',\n')}\n]`
     writeFileSync(join(process.cwd(), rulesPath, 'rules.ts'), `${rules}${rules2}`)
     
 

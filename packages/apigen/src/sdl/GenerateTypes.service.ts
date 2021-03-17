@@ -2,7 +2,7 @@ import { AppLogger } from '@mechsoft/app-logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
 import { join } from 'path';
-import { generateResourcesRules } from 'src/gen.resources.rules';
+import { generateResourcesRules } from '../gen.resources.rules';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions, TypingsGeneratorOptions } from './config.options';
 import { Options } from './Generators';
 

@@ -1,57 +1,16 @@
 import { Role, ruleGroup } from "@mechsoft/apigen";
 import { MutationsRulesList } from './models/mutationRuleslist';
 import { QueriesRulesList } from './models/queriesRuleslist';
-import { MutationRules, QueriesRules } from "./models/rules";
-export class ANONYMOUS extends Role<MutationRules, QueriesRules>{
 
+export class ANONYMOUS extends Role {
     constructor() {
         super();
-
-        this.addWriteRule([
+       // this.addWriteRule([
             //create user account           
-            ...ruleGroup<MutationRules>(MutationsRulesList, 'createOneUser', {
-                exclude: [
-                    'data.id',
-                    'data.createdAt',
-                    'data.updatedAt',
-                    'data.avator',
-                    'data.organization',
-                    'data.service',
-                    'data.order',
-                    'data.rating',
-                    'data.location',
-                    'data.role',
-                    'data.state',
-                    'data.avatorId',
-                    'data.organizationId',
-                    'data.locationId',
-                    'data.disabled',
-                    'data.emailVerified',
-                    'select.organization',
-                    'select.order',
-                    'select.location',
-                    'select.avator',
-                    'select.role',
-                    'select.rating',
-                    'select.email'
-
-                ],
-                include: [
-                    'data.avator.create.path',
-                    'data.location.create.name',
-                    'data.location.create.latlon',
-                    'select.avator.id',
-                    'select.avator.path',
-                    'select.avator.mimetype',
-                    'select.location.id',
-                    'select.location.name',
-
-                ]
-            }, true)
-        ])
+       // ])
         this.addReadRule([
             //view service categories            
-            ...ruleGroup<QueriesRules>(QueriesRulesList, 'findManyServiceCategory', {
+            ...ruleGroup(QueriesRulesList, 'findManyServiceCategory', {
                 exclude: [
                     'where',
                     'orderBy',
@@ -75,14 +34,14 @@ export class ANONYMOUS extends Role<MutationRules, QueriesRules>{
 
 }
 
-export class CONSUMER extends Role<MutationRules, QueriesRules>{
+export class CONSUMER extends Role {
 
     constructor() {
         super();
-      //  debugger;
+        //  debugger;
         this.addWriteRule([
             //create orders            
-            ...ruleGroup<MutationRules>(MutationsRulesList,
+            ...ruleGroup(MutationsRulesList,
                 'createOneOrder', {
                 exclude: [
                     'data.id',
@@ -140,7 +99,7 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
             }, true),
 
             //create ratings
-            ...ruleGroup<MutationRules>(MutationsRulesList, 'createOneRating', {
+            ...ruleGroup(MutationsRulesList, 'createOneRating', {
                 exclude: [
                     'data.id',
                     'data.createdAt',
@@ -179,7 +138,7 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
             }, true),
 
             //update personal profile //add location to profile
-            ...ruleGroup<MutationRules>(MutationsRulesList, 'updateOneUser', {
+            ...ruleGroup(MutationsRulesList, 'updateOneUser', {
                 exclude: [
                     'where',
                     'data.id',
@@ -234,7 +193,7 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
             }),
 
             //create organization
-            ...ruleGroup<MutationRules>(MutationsRulesList, 'createOneOrganization', {
+            ...ruleGroup(MutationsRulesList, 'createOneOrganization', {
                 exclude: [
                     'data.id',
                     'data.createdAt',
@@ -269,24 +228,24 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.location.name',
                     //'select.location.latlon',
                     'select.staffs.id',
-                     'select.staffs.displayName',
-                     'select.staffs.avator.id',
-                     'select.staffs.avator.path',
-                     'select.logo.id',
-                     'select.logo.path',
-                     'select.offers.id',
-                     'select.offers.name',
+                    'select.staffs.displayName',
+                    'select.staffs.avator.id',
+                    'select.staffs.avator.path',
+                    'select.logo.id',
+                    'select.logo.path',
+                    'select.offers.id',
+                    'select.offers.name',
                     // 'select.ratings.comments',                     
-                   //  'select.ratings.id',
-                   //  'select.ratings.value',
+                    //  'select.ratings.id',
+                    //  'select.ratings.value',
                     // 'select.ratings.comments'
                 ]
-            },true)
+            }, true)
         ])
         this.addReadRule([
             //view service categories            
-            
-            ...ruleGroup<QueriesRules>(QueriesRulesList, 'findManyServiceCategory', {
+
+            ...ruleGroup(QueriesRulesList, 'findManyServiceCategory', {
                 exclude: [
                     'where',
                     'orderBy',
@@ -302,9 +261,9 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                 ]
             }, true),
             //view public organizations profile
-           
-            ...ruleGroup<QueriesRules>(QueriesRulesList,'findManyOrganization',{
-                exclude:[
+
+            ...ruleGroup(QueriesRulesList, 'findManyOrganization', {
+                exclude: [
                     'where',
                     'orderBy',
                     'select.logo',
@@ -317,7 +276,7 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.logId',
                     'select.locationId'
                 ],
-                include:[
+                include: [
 
                     'where.offers.some.name',
                     'where.offers.some.id',
@@ -339,31 +298,31 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.services.image.path',
                     'select.services.image.mimetype',
                 ]
-            },true),
+            }, true),
 
             //view services public information
-           
- ...ruleGroup<QueriesRules>(QueriesRulesList,'findManyService',{
-                 exclude:[
-                     'where',
-                     'orderBy',
-                     'select.organization',
-                     'select.image',
-                     'select.category',
-                     'select.orders',
-                     'select.organizationId',
-                     'select.imageId',
-                     'select.serviceCategoryId'
 
-                 ],
-                 include:[
-                   // 'where.serviceCategoryId',
+            ...ruleGroup(QueriesRulesList, 'findManyService', {
+                exclude: [
+                    'where',
+                    'orderBy',
+                    'select.organization',
+                    'select.image',
+                    'select.category',
+                    'select.orders',
+                    'select.organizationId',
+                    'select.imageId',
+                    'select.serviceCategoryId'
+
+                ],
+                include: [
+                    // 'where.serviceCategoryId',
                     'where.organization.id',
                     'where.state',
                     'orderBy.name',
                     'orderBy.price',
                     'orderBy.createdAt',
-                    'orderBy.createdAt',       
+                    'orderBy.createdAt',
                     'select.image.id',
                     'select.image.path',
                     'select.image.mimetype',
@@ -374,43 +333,38 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.organization.logo.mimetype',
                     'select.category.id',
                     'select.category.name',
-                                       
-                   
-                 ]
-             },true),
+
+
+                ]
+            }, true),
             //view personal profile 
-            ...ruleGroup<QueriesRules>(QueriesRulesList,'findOneUser',{
-                exclude:[
-                   // 'where',
-                    'select.organization',
-                     'select.avator',
-                     'select.orders',
-                     'ratings',
-                     'select.location',
-                     'select.avatorId',
-                     'select.organizationId',
-                     'select.locationId',
-                     'select.email',
-                     'select.phoneNumber',
-                     'select.disabled',
-                     'select.role',
-                     'select.emailVerified',
-                     'select.state'
+            ...ruleGroup(QueriesRulesList, 'findUniqueUser', {
+                exclude: [
+                    "select.organization",
+                    "select.ratings",
+                    "select.orders",
+                    "select.location",
+                    "select.avator",
+                    'select.avatorId',
+                    'select.organizationId',
+                    'select.locationId',
                 ],
-                include:[
+                include: [
+                    'select.avator.id',
+                    'select.avator.path',
+                    'select.avator.mimetype',
+                    'select.location.id',
+                    'select.location.name',
                     'select.organization.id',
                     'select.organization.name',
                     'select.organization.logo.id',
-                    'select.organization.logo.path',
-                     'select.avator.id',
-                     'select.avator.path',
-                   //  'select.location.id',
-                     //'select.location.name',
+                    'select.organization.logo.path',                    
                 ]
-            },true),
+            }, true),
+            
             //view personal orders
-            ...ruleGroup<QueriesRules>(QueriesRulesList,'findManyOrders',{
-                exclude:[
+            ...ruleGroup(QueriesRulesList, 'findManyOrders', {
+                exclude: [
                     'where',
                     'select.service',
                     'select.organization',
@@ -421,7 +375,7 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.receiptId',
                     'select.receipt',
                 ],
-                include:[
+                include: [
                     'where.id',
                     'select.author.id',
                     'select.author.displayName',
@@ -437,18 +391,18 @@ export class CONSUMER extends Role<MutationRules, QueriesRules>{
                     'select.receipt.id',
                     'select.receipt.path',
                 ]
-            },true)
+            }, true)
 
         ])
     }
 
 }
 
-export class PROVIDER extends Role<MutationRules, QueriesRules>{
+export class PROVIDER extends Role {
 
     constructor() {
         super();
-        this.addParent(new CONSUMER())
+        this.addParent(CONSUMER.name)
         this.addWriteRule([
             //update organization orders
 
@@ -464,11 +418,11 @@ export class PROVIDER extends Role<MutationRules, QueriesRules>{
 
 }
 
-export class MANAGER extends Role<MutationRules, QueriesRules>{
+export class MANAGER extends Role {
 
     constructor() {
         super();
-        this.addParent(new PROVIDER())
+        this.addParent(PROVIDER.name)
         this.addWriteRule([
             //inherit provider
             //update organization            
@@ -478,19 +432,76 @@ export class MANAGER extends Role<MutationRules, QueriesRules>{
 
 }
 
-export class SUPERUSER extends Role<MutationRules, QueriesRules>{
+export class SUPERUSER extends Role {
 
     constructor() {
         super();
-        this.addParent(new MANAGER())
-        this.addParent(new ANONYMOUS())
+        debugger;
+        this.addParent(MANAGER.name)
+        this.addParent(ANONYMOUS.name)
         this.addWriteRule([
             //inherit all
-            //delete anything            
+            //delete anything  
+            ...ruleGroup(MutationsRulesList, 'createOneUser', {
+                exclude: [
+                   // 'data.id',
+                    'data.createdAt',
+                    'data.updatedAt',
+                    'data.avator',
+                    'data.organization',
+                    'data.service',
+                    'data.order',
+                    'data.rating',
+                    'data.location',
+                    // 'data.role',
+                    // 'data.state',
+                    'data.avatorId',
+                    'data.organizationId',
+                    'data.locationId',
+                    //  'data.disabled',
+                    //  'data.emailVerified',
+                    'select.organization',
+                    'select.order',
+                    'select.location',
+                    'select.avator',
+                    // 'select.role',
+                    'select.rating',
+                    // 'select.email'
 
+                ],
+                include: [
+                    'data.avator.create.path',
+                    'data.location.create.name',
+                    //'data.location.create.latlon',
+                    //'data.avator.create.path',
+                    'select.avator.id',
+                    'select.avator.path',
+                    'select.avator.mimetype',
+                    'select.location.id',
+                    'select.location.name',
+
+                ]
+            }, true),
+            ...ruleGroup(MutationsRulesList, 'deleteOneUser', {
+                exclude: [
+                    'select.organization',
+                    'select.order',
+                    'select.location',
+                    'select.avator',
+                    'select.ratings'
+                ],
+                include: []
+            },
+                true)
+
+        ]);
+
+        this.addReadRule([
+            //read unique user by email
+            
         ])
     }
 
 }
 
-//const anony = new CONSUMER()
+//const anony = new SUPERUSER()

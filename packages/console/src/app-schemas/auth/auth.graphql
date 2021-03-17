@@ -1,10 +1,18 @@
 
 
 input AuthInput {
-	email: String!
-	password: String!
+	email: String
+	password: String
 	displayName: String
+	phoneNumber: String
+	mode:   AuthMode
 }
+enum AuthMode{
+	EMAIL
+	PHONE
+	OAUTH
+}
+
 type AuthResult {
 	token: String
 	error: Boolean!

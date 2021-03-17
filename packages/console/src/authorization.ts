@@ -2,32 +2,44 @@ import { AppLogger } from "@mechsoft/app-logger";
 import { CasbinService } from "@mechsoft/enforcer";
 import { PrismaClient } from "@mechsoft/prisma-client";
 import { GraphQLError } from 'graphql';
+import { BusinessRules } from "./businesrules";
+import { Role } from "./models/graphql";
+
 export interface AuthorizerOptions {
   logger: AppLogger;
-  auth: any;
+  auth: any,//auth.DecodedIdToken;
   enforcer: CasbinService;
-  tenantId: string;
-  token: string;
-  prisma: PrismaClient
+  tenantId?: string;
+  token?: string;
+  prisma: PrismaClient,
+  businessRules?:BusinessRules
 }
 export function authorizationManager(options: AuthorizerOptions) {
-  const { logger, enforcer, tenantId, token, prisma, auth } = options;
+  const { logger,businessRules, enforcer, tenantId, token, prisma, auth } = options;
   logger.setContext(authorizationManager.name)
   const enforce = (...args): Promise<boolean> => {
     return enforcer.enforce(...args);
   }
 
-
-
   prisma.$on('beforeExit', () => {
     logger.log(`Exiting prisma tenant:${tenantId}`);
   });
+  
   prisma.$use(async (params, next) => {
-    const { model, action, args, dataPath, runInTransaction } = params;
-
     debugger;
-    logger.log(`Prisma tenant:${token} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
-    const { data,where, } = args;
+    const { model, action, args, dataPath, runInTransaction } = params;
+    let  role=Role.ANONYMOUS as string
+    if(auth && auth.role){
+      role=auth.role;
+    }
+    
+    
+    if(prisma.isRoleOverriden){
+      role=prisma.getRole;
+    }
+
+  
+    logger.log(`Prisma tenant:${role} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
 
     const r = [];
     let path = "";
@@ -80,40 +92,45 @@ export function authorizationManager(options: AuthorizerOptions) {
       default:
         throw new GraphQLError('Unauthorized operation');
     }
-    debugger
+    //debugger
     if(args)
-    r.push(...getRulesFromInput(token, args, `${path}`, rw))
-   // if(where)
-   // r.push(...getRulesFromInput(token, data, `${path}.where`, rw))
-    
+    r.push(...getRulesFromInput(role, args, `${path}`, rw))
+
     enforcer.enableLog(true);
     await enforcer.loadPolicy();
-    r.push([token,
+    r.push([role,
       path,
       rw])
     const res = await Promise
-      .all(r.map((v) => reflect(enforce(...v))))
-    //logger.debug(res);
-    const allow = res.reduce((p, c) => p.v && c.v ? p : { v: false }).v
-    logger.log(`Enforcer:${token} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
+      .all(r.map((v) => reflect(enforce(...v))));
 
+    const allow = res.reduce((p, c) => p.v && c.v ? p : { v: false }).v;
+
+    logger.log(`Enforcer:${role} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
+ debugger
+    const bv= await businessRules.handleRequest({
+      params,
+      rules:r,
+      allow,
+      authorization:options
+    });
 
     if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
-    else
+      
       return next(params);
   });
 }
 
-const reflect = (p) => p.then((v) => ({ v, status: true }),
+export const reflect = (p) => p.then((v) => ({ v, status: true }),
   (e) => ({ e, status: false }));
 
-const getRulesFromInput = (token:string, data, path:string, action:string) => {
-  debugger
+const getRulesFromInput = (role:string, data, path:string, action:string) => {
+ // debugger
   const r: string[][] = [];
   if (data instanceof Array) {
     for (let i = 0; i < data.length; i++) {
       const v = data[i];
-      r.push(...getRulesFromInput(token, v, `${path}`, action))
+      r.push(...getRulesFromInput(role, v, `${path}`, action))
     }
   } else if (typeof data === 'object') {
     const v = Object.entries(data)
@@ -122,16 +139,16 @@ const getRulesFromInput = (token:string, data, path:string, action:string) => {
       const t = typeof v1;
       if(k1 === 'select' && /select/.test(path)) {
         if (t !== 'object') {
-          r.push([token, `${path}`, action])
+          r.push([role, `${path}`, action])
         }
         else {
-          r.push(...getRulesFromInput(token, v1, `${path}`, action))
+          r.push(...getRulesFromInput(role, v1, `${path}`, action))
         }
       }else if (t !== 'object') {
-        r.push([token, `${path}.${k1}`, action])
+        r.push([role, `${path}.${k1}`, action])
       }
       else {
-        r.push(...getRulesFromInput(token, v1, `${path}.${k1}`, action))
+        r.push(...getRulesFromInput(role, v1, `${path}.${k1}`, action))
       }
     }
   }

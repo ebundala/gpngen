@@ -19,6 +19,7 @@ import { AuthModule } from './app-schemas/auth/auth.module';
 //import { AppUserModule } from './app-schemas/User/UserModule';
 import { AuthMiddleware } from './auth.middleware';
 import { authorizationManager, AuthorizerOptions } from './authorization';
+import { BusinessRulesModule } from './business.module';
 import modules from './schemas';
 
 
@@ -88,7 +89,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
   },
 };
 
-@Module({
+@Module({  
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
     FirebaseModule,
@@ -116,7 +117,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         //   log: ['error', 'warn'],
         // });
         
-        const { token, logger } = req;
+        const { token, logger,bloc,auth } = req;
 
         let client: PrismaClient;
 
@@ -152,11 +153,12 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
        const enforcer = new CasbinService(enforcerOptions);
         const authOptions:AuthorizerOptions={
           tenantId: token ?? 'tenant.id',
-          auth: req.auth,
+          auth: auth,
           token: token,
           enforcer: enforcer,
           prisma: client,
           logger,
+          businessRules: bloc
         }
         authorizationManager(authOptions);      
         
@@ -193,7 +195,8 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
     //   model: './src/authorization/rbac_model.conf',
     // }),
    ...modules,
-  AuthModule
+  AuthModule,
+  BusinessRulesModule
   ],
 })
 

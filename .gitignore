@@ -52,3 +52,4 @@ packages/apigen/test/prisma/mutationRuleslist.ts
 packages/apigen/test/prisma/queriesRuleslist.ts
 packages/console/serviceAccount.json
 packages/console/src/app-schemas/auth.zip
+packages/console/itahuduma-firebase-adminsdk.json
