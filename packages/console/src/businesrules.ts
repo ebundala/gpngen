@@ -24,7 +24,6 @@ export class BusinessRules{
         ))
     }
    async execute(rule:string,args:any,next?:cb){  
-       debugger
        if(this.rules.has(rule)){
           return this.rules.get(rule).apply(this,[args,next]);
        }

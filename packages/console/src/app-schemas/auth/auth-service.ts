@@ -4,7 +4,7 @@ import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
 import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
-import { BusinessRules } from 'src/businesrules';
+import { BusinessRequest, BusinessRules } from 'src/businesrules';
 import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
@@ -26,23 +26,45 @@ export class AuthService {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
-    this.bloc.on("findUniqueUser.where.email",async (v,next)=>{
-      
-      const {params,authorization,rules,allow,}=v;
-      const {action,args}=params
-      const {where}=args;
-      const {prisma,auth,logger} = authorization;
-     logger.debug("validating business rule findUniqueUser");
-     //  prisma.overrideRole=Role.SUPERUSER
-   // const user= await prisma.user.findUnique({where:{id:auth.id}});
-    if(auth?.id!==where?.id || auth.role!==Role.SUPERUSER){
-      logger.warn("Access violation non admin can access user data")
-      throw new GraphQLError("Access violation on findUniqueUser")
-    }
-    // prisma.resetRole();
-    })
-  }
+   // this.bloc.on("findUniqueUser.where.email",this.findUniqueUserBloc)
+    //this.bloc.on("findUniqueUser.where.id",this.findUniqueUserBloc)
+    this.bloc.on("findUniqueUser",this.findUniqueUserBloc)
 
+
+    
+  }
+  async findUniqueUserBloc(v:BusinessRequest,next){
+    
+    const {params,authorization,rules,allow,}=v;
+    const {action,args}=params
+    const {where,select}=args;
+    const {prisma,auth,logger} = authorization;
+   logger.debug("Validating business rule findUniqueUser");
+  
+  
+  // if(prisma.isRoleOverriden&&prisma.getRole!==Role.SUPERUSER){
+  //   debugger
+  //   logger.warn("Access violation non admin cant access user data")
+  //   throw new GraphQLError("Access violation on findUniqueUser")
+  // }
+
+  debugger
+  
+  if(where&&where.id||where.email){
+    //particular user selected 
+    const user= await prisma.rusAsRoot(()=>{
+      return prisma.user.findUnique({where})
+    })
+    if(select&&(select.email||select.phoneNumber || select.orders )){
+    //personal information access
+      if(auth&&auth.id!==where.id && auth.role !== Role.SUPERUSER && !prisma.runningAsRoot){
+        //not owner or superuser access 
+        throw new GraphQLError('Access violation you cant access personal data of other users') 
+      }
+    }
+  }
+ 
+  }
 
   async signup(credentials: AuthInput, prisma: PrismaClient,select): Promise<AuthResult> {
     
@@ -116,7 +138,7 @@ export class AuthService {
           debugger;
           if (user&&user.uid&&!await this.cleanUpOnSignUpFailure(user.uid, prisma)){          
             prisma.resetRole();
-            throw new GraphQLError('Failed to cleanup user signup errors')
+            throw new GraphQLError(`Failed to cleanup user signup errors\n ${message}`)
           };
           
         }

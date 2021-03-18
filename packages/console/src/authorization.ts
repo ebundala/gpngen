@@ -26,8 +26,14 @@ export function authorizationManager(options: AuthorizerOptions) {
   });
   
   prisma.$use(async (params, next) => {
-    debugger;
+    //if running as root return emediately
     const { model, action, args, dataPath, runInTransaction } = params;
+
+    if(prisma.runningAsRoot){
+      logger.log(`Prisma tenant:ROOT operation:${action} resource:${model} path:${dataPath?.join(".")}`);
+      return next(params);
+    }
+    
     let  role=Role.ANONYMOUS as string
     if(auth && auth.role){
       role=auth.role;
@@ -92,7 +98,7 @@ export function authorizationManager(options: AuthorizerOptions) {
       default:
         throw new GraphQLError('Unauthorized operation');
     }
-    //debugger
+    
     if(args)
     r.push(...getRulesFromInput(role, args, `${path}`, rw))
 
@@ -107,16 +113,16 @@ export function authorizationManager(options: AuthorizerOptions) {
     const allow = res.reduce((p, c) => p.v && c.v ? p : { v: false }).v;
 
     logger.log(`Enforcer:${role} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
- debugger
+ 
+
+    if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
+    debugger
     const bv= await businessRules.handleRequest({
       params,
       rules:r,
       allow,
       authorization:options
     });
-
-    if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
-      
       return next(params);
   });
 }

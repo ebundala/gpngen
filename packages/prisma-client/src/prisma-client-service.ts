@@ -4,6 +4,7 @@ import { Prisma, PrismaClient as _PrismaClient } from '@prisma/client';
 
 export class PrismaClient extends _PrismaClient {
   private _role:string;
+  private _byPassChecks=false;
   constructor(options: Prisma.PrismaClientOptions) {
     super(options);
     
@@ -27,6 +28,20 @@ export class PrismaClient extends _PrismaClient {
   }
   public resetRole(){
     this._role=null;
+  }
+  get runningAsRoot(){
+    return this._byPassChecks;
+  }
+  public async rusAsRoot<T=any>(cb:()=>Promise<T>){
+    this._byPassChecks=true;
+    try{
+     const result =  await cb() as T;
+     this._byPassChecks=false;
+     return result;
+    }catch(e){
+    this._byPassChecks=false;
+    throw e;
+    }
   }
 }
 
