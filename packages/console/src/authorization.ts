@@ -7,7 +7,7 @@ import { Role } from "./models/graphql";
 
 export interface AuthorizerOptions {
   logger: AppLogger;
-  auth: any,//auth.DecodedIdToken;
+  auth: {role?:string,uid?:string};
   enforcer: CasbinService;
   tenantId?: string;
   token?: string;
@@ -26,26 +26,29 @@ export function authorizationManager(options: AuthorizerOptions) {
   });
   
   prisma.$use(async (params, next) => {
-    //if running as root return emediately
     const { model, action, args, dataPath, runInTransaction } = params;
+     debugger
+         //if running as root return emediately
 
     if(prisma.runningAsRoot){
       logger.log(`Prisma tenant:ROOT operation:${action} resource:${model} path:${dataPath?.join(".")}`);
       return next(params);
     }
     
-    let  role=Role.ANONYMOUS as string
-    if(auth && auth.role){
-      role=auth.role;
-    }
     
+    let  auth:{role?:string,uid?:string} = options.auth??{role:Role.ANONYMOUS as string,uid:null};
+    // if(!options.auth || !options.auth.role){
+    //     auth.role=Role.ANONYMOUS as string;
+    // }
     
+    //override role 
     if(prisma.isRoleOverriden){
-      role=prisma.getRole;
+      auth=prisma.getRole;
+      options.auth=auth;
     }
 
   
-    logger.log(`Prisma tenant:${role} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
+    logger.log(`Prisma tenant:${auth.role} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
 
     const r = [];
     let path = "";
@@ -100,11 +103,11 @@ export function authorizationManager(options: AuthorizerOptions) {
     }
     
     if(args)
-    r.push(...getRulesFromInput(role, args, `${path}`, rw))
+    r.push(...getRulesFromInput(auth.role, args, `${path}`, rw))
 
     enforcer.enableLog(true);
     await enforcer.loadPolicy();
-    r.push([role,
+    r.push([auth.role,
       path,
       rw])
     const res = await Promise
@@ -112,7 +115,7 @@ export function authorizationManager(options: AuthorizerOptions) {
 
     const allow = res.reduce((p, c) => p.v && c.v ? p : { v: false }).v;
 
-    logger.log(`Enforcer:${role} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
+    logger.log(`Enforcer:${auth.role} operation:${action} resource:${model} path:${dataPath?.join(".")} allow:${allow}`);
  
 
     if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');

@@ -49,15 +49,11 @@ export class AuthService {
   // }
 
   debugger
-  
   if(where&&where.id||where.email){
     //particular user selected 
-    const user= await prisma.rusAsRoot(()=>{
-      return prisma.user.findUnique({where})
-    })
     if(select&&(select.email||select.phoneNumber || select.orders )){
     //personal information access
-      if(auth&&auth.id!==where.id && auth.role !== Role.SUPERUSER && !prisma.runningAsRoot){
+      if(auth&&auth.uid!==where.id && auth.role !== Role.SUPERUSER && !prisma.runningAsRoot){
         //not owner or superuser access 
         throw new GraphQLError('Access violation you cant access personal data of other users') 
       }
@@ -106,17 +102,20 @@ export class AuthService {
       throw new GraphQLError('Username must be 3 characters or more');
     }
 
-      prisma.overrideRole=Role.SUPERUSER;
+     // prisma.overrideRole=Role.SUPERUSER;
     const users = prisma.user;
-    const exist = await users.findUnique({ where: { email }});
+    const exist= await prisma.runAsRoot(()=>{
+      return users.findUnique({where:{email}})
+    })
+    //const exist = await users.findUnique({ where: { email }});
       debugger
     if (exist&&exist.id) {
       throw new GraphQLError('The email address is already in use by another account');
     } 
       try{
      user= await  this._createUserWithEmail(email, password, displayName,phoneNumber);
-        
-    const u2= (await users.create({
+       
+    const u2= await prisma.runAsRoot(()=> prisma.user.create({
             data: {
               id: user.uid,
               displayName: user.displayName,
@@ -125,26 +124,26 @@ export class AuthService {
               emailVerified: user.emailVerified,
               role: Role.CONSUMER,
             },
-            select
-          })) as User;
-          const setClaims = await this._setUserClaims(user.id, Role.CONSUMER);
-         prisma.resetRole();
+          }));
+
+          const setClaims = await this._setUserClaims(u2.id, u2.role);
+         const u3 = await prisma.runAs(u2,()=>prisma.user.findUnique({where:{id:u2.id},select})) as User;
           return {
             error: false,
-            user: u2,
+            user: u3,
             message: "Thank you for registering\n you will receive a confimation email when your account is ready",
           }
         }catch({message}){
-          debugger;
+          //debugger;
           if (user&&user.uid&&!await this.cleanUpOnSignUpFailure(user.uid, prisma)){          
-            prisma.resetRole();
+            
             throw new GraphQLError(`Failed to cleanup user signup errors\n ${message}`)
           };
           
         }
         }catch({message}){
           debugger
-          prisma.resetRole();
+          
           throw new GraphQLError(message)
         }
 
@@ -158,8 +157,8 @@ export class AuthService {
       .deleteUser(uid)
       .then(() => true)
       .catch(() => false);
-    const remove2 = await prisma.user
-      .delete({ where: { id: uid } })
+    const remove2 = await prisma.runAsRoot(()=>prisma.user
+      .delete({ where: { id: uid } }))
       .then(() => true)
       .catch(() => false);
     return remove1 && remove2;
@@ -168,10 +167,10 @@ export class AuthService {
   async signInWithEmail(credentials:Partial<AuthInput>, prisma: PrismaClient,select) {
     try{
     const { email ,password } = credentials;
-     prisma.overrideRole=Role.SUPERUSER
-    const user = await prisma.user
-      .findUnique({ where: { email }, select: { id: true, state: true, role: true } });
-      prisma.resetRole();
+    
+    const user = await prisma.runAsRoot(()=>prisma.user
+      .findUnique({ where: { email }, select: { id: true, state: true, role: true } }));
+      
     if (!user) {
       throw new GraphQLError('Signin failed user does not exist');
     }
@@ -230,7 +229,7 @@ export class AuthService {
       .auth()
       .setCustomUserClaims(id, { role: role })
       .then(() => true)
-      .catch(() => false);
+      //.catch(() => false);
   }
 
   async createSessionToken(idToken:string, prisma: PrismaClient, select,expiresIn = 60 * 60 * 5 * 24 * 1000):Promise<any> {
@@ -244,9 +243,9 @@ export class AuthService {
         const token = await this.firebaseApp.admin.auth()
           .createSessionCookie(idToken, { expiresIn });
         debugger
-        prisma.overrideRole=decodedIdToken.role;
-        const user = await prisma.user.findUnique({ where: { id: decodedIdToken.uid },select });
-        prisma.resetRole();
+        const user = await prisma.runAs({
+          role:decodedIdToken.role,
+          id:decodedIdToken.uid},()=>prisma.user.findUnique({ where: { id: decodedIdToken.uid },select }));
 
         return {
           user,

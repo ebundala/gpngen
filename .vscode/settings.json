@@ -3,4 +3,6 @@
     "eslint.format.enable": true,
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "typescript.tsdk": "node_modules/typescript/lib",
+    "files.autoSave": "onFocusChange",
+    "eslint.codeActionsOnSave.mode": "problems",
 }
