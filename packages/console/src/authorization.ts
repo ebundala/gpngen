@@ -139,7 +139,12 @@ const getRulesFromInput = (role:string, data, path:string, action:string) => {
   if (data instanceof Array) {
     for (let i = 0; i < data.length; i++) {
       const v = data[i];
+      if(typeof v === 'object'){
       r.push(...getRulesFromInput(role, v, `${path}`, action))
+      }
+      else if(!r.find(([r,p,a])=>r===role&&path===p&&action===a)){
+        r.push([role, `${path}`, action]);
+      }
     }
   } else if (typeof data === 'object') {
     const v = Object.entries(data)
