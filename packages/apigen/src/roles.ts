@@ -84,8 +84,9 @@ export const getRoleGrouping = (role:Role)=>{
   return []
 }
 
-export const ruleGroup=(rules:string[],group,filterBy:{include?:string[],exclude?:string[]},includeDefault=false):string[]=>{
-  const {include,exclude}=filterBy;
+export const ruleGroup=(group:string,rules:string[],filterBy:{include?:string[],exclude?:string[],extensions?:string[]},includeDefault=false):string[]=>{
+  const {include,exclude,extensions}=filterBy;
+  const ext=extensions?.map((v)=>`${group}.${v}`)??[]
   return rules
   .filter((g)=>g===group||g.startsWith(`${group}.`))
   .filter((g1)=>{
@@ -95,5 +96,5 @@ export const ruleGroup=(rules:string[],group,filterBy:{include?:string[],exclude
          else if(exclude&&exclude.filter((i)=>g1.startsWith(`${group}.${i}`)).length>0) return false;
          else return includeDefault;
      }
-  });
+  }).concat(ext);
 }

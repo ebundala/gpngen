@@ -1,7 +1,7 @@
 import { getRoleGrouping, getRolePolicies } from '@mechsoft/apigen';
 import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { join } from 'path';
-import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from '../src/roles';
+import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from '../src/authorization/roles/roles';
 
 const getDefaultPolicies = async () => {
    const su = new SUPERUSER();
