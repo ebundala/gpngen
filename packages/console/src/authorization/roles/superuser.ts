@@ -1,5 +1,5 @@
 import { Role, ruleGroup } from "@mechsoft/apigen";
-import { MutationsRulesList } from "../../models/mutationRuleslist";
+import { createOneUserRules, deleteOneUserRules } from "../../models/mutationRuleslist";
 import { ANONYMOUS, MANAGER } from "./roles";
 
 export class SUPERUSER extends Role {
@@ -12,7 +12,7 @@ export class SUPERUSER extends Role {
         this.addWriteRule([
             //inherit all
             //delete anything  
-            ...ruleGroup( 'createOneUser',MutationsRulesList, {
+            ...ruleGroup( 'createOneUser',createOneUserRules, {
                 exclude: [
                    // 'data.id',
                     'data.createdAt',
@@ -52,7 +52,7 @@ export class SUPERUSER extends Role {
 
                 ]
             }, true),
-            ...ruleGroup( 'deleteOneUser',MutationsRulesList, {
+            ...ruleGroup( 'deleteOneUser',deleteOneUserRules, {
                 exclude: [
                     'select.organization',
                     'select.order',

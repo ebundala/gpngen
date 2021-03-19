@@ -45,9 +45,22 @@ const createRoles = async () => {
     const { policies, roleGroups } = await getDefaultPolicies();
     const cl = (casbin.getAdapter() as PrismaAdapter);
     await cl.prisma.casbinRule.deleteMany();
- 
-    await casbin.addGroupingPolicies(roleGroups)
-    await casbin.addPolicies(policies);
+    await cl.prisma.casbinRule.createMany({
+        skipDuplicates:true,
+        data:roleGroups.map(([v0,v1,v2,v3,v4,v5],i)=>{
+            return {
+                ptype:'g',
+                v0,v1,v2,v3,v4,v5
+            }
+        }).concat(policies.map(([v0,v1,v2,v3,v4,v5],i)=>{
+            return {
+                ptype:'p',
+                v0,v1,v2,v3,v4,v5
+            }
+        }))
+    });
+   // await casbin.addGroupingPolicies(roleGroups)
+   // await casbin.addPolicies(policies);
 
 
     return cl.close();

@@ -23,8 +23,9 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
     const findPaths = (data: DMMF.OutputType) => {
         const N = data.name;
         const a = data.fields;
-        const r = new Set<string>();
+        const r2 = new Map<string,Set<string>>();
         for (let i = 0; i < a.length; i++) {
+            const r = new Set<string>();
             const v = a[i];
             const path = `${v.name}`
             r.add(path);
@@ -42,9 +43,9 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
             }
             
             findOutputResources(v.outputType,`${path}.select`,r,depth);
-
+          r2.set(v.name,r);
         }
-        return r;
+        return r2;
     }
 
     const findInputResources = (inputTypes, path, p: Set<string>, depth) => {
@@ -87,23 +88,41 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
     }
     const resources = findPaths(mutations);
     const resources2 = findPaths(queries);
-    const items = [];
-    resources.forEach((v) => {
+    const mutationsRules:string[]=[];
+    resources.forEach((v,k)=>{
+        const items = [];
+    v.forEach((v) => {
         items.push(`'${v}'`)
     })
-    const items2 = []
-    resources2.forEach((v) => {
-        items2.push(`'${v}'`)
+    const rules = `export const ${k}Rules =[\n${items.join(',\n')}\n];\n`;
+     mutationsRules.push(rules);
+    });
+    const queriesRules:string[]=[];
+    resources2.forEach((v,k)=>{
+        const items = [];
+    v.forEach((v) => {
+        items.push(`'${v}'`)
     })
+    const rules = `export const ${k}Rules =[\n${items.join(',\n')}\n];\n`;
+    queriesRules.push(rules);
+    });
+    // const items = [];
+    // resources.forEach((v) => {
+    //     items.push(`'${v}'`)
+    // })
+    // const items2 = []
+    // resources2.forEach((v) => {
+    //     items2.push(`'${v}'`)
+    // })
     
-    const rules = `export type MutationRules = ${items.join(" | \n")};\n`;
-    const rules2 = `export type QueriesRules = ${items2.join(" | \n")};\n`;
-    const list1=`export const MutationsRulesList=[\n${items.join(',\n')}\n]`
-    const list2=`export const QueriesRulesList=[\n${items2.join(',\n')}\n]`
-    writeFileSync(join(process.cwd(), rulesPath, 'rules.ts'), `${rules}${rules2}`)
+    // const rules = `export type MutationRules = ${items.join(" | \n")};\n`;
+    // const rules2 = `export type QueriesRules = ${items2.join(" | \n")};\n`;
+    // const list1=`export const MutationsRulesList=[\n${items.join(',\n')}\n]`
+    // const list2=`export const QueriesRulesList=[\n${items2.join(',\n')}\n]`
+    // writeFileSync(join(process.cwd(), rulesPath, 'rules.ts'), `${rules}${rules2}`)
     
 
-    writeFileSync(join(process.cwd(), rulesPath, 'mutationRuleslist.ts'), `${list1}`)
+     writeFileSync(join(process.cwd(), rulesPath, 'mutationRuleslist.ts'), `${mutationsRules.join('\n')}`)
 
-    writeFileSync(join(process.cwd(), rulesPath, 'queriesRuleslist.ts'), `${list2}`)
+     writeFileSync(join(process.cwd(), rulesPath, 'queriesRuleslist.ts'), `${queriesRules.join('\n')}`)
 }

@@ -1,6 +1,35 @@
 import { Role, ruleGroup } from "@mechsoft/apigen";
-import { MutationsRulesList as mRules } from "../../models/mutationRuleslist";
-import { QueriesRulesList as qRules } from "../../models/queriesRuleslist";
+import {
+    createOneOrderRules,
+    createOneOrganizationRules,
+    createOneRatingRules,
+    updateOneOrderRules,
+    updateOneRatingRules,
+    updateOneUserRules
+} from "../../models/mutationRuleslist";
+import {
+    findManyOrderRules,
+    findManyOrganizationRules,
+    findManyServiceCategoryRules,
+    findManyServiceRules,
+
+
+
+    findUniqueOrderRules,
+
+
+
+    findUniqueOrganizationRules,
+
+
+
+    findUniqueServiceRules,
+
+
+
+    findUniqueUserRules
+} from "../../models/queriesRuleslist";
+
 
 export class CONSUMER extends Role {
 
@@ -9,7 +38,7 @@ export class CONSUMER extends Role {
         debugger;
         this.addWriteRule([
              //update personal profile //add location to profile add avator
-             ...ruleGroup('updateOneUser',mRules, {
+             ...ruleGroup('updateOneUser',updateOneUserRules, {
                 exclude: [
                     'where',
                    "data.id",             
@@ -79,7 +108,7 @@ export class CONSUMER extends Role {
             },true),
 
             //create organization
-            ...ruleGroup('createOneOrganization',mRules, {
+            ...ruleGroup('createOneOrganization',createOneOrganizationRules, {
                 exclude: [
                     "data.id",          
                     //"data.name",        
@@ -144,7 +173,7 @@ export class CONSUMER extends Role {
             }, true),
 
             //create orders            
-            ...ruleGroup('createOneOrder',mRules, {
+            ...ruleGroup('createOneOrder',createOneOrderRules, {
                 exclude: [
                     "data.id",             
                     "data.service",        
@@ -215,7 +244,7 @@ export class CONSUMER extends Role {
             }, true),
 
            //update order state only (cancel/receive/submit)
-            ...ruleGroup('updateOneOrder',mRules,{
+            ...ruleGroup('updateOneOrder',updateOneOrderRules,{
                 exclude: [
                     "where",
                     "data.id",             
@@ -290,7 +319,7 @@ export class CONSUMER extends Role {
             },true),
 
             //create ratings
-            ...ruleGroup('createOneRating',mRules, {
+            ...ruleGroup('createOneRating',createOneRatingRules, {
                 exclude: [
                     "data.id",                   
                     "data.value",         
@@ -340,7 +369,7 @@ export class CONSUMER extends Role {
             }, true),
             
            // update on rating 
-           ...ruleGroup('updateOneRating',mRules,{
+           ...ruleGroup('updateOneRating',updateOneRatingRules,{
             exclude: [
                 "where",
                 "data.id",                   
@@ -402,7 +431,7 @@ export class CONSUMER extends Role {
         this.addReadRule([
             //view service categories            
 
-            ...ruleGroup('findManyServiceCategory',qRules, {
+            ...ruleGroup('findManyServiceCategory',findManyServiceCategoryRules, {
                 exclude: [
                     'where',
                     'orderBy',
@@ -420,7 +449,7 @@ export class CONSUMER extends Role {
 
             //view public organizations profile
 
-            ...ruleGroup('findManyOrganization',qRules, {
+            ...ruleGroup('findManyOrganization',findManyOrganizationRules, {
                 exclude: [
                     "where",
                       "orderBy",
@@ -440,10 +469,10 @@ export class CONSUMER extends Role {
                      "select.locationId",                     
                 ],
                 include: [
-                    "where.offers",
+                   // "where.offers",
                     'where.offers.some.name.in',
                     'where.offers.some.id.in',
-                    'where.location.name',
+                   // 'where.location.name',
                     'where.location.name.mode',
                     'where.location.name.contains',
                     'where.AND.location.name.contains',
@@ -453,11 +482,11 @@ export class CONSUMER extends Role {
                     
                     'orderBy.name',
                     'orderBy.createdAt',
-                    "select.logo", 
+                   // "select.logo", 
                     "select.logo.id",
                     "select.logo.path",
                     "select.logo.mimetype",       
-                    "select.services",    
+                    //"select.services",    
                     "select.services.id",  
                     "select.services.name",  
                     "select.services.price",  
@@ -467,70 +496,58 @@ export class CONSUMER extends Role {
                     "select.staffs", 
                     "select.staffs.id",
                     "select.staffs.displayName",     
-                    "select.location", 
+                   // "select.location", 
                     "select.location.id", 
                     "select.location.name",    
-                    "select.offers", 
+                    //"select.offers", 
                     "select.offers.id", 
                     "select.offers.name", 
                     "select.offers.state",     
-                    "select.ratings",
+                   // "select.ratings",
                     "select.ratings.id",
                     "select.ratings.value",
                     "select.ratings.comment",
-                    "select.ratings.author",
+                   // "select.ratings.author",
                     "select.ratings.author.id",
                     "select.ratings.author.displayName",
-                    "select.ratings.author.avator",
+                    //"select.ratings.author.avator",
                     "select.ratings.author.avator.id",
                     "select.ratings.author.avator.path",
                     "select.ratings.author.avator.mimetype",
-
-                    // 'where.offers.some.name',
-                    // 'where.offers.some.id',
-                    // 'where.location.name',
-                    // 'where.ratings.every.value.gte',
-                    // 'orderBy.name',
-                    // 'orderBy.createdAt',
-                    // 'select.logo.id',
-                    // 'select.logo.path',
-                    // 'select.logo.mimetype',
-                    // 'select.offers.id',
-                    // 'select.offers.name',
-                    // 'select.location.id',
-                    // 'select.location.name',
-                    // 'select.services.id',
-                    // 'select.services.price',
-                    // 'select.services.description',
-                    // 'select.services.image.id',
-                    // 'select.services.image.path',
-                    // 'select.services.image.mimetype',
+                    
                 ]
             }, true),
 
             //view services public information
-
-            ...ruleGroup( 'findManyService',qRules, {
+            ...ruleGroup( 'findManyService',findManyServiceRules, {
                 exclude: [
                     'where',
                     'orderBy',
-                    'select.organization',
-                    'select.image',
-                    'select.category',
-                    'select.orders',
-                    'select.organizationId',
-                    'select.imageId',
-                    'select.serviceCategoryId'
+                   // "select.id",                
+                  //  "select.name",             
+                  //  "select.description",       
+                  //  "select.price",             
+                  //  "select.state",             
+                    "select.organization",      
+                    "select.image",             
+                    "select.category",          
+                    "select.orders",            
+                   // "select.createdAt",         
+                  //  "select.updatedAt",         
+                    "select.organizationId",    
+                    "select.imageId",           
+                    "select.serviceCategoryId", 
+                    
 
                 ],
                 include: [
-                    // 'where.serviceCategoryId',
                     'where.organization.id',
                     'where.state',
                     'orderBy.name',
                     'orderBy.price',
                     'orderBy.createdAt',
                     'orderBy.createdAt',
+
                     'select.image.id',
                     'select.image.path',
                     'select.image.mimetype',
@@ -546,8 +563,9 @@ export class CONSUMER extends Role {
                 ]
             }, true),
             //view personal profile 
-            ...ruleGroup( 'findUniqueUser',qRules, {
+            ...ruleGroup( 'findUniqueUser',findUniqueUserRules, {
                 exclude: [
+                    "where",
                     "select.organization",
                     "select.ratings",
                     "select.orders",
@@ -558,6 +576,8 @@ export class CONSUMER extends Role {
                     'select.locationId',
                 ],
                 include: [
+                    "where.id",
+                    "where.email",
                     'select.avator.id',
                     'select.avator.path',
                     'select.avator.mimetype',
@@ -571,35 +591,197 @@ export class CONSUMER extends Role {
             }, true),
             
             //view personal orders
-            ...ruleGroup( 'findManyOrders',qRules, {
+            ...ruleGroup( 'findManyOrder',findManyOrderRules, {
                 exclude: [
                     'where',
-                    'select.service',
-                    'select.organization',
-                    'select.author',
-                    'select.serviceId',
-                    'select.organizationId',
-                    'select.userId',
-                    'select.receiptId',
-                    'select.receipt',
+                    'orderBy',
+                    "select.id",             
+                    "select.service",       
+                    "select.organization",   
+                    "select.author",         
+                   // "select.state",          
+                    "select.receipt",        
+                    //"select.createdAt",      
+                   // "select.updatedAt",      
+                    "select.serviceId",      
+                    "select.organizationId", 
+                    "select.userId",         
+                    "select.receiptId",      
+                   
                 ],
                 include: [
-                    'where.id',
-                    'select.author.id',
-                    'select.author.displayName',
+                    'where.id',                 
+                    'orderBy.createdAt',
+                    'orderBy.updatedAt',
+                    'orderBy.service.price',
+                    "select.services.id",  
+                    "select.services.name",  
+                    "select.services.price",  
+                    "select.services.description",  
+                    "select.services.createdAt",  
+                    "select.services.updatedAt",     
+                    'select.organization.id',
+                    'select.organization.name',
+                    'select.organization.logo.id',
+                    'select.organization.logo.path',   
                     'select.author.avator.id',
                     'select.author.avator.path',
+                    'select.author.avator.mimetype',
+                    'select.author.location.id',
+                    'select.author.location.name',,                           
+                    'select.receipt.id',
+                    'select.receipt.path',
+                    'select.receipt.mimetype',
+                    "select.receipt.createdAt",
+                    "select.receipt.updatedAt",
+                ]
+            }, true),
+            
+            //view a single service
+            ...ruleGroup('findUniqueService',findUniqueServiceRules,{
+                exclude: [
+                   // 'where',
+                   // 'orderBy',
+                   // "select.id",                
+                  //  "select.name",             
+                  //  "select.description",       
+                  //  "select.price",             
+                  //  "select.state",             
+                    "select.organization",      
+                    "select.image",             
+                    "select.category",          
+                    "select.orders",            
+                   // "select.createdAt",         
+                  //  "select.updatedAt",         
+                    "select.organizationId",    
+                    "select.imageId",           
+                    "select.serviceCategoryId", 
+                    
+
+                ],
+                include: [
+                    'where.id',                    
+                    'orderBy.name',
+                    'orderBy.price',
+                    'orderBy.createdAt',
+                    'orderBy.createdAt',
+
+                    'select.image.id',
+                    'select.image.path',
+                    'select.image.mimetype',
                     'select.organization.id',
                     'select.organization.name',
                     'select.organization.logo.id',
                     'select.organization.logo.path',
-                    'select.service.id',
-                    'select.service.name',
-                    'select.service.price',
+                    'select.organization.logo.mimetype',
+                    'select.category.id',
+                    'select.category.name',
+                ]
+            },true),
+
+            //view a single organization
+            ...ruleGroup('findUniqueOrganization',findUniqueOrganizationRules,{
+                exclude: [
+                   // "where",
+                    //  "orderBy",
+                    // "select.id",         
+                   //  "select.name",        
+                    // "select.description", 
+                     "select.logo",        
+                     "select.services",    
+                     "select.orders",      
+                     "select.staffs",      
+                     "select.location",    
+                     "select.offers",     
+                     "select.ratings",     
+                    // "select.createdAt",   
+                   //  "select.updatedAt",   
+                     "select.logoId",      
+                     "select.locationId",                     
+                ],
+                include: [
+                   
+                   // "select.logo", 
+                    "select.logo.id",
+                    "select.logo.path",
+                    "select.logo.mimetype",       
+                    //"select.services",    
+                    "select.services.id",  
+                    "select.services.name",  
+                    "select.services.price",  
+                    "select.services.description",  
+                    "select.services.createdAt",  
+                    //"select.orders",      
+                    "select.staffs", 
+                    "select.staffs.id",
+                    "select.staffs.displayName",     
+                   // "select.location", 
+                    "select.location.id", 
+                    "select.location.name",    
+                    //"select.offers", 
+                    "select.offers.id", 
+                    "select.offers.name", 
+                    "select.offers.state",     
+                   // "select.ratings",
+                    "select.ratings.id",
+                    "select.ratings.value",
+                    "select.ratings.comment",
+                   // "select.ratings.author",
+                    "select.ratings.author.id",
+                    "select.ratings.author.displayName",
+                    //"select.ratings.author.avator",
+                    "select.ratings.author.avator.id",
+                    "select.ratings.author.avator.path",
+                    "select.ratings.author.avator.mimetype",
+                    
+                ]
+            },true),
+            //view a onw single order
+            ...ruleGroup('findUniqueOrder',findUniqueOrderRules,{
+              exclude: [
+                   // 'where',
+                    'orderBy',
+                   // "select.id",             
+                    "select.service",       
+                    "select.organization",   
+                    "select.author",         
+                   // "select.state",          
+                    "select.receipt",        
+                    //"select.createdAt",      
+                   // "select.updatedAt",      
+                    "select.serviceId",      
+                    "select.organizationId", 
+                    "select.userId",         
+                    "select.receiptId",      
+                   
+                ],
+                include: [
+                   // 'where.id',                    
+                    'orderBy.createdAt',
+                    'orderBy.updatedAt',
+                    'orderBy.service.price',
+                    "select.services.id",  
+                    "select.services.name",  
+                    "select.services.price",  
+                    "select.services.description",  
+                    "select.services.createdAt",  
+                    "select.services.updatedAt",     
+                    'select.organization.id',
+                    'select.organization.name',
+                    'select.organization.logo.id',
+                    'select.organization.logo.path',   
+                    'select.author.avator.id',
+                    'select.author.avator.path',
+                    'select.author.avator.mimetype',
+                    'select.author.location.id',
+                    'select.author.location.name',,                           
                     'select.receipt.id',
                     'select.receipt.path',
+                    'select.receipt.mimetype',
+                    "select.receipt.createdAt",
+                    "select.receipt.updatedAt",
                 ]
-            }, true)
+            },true)
 
         ])
     }
@@ -607,4 +789,4 @@ export class CONSUMER extends Role {
 }
 
 
-const consumer = new CONSUMER();
+//const consumer = new CONSUMER();

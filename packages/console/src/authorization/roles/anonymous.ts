@@ -1,5 +1,5 @@
 import { Role, ruleGroup } from "@mechsoft/apigen";
-import { QueriesRulesList } from "../../models/queriesRuleslist";
+import { findManyServiceCategoryRules } from "../../models/queriesRuleslist";
 
 export class ANONYMOUS extends Role {
     constructor() {
@@ -9,7 +9,7 @@ export class ANONYMOUS extends Role {
        // ])
         this.addReadRule([
             //view service categories            
-            ...ruleGroup('findManyServiceCategory', QueriesRulesList, {
+            ...ruleGroup('findManyServiceCategory', findManyServiceCategoryRules, {
                 exclude: [
                     'where',
                     'orderBy',

@@ -21,8 +21,9 @@
             "${relativeFile}"
         ],
         "runtimeArgs": [
+            "--max-old-space-size=2096",
             "--nolazy",
-            "-r",
+            "-r",           
             "ts-node/register"
         ],
         "sourceMaps": true,
