@@ -35,9 +35,13 @@ export class CONSUMER extends Role {
 
     constructor() {
         super();
-        debugger;
+      //  debugger;
         this.addWriteRule([
-             //update personal profile //add location to profile add avator
+            /**
+             *
+             * update personal profile //add location to profile add avator
+             *
+             * */
              ...ruleGroup('updateOneUser',updateOneUserRules, {
                 exclude: [
                     'where',
@@ -107,7 +111,11 @@ export class CONSUMER extends Role {
                 ]
             },true),
 
-            //create organization
+            /**
+             *
+             * create organization
+             *
+             * */
             ...ruleGroup('createOneOrganization',createOneOrganizationRules, {
                 exclude: [
                     "data.id",          
@@ -172,7 +180,11 @@ export class CONSUMER extends Role {
                 ]
             }, true),
 
-            //create orders            
+            /**
+             *
+             * create orders
+             *
+             * */
             ...ruleGroup('createOneOrder',createOneOrderRules, {
                 exclude: [
                     "data.id",             
@@ -243,8 +255,12 @@ export class CONSUMER extends Role {
                 ]
             }, true),
 
-           //update order state only (cancel/receive/submit)
-            ...ruleGroup('updateOneOrder',updateOneOrderRules,{
+            /**
+             *
+             * update order state only (cancel/receive/submit)
+             *
+             * */
+           ...ruleGroup('updateOneOrder',updateOneOrderRules,{
                 exclude: [
                     "where",
                     "data.id",             
@@ -318,7 +334,11 @@ export class CONSUMER extends Role {
                 ]
             },true),
 
-            //create ratings
+            /**
+             *
+             * create ratings
+             *
+             * */
             ...ruleGroup('createOneRating',createOneRatingRules, {
                 exclude: [
                     "data.id",                   
@@ -368,7 +388,10 @@ export class CONSUMER extends Role {
                 ]
             }, true),
             
-           // update on rating 
+            /**
+             * update on rating
+             *
+             * */
            ...ruleGroup('updateOneRating',updateOneRatingRules,{
             exclude: [
                 "where",
@@ -422,14 +445,22 @@ export class CONSUMER extends Role {
            })
            
 
-           //chat feature permissions
+            /**
+             *
+             * chat feature permissions
+             *
+             * */
             
 
 
         ]);
 
         this.addReadRule([
-            //view service categories            
+            /**
+             *
+             * view service categories
+             *
+             * */
 
             ...ruleGroup('findManyServiceCategory',findManyServiceCategoryRules, {
                 exclude: [
@@ -590,12 +621,16 @@ export class CONSUMER extends Role {
                 ]
             }, true),
             
-            //view personal orders
+            /**
+             *
+             * view personal orders
+             *
+             * */
             ...ruleGroup( 'findManyOrder',findManyOrderRules, {
                 exclude: [
                     'where',
                     'orderBy',
-                    "select.id",             
+                   // "select.id",             
                     "select.service",       
                     "select.organization",   
                     "select.author",         
@@ -610,7 +645,8 @@ export class CONSUMER extends Role {
                    
                 ],
                 include: [
-                    'where.id',                 
+                    'where.author.id',
+                    //'where.author.email',
                     'orderBy.createdAt',
                     'orderBy.updatedAt',
                     'orderBy.service.price',
@@ -637,7 +673,11 @@ export class CONSUMER extends Role {
                 ]
             }, true),
             
-            //view a single service
+            /**
+             *
+             * view a single service
+             *
+             * */
             ...ruleGroup('findUniqueService',findUniqueServiceRules,{
                 exclude: [
                    // 'where',
@@ -679,7 +719,11 @@ export class CONSUMER extends Role {
                 ]
             },true),
 
-            //view a single organization
+            /**
+             *
+             * view a single organization
+             *
+             * */
             ...ruleGroup('findUniqueOrganization',findUniqueOrganizationRules,{
                 exclude: [
                    // "where",
@@ -714,7 +758,10 @@ export class CONSUMER extends Role {
                     //"select.orders",      
                     "select.staffs", 
                     "select.staffs.id",
-                    "select.staffs.displayName",     
+                    "select.staffs.displayName",
+                    "select.staffs.avator.id",
+                    "select.staffs.avator.path",
+                    "select.staffs.avator.mimetype",
                    // "select.location", 
                     "select.location.id", 
                     "select.location.name",    
@@ -736,7 +783,10 @@ export class CONSUMER extends Role {
                     
                 ]
             },true),
-            //view a onw single order
+            /**
+             * view own single order
+             *
+             * */
             ...ruleGroup('findUniqueOrder',findUniqueOrderRules,{
               exclude: [
                    // 'where',
@@ -760,12 +810,12 @@ export class CONSUMER extends Role {
                     'orderBy.createdAt',
                     'orderBy.updatedAt',
                     'orderBy.service.price',
-                    "select.services.id",  
-                    "select.services.name",  
-                    "select.services.price",  
-                    "select.services.description",  
-                    "select.services.createdAt",  
-                    "select.services.updatedAt",     
+                    "select.service.id",
+                    "select.service.name",
+                    "select.service.price",
+                    "select.service.description",
+                    "select.service.createdAt",
+                    "select.service.updatedAt",
                     'select.organization.id',
                     'select.organization.name',
                     'select.organization.logo.id',

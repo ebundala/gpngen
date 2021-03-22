@@ -28,7 +28,7 @@ export class AuthService {
     this.logger.setContext(AuthService.name);
    // this.bloc.on("findUniqueUser.where.email",this.findUniqueUserBloc)
     //this.bloc.on("findUniqueUser.where.id",this.findUniqueUserBloc)
-    this.bloc.on("findUniqueUser",this.findUniqueUserBloc)
+    this.bloc.on("findUniqueUser", this.findUniqueUserBloc)
 
 
     
@@ -41,14 +41,15 @@ export class AuthService {
     const {prisma,auth,logger} = authorization;
    logger.debug("Validating business rule findUniqueUser");
   
-  
+    // const r = new Rule({name:})
+
   // if(prisma.isRoleOverriden&&prisma.getRole!==Role.SUPERUSER){
   //   debugger
   //   logger.warn("Access violation non admin cant access user data")
   //   throw new GraphQLError("Access violation on findUniqueUser")
   // }
 
-  debugger
+  //debugger
   if(where&&where.id||where.email){
     //particular user selected 
     if(select&&(select.email||select.phoneNumber || select.orders )){

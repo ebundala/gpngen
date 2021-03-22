@@ -9,7 +9,8 @@ const getDefaultPolicies = async () => {
    const pv = new PROVIDER();
    const cs = new CONSUMER();
    const an = new ANONYMOUS();
-  // debugger;
+
+    debugger;
     const superUser = getRolePolicies(su)
     const manager = getRolePolicies(mn)
     const provider = getRolePolicies(pv)

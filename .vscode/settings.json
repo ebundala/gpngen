@@ -5,4 +5,7 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "files.autoSave": "onFocusChange",
     "eslint.codeActionsOnSave.mode": "problems",
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
 }

@@ -1,22 +1,200 @@
-import { Role } from "@mechsoft/apigen";
-import { CONSUMER } from "./roles";
+import { Role, ruleGroup } from "@mechsoft/apigen";
+import { findManyOrderRules, findUniqueOrganizationRules } from "../../models/queriesRuleslist";
+import { createOneServiceRules, updateOneOrderRules, updateOneServiceRules } from "../../models/mutationRuleslist";
+import { CONSUMER } from "./consumer";
 
 export class PROVIDER extends Role {
 
     constructor() {
-        super();
+        super()
+     //   debugger;
         this.addParent(CONSUMER.name)
         this.addWriteRule([
-            //update organization orders
+            /** 
+             * 
+             *  update orders for organization 
+             * 
+             * */
+            ...ruleGroup('updateOneOrder.data', updateOneOrderRules, {
+                extensions: [
+                    "state",
+                    "state.set",
+                    "receipt.connect.id",
+                    "receipt.disconnect.id"
+                ]
+            }),
+            /** 
+             * create services for organization 
+             * 
+             * */
+            ...ruleGroup("createOneService", createOneServiceRules, {
+                exclude: [
+                    "data",
+                    // "select.id",                
+                    // "select.name",              
+                    // "select.description",       
+                    //  "select.price",          
+                    //  "select.state",             
+                    "select.organization",
+                    "select.image",
+                    "select.category",
+                    "select.orders",
+                    // "select.createdAt",
+                    //  "select.updatedAt",
+                    "select.organizationId",
+                    "select.imageId",
+                    "select.serviceCategoryId",
 
-            //create services in organization
+                ],
+                include: [
+                    "data.name",
+                    "data.description",
+                    "data.price",
+                    "data.organization.connect.id",
+                    "data.image.connect.id",
+                    "select.organization.id",
+                    "select.organization.name",
+                    "select.organization.description",
+                    "select.organization.logo.id",
+                    "select.organization.logo.path",
+                    "select.organization.logo.mimetype",
+                    'select.organization.location.id',
+                    'select.organization.location.name',
+                    'select.organization.location.latlon',
+                    "select.image.id",
+                    "select.image.path",
+                    "select.image.mimetype",
+                    "select.category.id",
+                    "select.category.name",
+                    // "select.orders",
+                    // "select.createdAt",
+                    //  "select.updatedAt",
+                ]
+            }, true),
 
+            /**
+             * 
+             *   update service for organization 
+             * 
+             * */
+            ...ruleGroup("updateOneService", updateOneServiceRules, {
+                exclude: [
+                    "data",
+                    // "select.id",                
+                    // "select.name",              
+                    // "select.description",       
+                    //  "select.price",          
+                    //  "select.state",             
+                    "select.organization",
+                    "select.image",
+                    "select.category",
+                    "select.orders",
+                    // "select.createdAt",
+                    //  "select.updatedAt",
+                    "select.organizationId",
+                    "select.imageId",
+                    "select.serviceCategoryId",
+
+                ],
+                include: [
+                    "data.name",
+                    "data.description",
+                    "data.price",
+                    "data.organization.connect.id",
+                    "data.image.connect.id",
+                             
+                    "select.organization.id",
+                    "select.organization.name",
+                    "select.organization.description",
+                    "select.organization.logo.id",
+                    "select.organization.logo.path",
+                    "select.organization.logo.mimetype",
+                    'select.organization.location.id',
+                    'select.organization.location.name',
+                    'select.organization.location.latlon',
+                    "select.image.id",
+                    "select.image.path",
+                    "select.image.mimetype",
+                    "select.category.id",
+                    "select.category.name",
+                    // "select.orders",
+                    // "select.createdAt",
+                    //  "select.updatedAt",
+                ]
+            }, true)
         ])
         this.addReadRule([
             //same as consumer
-            //view organization orders
-            //
+            /**
+             * 
+             *  view organization with its orders 
+             * 
+             * */
+            ...ruleGroup("findUniqueOrganization.select.orders", findUniqueOrganizationRules, {
+                exclude: [
+                    "id",
+                    // "quantity",      
+                    "service",
+                    "organization",
+                    "author",
+                    // "state",          
+                    "receipt",
+                    // "createdAt",      
+                    // "updatedAt",      
+                    "serviceId",
+                    "organizationId",
+                    "userId",
+                    "receiptId",
+                ],
+                include: [
+                    "service.id",
+                    "service.name",
+                    "service.price",
+                    "service.description",
+                    "service.createdAt",
+                    "service.updatedAt",
+                    'organization.id',
+                    'organization.name',
+                    'organization.logo.id',
+                    'organization.logo.path',
+                    'author.id',
+                    'author.displayName',
+                    'author.email',
+                    'author.phoneNUmber',
+                    'author.state',
+                    'author.avator.id',
+                    'author.avator.path',
+                    'author.avator.mimetype',
+                    'author.location.id',
+                    'author.location.name', ,
+                    'receipt.id',
+                    'receipt.path',
+                    'receipt.mimetype',
+                    "receipt.createdAt",
+                    "receipt.updatedAt",
+                ]
+            }, true),
+
+            /**
+             * 
+             * find many orders for organization
+             */
+            ...ruleGroup("findManyOrder.where", findManyOrderRules, {
+                extensions: [
+                    'organization.id'
+                ]
+            })
         ])
+        /**
+         *
+         *  FOR DEBUG ONLY
+         *
+         * */
+        // const consumer = new CONSUMER();
+        // this.readRules.unshift(...consumer.readRules);
+        // this.writeRules.unshift(...consumer.writeRules);
     }
 
 }
+
+//const provider = new PROVIDER();
