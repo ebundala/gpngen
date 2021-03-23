@@ -6,11 +6,16 @@ export class MANAGER extends Role {
 
     constructor() {
         super();
-        debugger
+       // debugger
+                   //inherit provider
+
         this.addParent(PROVIDER.name)
         this.addWriteRule([
-            //inherit provider
-            //update organization   
+            /**
+             *
+             * update organization
+             *
+             * */
             ...ruleGroup('updateOneOrganization', updateOneOrganizationRules, {
                 exclude: [
                     // "where",
@@ -89,4 +94,4 @@ export class MANAGER extends Role {
 
 }
 
-const manager = new MANAGER()
+//const manager = new MANAGER()

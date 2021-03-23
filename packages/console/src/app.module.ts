@@ -65,21 +65,12 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
     //debugger;
     //console.log('willSendResponse');
     const { context, request, response } = requestContext;
-    const { tenantId, prisma, logger,auth } = context;
-    // const client = clients.get(tenantId);
-    // const expired = Date.now() - client.start.getTime() >= 60000;
-    // if (clients.size > 1 || expired) {
-      
+    const { tenantId, prisma, logger, auth } = context;
+    
        await (context.enforcer.getAdapter() as PrismaAdapter).close()      
        await prisma.$disconnect();
       
-    //   clients.delete(tenantId);
-    //   // const arr:ClientValue[] = []
-    //   //  clients.forEach((v, k) => {
-    //   //    arr.push(v)
-    //   //  })
-    //   // const sorted= arr.sort((a,b)=>a.lastUsed.getTime()-a.lastUsed.getTime());
-    //   // await sorted[0].client.$disconnect();
+
     logger?.debug(
       `Disconected from prisma server tenantId:${tenantId}`,
       'PrismaConnectionManager',
