@@ -6,6 +6,8 @@ import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { Engine, EngineResult, Event, Fact, Rule, TopLevelCondition } from 'json-rules-engine';
 import { BusinessRequest, BusinessRules } from 'src/businesrules';
+import { canCreateOnlyOneOrganization, isUserSensitiveInfo, onlyConnectActiveOffers, onlyConnectOwnerSelf, onlyOwnerhasAccess, onlyServiceOfferedByOrg } from 'src/business-rules/rules.definitions';
+import { businessRulesEvaluate } from '../../business-rules/rules.evalutor';
 import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
@@ -15,6 +17,7 @@ import {
   State,
   User
 } from '../../models/graphql';
+import { on } from 'node:events';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,11 +30,11 @@ export class AuthService {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
-    // this.bloc.on("findUniqueUser.where.email",this.findUniqueUserBloc)
-    //this.bloc.on("findUniqueUser.where.id",this.findUniqueUserBloc)
+    process.env.DEBUG = "json-rules-engine"
+    this.bloc.on("updateOneUser", this.updateOneUserBloc)
     this.bloc.on("findUniqueUser", this.findUniqueUserBloc)
-
-
+    this.bloc.on("createOneOrganization", this.createOneOrganizationBloc)
+    this.bloc.on("createOneOrder", this.createOneOrderBloc)
 
   }
   async findUniqueUserBloc(v: BusinessRequest, next) {
@@ -41,115 +44,58 @@ export class AuthService {
     const { where, select } = args;
     const { prisma, auth, logger } = authorization;
     logger.debug("Validating business rule findUniqueUser");
-    process.env.DEBUG = "json-rules-engine"
-    const isOwner = new Rule({
-      name: "onlyOwnerhasNoAccess",
-      event: {
-        type: "isOwner",
-        params: {
-          message: 'Permission error Your\'e not the owner of this record'
-        }
-      },
-      conditions: {
-        all: [
-          {
-            fact: "uid",
-            operator: 'notEqual',
-            value: where.id,
-          },
-          {
-            fact: "role",
-            operator: 'notEqual',
-            value: Role.SUPERUSER
-          }
-        ]
-      }
-    })
 
-    const selectRule = new Rule(
-      {
-        name: 'isSensitiveInfo',
-        priority: 10,
-        event: {
-          type: 'isSensitiveInfo',
-          params: {
-            message: 'You dont have permission to access this user info'
-          }
-        },
-        conditions: {
-          any: [
+    await businessRulesEvaluate([isUserSensitiveInfo(where.id)], { ...select, ...auth })
 
-            {
-              all: [
-                {
-                  fact: "email",
-                  operator: 'equal',
-                  value: true,
-                  priority: 10,
+  }
+  async updateOneUserBloc(v: BusinessRequest, next) {
+    const { params, authorization, rules, allow, } = v;
+    const { action, args } = params
+    const { where, select } = args;
+    const { prisma, auth, logger } = authorization;
+    await businessRulesEvaluate([onlyOwnerhasAccess(where.id)], auth)
+  }
+  async createOneOrganizationBloc(v: BusinessRequest) {
+    const { params, authorization, rules, allow, } = v;
+    const { action, args } = params
+    const { where, data, select } = args;
+    const { prisma, auth, logger } = authorization;
+    const user = await prisma.runAsRoot(() => prisma.user.findUnique({ where: { id: auth.uid }, include: { organizations: true } }))
+    const serviceCategories = (await prisma
+      .runAsRoot(() => prisma.serviceCategory.findMany({
+        where: { state: State.APPROVED },
+        select: { id: true }
+      }))).map((v) => v.id);
 
-                },
-                isOwner.conditions
-              ]
-            },
-            {
-              all: [
-                {
-                  fact: "phoneNumber",
-                  operator: 'equal',
-                  value: true,
-                },
-                isOwner.conditions
-              ]
-            },
-            {
-              all: [
-                {
-                  fact: "orders",
-                  operator: 'equal',
-                  value: true,
-                  path: '$.orders',
-                },
-                isOwner.conditions
-              ]
-            }
-          ]
-        }
-      })
-
-    const engine = new Engine([], { allowUndefinedFacts: true });
-    engine.addRule(selectRule);
-   
-    debugger
-    const { events, failureEvents }: EngineResult = await engine.run({
-      ...select, ...auth
-    }).catch((r) => r)
-
-    if (events?.length > 0) {
-      const message = events[0]?.params?.message ?? 'Permision error'
-      throw new GraphQLError(message)
-
-    }
-
-    // if(prisma.isRoleOverriden&&prisma.getRole!==Role.SUPERUSER){
-    //   debugger
-    //   logger.warn("Access violation non admin cant access user data")
-    //   throw new GraphQLError("Access violation on findUniqueUser")
-    // }
-
-    //debugger
-    // if (where && where.id || where.email) {
-    //   //particular user selected 
-    //   if (select && (select.email || select.phoneNumber || select.orders)) {
-    //     //personal information access
-    //     if (auth && auth.uid !== where.id && auth.role !== Role.SUPERUSER && !prisma.runningAsRoot) {
-    //       //not owner or superuser access 
-    //       throw new GraphQLError('Access violation you cant access personal data of other users')
-    //     }
-    //   }
-    // }
+    await businessRulesEvaluate([
+      onlyConnectOwnerSelf(auth.uid),
+      onlyConnectActiveOffers(serviceCategories),
+      canCreateOnlyOneOrganization()],
+      { ...user, ...data, /*offers: { connect: { id: data?.offers?.connect[0]?.id } }*/ })
 
   }
 
+  async createOneOrderBloc(v: BusinessRequest) {
+    const { params, authorization, rules, allow, } = v;
+    const { action, args } = params
+    const { where, data, select } = args;
+    const { prisma, auth, logger } = authorization;
+    debugger
+    const service = await prisma.runAsRoot(() => prisma.service.findFirst({
+      where: {
+        id: data?.service?.connect?.id,
+        AND: {
+          state: State.APPROVED
+        }
+      },
+      select: { id: true, state: true, organization: { select: { id: true,/* state:true */ } } }
+    }));
+    
+    await businessRulesEvaluate([
+      onlyConnectOwnerSelf(auth.uid),
+      onlyServiceOfferedByOrg(service?.id, service?.organization?.id)
+    ], data)
+  }
   async signup(credentials: AuthInput, prisma: PrismaClient, select): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select);

@@ -7,8 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-   previewFeatures = ["createMany"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["createMany"]
 }
 
 enum Role {
@@ -53,24 +53,26 @@ model CasbinRule {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  email          String        @unique
+  id             String         @id @default(cuid())
+  email          String         @unique
   displayName    String
   phoneNumber    String?
-  emailVerified  Boolean       @default(false)
-  disabled       Boolean       @default(false)
-  avator         Attachment?   @relation(fields: [avatorId], references: [id])
-  role           Role          @default(ANONYMOUS)
-  state          State         @default(PENDING)
+  emailVerified  Boolean        @default(false)
+  disabled       Boolean        @default(false)
+  avator         Attachment?    @relation(fields: [avatorId], references: [id])
+  role           Role           @default(ANONYMOUS)
+  state          State          @default(PENDING)
   orders         Order[]
-  organization   Organization? @relation(fields: [organizationId], references: [id])
   ratings        Rating[]
-  location       Location?     @relation(fields: [locationId], references: [id])
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  avatorId       String?
-  organizationId String?
-  locationId     String?
+  location       Location?      @relation(fields: [locationId], references: [id])
+  organizations  Organization[] @relation("ownedBy")
+  staffOf        Organization[] @relation("staffOf")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  avatorId       String?        
+  //organizationId String?        
+  locationId     String?        
+
 }
 
 model Attachment {
@@ -84,31 +86,33 @@ model Attachment {
   attachmentType AttachmentType @default(IMAGE)
   downloadable   Boolean        @default(false)
   placement      String         @default("default")
-  users          User[]
-  services       Service[]
-  organizations  Organization[]
-  orders         Order[]
+  users          User[]         
+  services       Service[]      
+  organizations  Organization[] 
+  orders         Order[]        
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
 }
 
-
 model Organization {
   id          String            @id @default(cuid())
   name        String
   description String?
-  logo        Attachment?       @relation(fields: [logoId], references: [id])
+  logo        Attachment        @relation(fields: [logoId], references: [id])
   services    Service[]
   orders      Order[]
-  staffs      User[]
-  location    Location?         @relation(fields: [locationId], references: [id])
+  staffs      User[]            @relation("staffOf")
+  location    Location          @relation(fields: [locationId], references: [id])
   offers      ServiceCategory[]
   ratings     Rating[]
+  owner       User              @relation("ownedBy", fields: [ownerId], references: [id])
+  //state       State           @default(PENDING)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-  logoId      String?
-  locationId  String?
+  logoId      String            
+  locationId  String            
+  ownerId     String            
 }
 
 model Service {
@@ -118,14 +122,14 @@ model Service {
   price             Float
   state             State           @default(PENDING)
   organization      Organization    @relation(fields: [organizationId], references: [id])
-  image             Attachment?     @relation(fields: [imageId], references: [id])
+  image             Attachment      @relation(fields: [imageId], references: [id])
   category          ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
   orders            Order[]
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  organizationId    String
-  imageId           String?
-  serviceCategoryId String
+  organizationId    String          
+  imageId           String          
+  serviceCategoryId String          
 }
 
 model Order {
@@ -133,15 +137,15 @@ model Order {
   quantity       Int
   service        Service      @relation(fields: [serviceId], references: [id])
   organization   Organization @relation(fields: [organizationId], references: [id])
-  author         User         @relation(fields: [userId], references: [id])
+  owner          User         @relation(fields: [ownerId], references: [id])
   state          State        @default(PENDING)
   receipt        Attachment?  @relation(fields: [receiptId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  serviceId      String
-  organizationId String
-  userId         String
-  receiptId      String?
+  serviceId      String       
+  organizationId String       
+  ownerId        String       
+  receiptId      String?      
 }
 
 model ServiceCategory {
@@ -159,11 +163,11 @@ model Rating {
   value          Int
   comment        String?
   organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String
-  author         User?        @relation(fields: [authorId], references: [id])
+  owner          User         @relation(fields: [ownerId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  authorId       String?
+  ownerId        String       
+  organizationId String       
 }
 
 model Location {
@@ -172,6 +176,6 @@ model Location {
   latlon        Unsupported("Point")?
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
-  organizations Organization[]
-  users         User[]
+  organizations Organization[]        
+  users         User[]                
 }

@@ -3,6 +3,7 @@ import { join } from 'path';
 
 const options: Partial<SdlGeneratorServiceOptions> = {
   schemaPath: './prisma/schema.prisma',
+
   customOptions: {
     onDelete: true,
     genTypes: true,

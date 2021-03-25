@@ -6,9 +6,8 @@ export class MANAGER extends Role {
 
     constructor() {
         super();
-       // debugger
-                   //inherit provider
-
+        //debugger
+        //inherit provider
         this.addParent(PROVIDER.name)
         this.addWriteRule([
             /**
@@ -22,6 +21,7 @@ export class MANAGER extends Role {
                     "data.id",
                     //"data.name",        
                     //"data.description",
+                    "data.owner",
                     "data.logo",
                     "data.services",
                     "data.orders",
@@ -40,6 +40,7 @@ export class MANAGER extends Role {
                     "select.location",
                     "select.offers",
                     "select.ratings",
+                    "select.owner"
 
                 ],
                 include: [
@@ -84,8 +85,17 @@ export class MANAGER extends Role {
                     //select.offers
                     "select.offers.id",
                     "select.offers.name",
-                    "select.offers.state"
+                    "select.offers.state",
                     //"select.ratings",
+                    "select.owner.id",
+                    "select.owner.displayName",
+                    "select.owner.role",
+                    "select.owner.state",
+                    "select.owner.email",
+                    "select.owner.phoneNumber",
+                    "select.owner.avator.id",
+                    "select.owner.avator.path",
+                    "select.owner.avator.mimetype",
                 ]
             }, true)
 
@@ -94,4 +104,4 @@ export class MANAGER extends Role {
 
 }
 
-//const manager = new MANAGER()
+const manager = new MANAGER()
