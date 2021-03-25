@@ -187,3 +187,151 @@ export const onlyServiceOfferedByOrg = (serviceId, organizationId) => {
         }
     })
 }
+/**
+ * 
+ * @fact shape { staff } a user record with id
+ * @param staffsId staff id for given organization
+ * @returns 
+ */
+export const onlyStaffsAllowed = (staffsId: string[]) => {
+    return new Rule({
+        name: "only staff allowed",
+        event: {
+            type: "onlyStaffAllowed",
+            params: {
+                message: "You are not a staff you cant access this record"
+            }
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "uid",
+                    operator: "notIn",
+                    value: staffsId,
+                }
+            ]
+        }
+    })
+}
+/**
+ * @fact shape { role,uid} 
+ * @param userId current user id
+ * @param staffsId staffs ids for given organization
+ * @returns 
+ */
+export const onlyOwnerAndProviderOrManagerUpdateOrder = (
+    orderOwnerId: string, organizationManagerId: string,
+    staffsId: string[]) => {
+    const staffCondition = onlyStaffsAllowed(staffsId).conditions
+
+    return new Rule({
+        name: "only owner or provider and manager of organization can update order",
+        event: {
+            type: "onlyOwnerAndProviderOrManagerUpdateOrder",
+            params: {
+                message: "Your not owner or service provider for this order"
+            },
+
+        },
+        conditions: {
+            any: [
+                {
+                    fact: "role",
+                    operator: "notIn",
+                    value: [Role.MANAGER, Role.CONSUMER, Role.PROVIDER, Role.SUPERUSER]
+                },
+                {
+                    all: [
+                        {
+                            fact: "role",
+                            operator: "equal",
+                            value: Role.CONSUMER,
+
+                        },
+                        onlyOwnerhasAccess(orderOwnerId).conditions
+                    ],
+                },
+
+                {
+                    all: [
+                        {
+                            fact: "role",
+                            operator: "equal",
+                            value: Role.PROVIDER,
+                        },
+                        staffCondition
+                    ]
+                },
+                {
+                    all: [
+                        {
+                            fact: "role",
+                            operator: "equal",
+                            value: Role.MANAGER,
+                        },
+                        {
+                            fact: "uid",
+                            operator: "notEqual",
+                            value: organizationManagerId,
+
+                        }
+                    ]
+                }
+
+            ]
+        }
+    })
+}
+
+export const onlyProviderAndManagerCanProcessOrder = () => {
+    return new Rule({
+        name: "only provider and manager can approve order",
+        event: {
+            type: "onlyProviderAndManagerCanApproveOrder",
+            params: {
+                message: "You can not process this order only service provider can process the order"
+            }
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "role",
+                    operator: "in",
+                    value: [Role.CONSUMER, Role.ANONYMOUS]
+                },
+                {
+                    fact: "state",
+                    operator: "in",
+                    value: [State.REVIEW, State.REJECTED, State.APPROVED, State.PENDING]
+
+                }
+            ]
+        }
+    })
+}
+
+export const onlyConsumerCanCompleteOrder = () => {
+    return new Rule({
+        name: "only consumer can complete order",
+        event: {
+            type: "onlyProviderAndManagerCanApproveOrder",
+            params: {
+                message: "You can not complete this order only customer can complete"
+            }
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "role",
+                    operator: "in",
+                    value: [Role.MANAGER, Role.PROVIDER]
+                },
+                {
+                    fact: "state",
+                    operator: "in",
+                    value: [State.COMPLETED, State.ARCHIVED,],
+                }
+            ]
+        }
+    })
+}

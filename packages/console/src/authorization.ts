@@ -27,7 +27,7 @@ export function authorizationManager(options: AuthorizerOptions) {
   
   prisma.$use(async (params, next) => {
     const { model, action, args, dataPath, runInTransaction } = params;
-     debugger
+    // debugger
          //if running as root return emediately
 
     if(prisma.runningAsRoot){
@@ -119,7 +119,7 @@ export function authorizationManager(options: AuthorizerOptions) {
  
 
     if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
-    debugger
+    //debugger
     const bv= await businessRules.handleRequest({
       params,
       rules:r,

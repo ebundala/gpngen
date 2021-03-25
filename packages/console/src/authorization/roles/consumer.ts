@@ -283,7 +283,7 @@ export class CONSUMER extends Role {
 
             /**
              *
-             * update order state only (cancel/receive/submit)
+             * update order only (cancel/receive/submit)
              *
              * */
             ...ruleGroup('updateOneOrder', updateOneOrderRules, {
@@ -330,23 +330,23 @@ export class CONSUMER extends Role {
                     //  "data.author.connect.id",      
                     //"data.state",          
                     //"data.receipt",
-                   // "select.service",
+                    "select.service.id",
                     "select.service.name",
                     "select.service.price",
                     "select.service.description",
                     "select.service.state",
-                    'select.service.image',
+                    //'select.service.image',
                     'select.service.image.id',
                     'select.service.image.path',
                     'select.service.image.mimetype',
-                    "select.organization",
+                    "select.organization.id",
                     "select.organization.name",
                     "select.organization.description",
-                    "select.organization.logo",
+                    //"select.organization.logo",
                     "select.organization.logo.id",
                     "select.organization.logo.path",
                     "select.organization.logo.mimetype",
-                    'select.organization.location',
+                   // 'select.organization.location',
                     'select.organization.location.id',
                     'select.organization.location.name',
                     'select.organization.location.latlon',
