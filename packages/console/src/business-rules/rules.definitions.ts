@@ -219,7 +219,7 @@ export const onlyStaffsAllowed = (staffsId: string[]) => {
  * @param staffsId staffs ids for given organization
  * @returns 
  */
-export const onlyOwnerAndProviderOrManagerUpdateOrder = (
+export const onlyOwnerOrProviderOrManagerCanUpdateOrder = (
     orderOwnerId: string, organizationManagerId: string,
     staffsId: string[]) => {
     const staffCondition = onlyStaffsAllowed(staffsId).conditions
@@ -229,7 +229,7 @@ export const onlyOwnerAndProviderOrManagerUpdateOrder = (
         event: {
             type: "onlyOwnerAndProviderOrManagerUpdateOrder",
             params: {
-                message: "Your not owner or service provider for this order"
+                message: "Your\'e not owner or service provider for this order"
             },
 
         },
@@ -243,17 +243,29 @@ export const onlyOwnerAndProviderOrManagerUpdateOrder = (
                 {
                     all: [
                         {
-                            fact: "role",
-                            operator: "equal",
-                            value: Role.CONSUMER,
+                            fact: "uid",
+                            operator: "notEqual",
+                            value: orderOwnerId,
 
                         },
-                        onlyOwnerhasAccess(orderOwnerId).conditions
+                        {
+                            fact: "role",
+                            operator: "in",
+                            value: [Role.CONSUMER, Role.ANONYMOUS]
+
+                        },
+                       // onlyOwnerhasAccess(orderOwnerId).conditions
                     ],
                 },
 
                 {
                     all: [
+                        {
+                            fact: "uid",
+                            operator: "notEqual",
+                            value: orderOwnerId,
+
+                        },
                         {
                             fact: "role",
                             operator: "equal",
@@ -264,6 +276,12 @@ export const onlyOwnerAndProviderOrManagerUpdateOrder = (
                 },
                 {
                     all: [
+                        {
+                            fact: "uid",
+                            operator: "notEqual",
+                            value: orderOwnerId,
+
+                        },
                         {
                             fact: "role",
                             operator: "equal",
@@ -283,7 +301,7 @@ export const onlyOwnerAndProviderOrManagerUpdateOrder = (
     })
 }
 
-export const onlyProviderAndManagerCanProcessOrder = () => {
+export const onlyProviderAndManagerCanProcessOrder = (customerId) => {
     return new Rule({
         name: "only provider and manager can approve order",
         event: {
@@ -295,9 +313,9 @@ export const onlyProviderAndManagerCanProcessOrder = () => {
         conditions: {
             all: [
                 {
-                    fact: "role",
-                    operator: "in",
-                    value: [Role.CONSUMER, Role.ANONYMOUS]
+                    fact: "uid",
+                    operator: "equal",
+                    value: customerId
                 },
                 {
                     fact: "state",
@@ -310,7 +328,7 @@ export const onlyProviderAndManagerCanProcessOrder = () => {
     })
 }
 
-export const onlyConsumerCanCompleteOrder = () => {
+export const onlyConsumerCanCompleteOrder = (customerId) => {
     return new Rule({
         name: "only consumer can complete order",
         event: {
@@ -322,14 +340,59 @@ export const onlyConsumerCanCompleteOrder = () => {
         conditions: {
             all: [
                 {
-                    fact: "role",
-                    operator: "in",
-                    value: [Role.MANAGER, Role.PROVIDER]
+                    fact: "uid",
+                    operator: "notEqual",
+                    value: customerId
                 },
                 {
                     fact: "state",
                     operator: "in",
                     value: [State.COMPLETED, State.ARCHIVED,],
+                }
+            ]
+        }
+    })
+}
+
+export const onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization = () => {
+    return new Rule({
+        name: "only consumer with a completed/rejected order can rate organization",
+        event: {
+            type: "noCompletedOrder",
+            params: {
+                message: "You havent used any of this organization services to rate them"
+            },
+
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "orders",
+                    operator: "lessThan",
+                    value: 1,
+                    path: "$.length"
+                }
+            ]
+        }
+    })
+}
+
+export const onlyOneRatingPerConsumerOrganizationPair = () => {
+    return new Rule({
+        name: "only one rating per consumer per organization",
+        event: {
+            type: "alreadyRated",
+            params: {
+                message: "You have already rated this service provider try to update your rating"
+            }
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "ratings",
+                    operator: "greaterThanInclusive",
+                    value: 1,
+                    path: "$.length"
                 }
             ]
         }

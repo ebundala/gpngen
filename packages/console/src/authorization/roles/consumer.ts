@@ -407,6 +407,7 @@ export class CONSUMER extends Role {
                     'select.owner.location.name',
                     'select.organization.id',
                     'select.organization.name',
+                    'select.organization.description',
                     'select.organization.logo.id',
                     'select.organization.logo.path',
                     'select.organization.logo.mimetype',

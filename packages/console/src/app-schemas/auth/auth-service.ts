@@ -6,7 +6,14 @@ import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { Engine, EngineResult, Event, Fact, Rule, TopLevelCondition } from 'json-rules-engine';
 import { BusinessRequest, BusinessRules } from 'src/businesrules';
-import { canCreateOnlyOneOrganization, isUserSensitiveInfo, onlyConnectActiveOffers, onlyConnectOwnerSelf, onlyConsumerCanCompleteOrder, onlyOwnerAndProviderOrManagerUpdateOrder as onlyOwnerOrProviderOrManagerCanUpdateOrder, onlyOwnerhasAccess, onlyProviderAndManagerCanProcessOrder, onlyServiceOfferedByOrg } from 'src/business-rules/rules.definitions';
+import {
+  canCreateOnlyOneOrganization, isUserSensitiveInfo,
+  onlyConnectActiveOffers, onlyConnectOwnerSelf,
+  onlyConsumerCanCompleteOrder,
+  onlyOwnerOrProviderOrManagerCanUpdateOrder,
+  onlyOwnerhasAccess,
+  onlyProviderAndManagerCanProcessOrder, onlyServiceOfferedByOrg, onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization, onlyOneRatingPerConsumerOrganizationPair
+} from 'src/business-rules/rules.definitions';
 import { businessRulesEvaluate } from '../../business-rules/rules.evalutor';
 import { isEmail, isLength } from 'validator';
 import {
@@ -36,6 +43,8 @@ export class AuthService {
     this.bloc.on("createOneOrganization", this.createOneOrganizationBloc)
     this.bloc.on("createOneOrder", this.createOneOrderBloc)
     this.bloc.on("updateOneOrder", this.updateOneOrderBloc)
+    this.bloc.on("createOneRating", this.createOneRatingBloc)
+
 
   }
   async findUniqueUserBloc(v: BusinessRequest, next) {
@@ -93,7 +102,7 @@ export class AuthService {
       },
       select: { id: true, state: true, organization: { select: { id: true,/* state:true */ } } }
     }));
-    
+
     await businessRulesEvaluate([
       onlyConnectOwnerSelf(auth.uid),
       onlyServiceOfferedByOrg(service?.id, service?.organization?.id)
@@ -132,18 +141,70 @@ export class AuthService {
         }
       }
     }));
-    debugger
+    //TODO prevent updating quantity for approved orders
+    //TODO add a concept of service provider based on services for organization 
     await businessRulesEvaluate([
       onlyOwnerOrProviderOrManagerCanUpdateOrder(
         order?.owner?.id,
         order?.organization?.owner?.id,
         order?.organization?.staffs?.map((v) => v.id)),
-      onlyProviderAndManagerCanProcessOrder(),
-      onlyConsumerCanCompleteOrder()
+      onlyProviderAndManagerCanProcessOrder(order?.owner?.id),
+      onlyConsumerCanCompleteOrder(order?.owner?.id)
     ], { ...auth, state: data?.state?.set });
 
   }
+  async createOneRatingBloc(v: BusinessRequest, next) {
 
+    const { params, authorization, rules, allow, } = v;
+    const { action, args } = params
+    const { where, data, select } = args;
+    const { prisma, auth, logger } = authorization;
+
+    const { orders, ratings } = (await prisma.runAsRoot(() =>
+      prisma.user.findUnique({
+        where: {
+          id: auth.uid,
+        },
+        select: {
+          id: true,
+          ratings: {
+            where: {
+              organizationId: data?.organization?.connect?.id,
+              AND: {
+                ownerId: auth.uid
+              }
+            },
+            select: {
+              id: true
+            }
+          },
+          orders: {
+            where: {
+              organization: {
+                id: data?.organization?.connect?.id
+              },
+              AND: {
+                OR: [
+                  { state: State.REJECTED },
+                  { state: State.COMPLETED }
+                ]
+              }
+
+            },
+            select: { id: true, state: true }
+          }
+        }
+      }))) ?? {};
+    debugger
+    const ordersRule = onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization()
+    const connectSelf = onlyConnectOwnerSelf(auth.uid);
+    const onlyOneRating = onlyOneRatingPerConsumerOrganizationPair();
+    await businessRulesEvaluate([
+      connectSelf
+      , ordersRule,
+      onlyOneRating], { owner: data?.owner, orders: orders ?? [], ratings: ratings ?? [] });
+
+  }
   async signup(credentials: AuthInput, prisma: PrismaClient, select): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select);
