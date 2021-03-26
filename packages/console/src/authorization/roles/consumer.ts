@@ -447,14 +447,14 @@ export class CONSUMER extends Role {
                    // "where",
                     "where.id",
                 //    'data',
-                    'data.value',
-                    'data.comment',
+                    'data.value.set',
+                    'data.comment.set',
                     //'data.author',
                     //'data.author.connect.id',
                     // 'data.organization',
                     //'data.organization.connect.id',
-                    // 'select.id',
-                    // 'select.value',
+                    //'select.id',
+                    //'select.value',
                     //'select.comment',
                     'select.owner.id',
                     'select.owner.displayName',
@@ -469,7 +469,7 @@ export class CONSUMER extends Role {
                     'select.organization.logo.mimetype',
                    // 'select.organization.ratings.value',
                 ]
-            })
+            }, true)
 
 
             /**

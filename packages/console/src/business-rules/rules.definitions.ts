@@ -398,3 +398,25 @@ export const onlyOneRatingPerConsumerOrganizationPair = () => {
         }
     })
 }
+
+export const onlyOwnerOfRecordAllowed = (ownerId: string) => {
+    return new Rule({
+        name: "only owner of record can perform operation",
+        event: {
+            type: "onlyOwnerAllowed",
+            params: {
+                message: "Your\'e not the owner of this record"
+            }
+        },
+        conditions: {
+            all: [
+                {
+                    fact: "owner",
+                    operator: "notEqual",
+                    value: ownerId,
+                    path: "$.id"
+                }
+            ]
+        }
+    })
+}

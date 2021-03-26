@@ -12,7 +12,7 @@ import {
   onlyConsumerCanCompleteOrder,
   onlyOwnerOrProviderOrManagerCanUpdateOrder,
   onlyOwnerhasAccess,
-  onlyProviderAndManagerCanProcessOrder, onlyServiceOfferedByOrg, onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization, onlyOneRatingPerConsumerOrganizationPair
+  onlyProviderAndManagerCanProcessOrder, onlyServiceOfferedByOrg, onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization, onlyOneRatingPerConsumerOrganizationPair, onlyOwnerOfRecordAllowed
 } from 'src/business-rules/rules.definitions';
 import { businessRulesEvaluate } from '../../business-rules/rules.evalutor';
 import { isEmail, isLength } from 'validator';
@@ -44,7 +44,26 @@ export class AuthService {
     this.bloc.on("createOneOrder", this.createOneOrderBloc)
     this.bloc.on("updateOneOrder", this.updateOneOrderBloc)
     this.bloc.on("createOneRating", this.createOneRatingBloc)
+    this.bloc.on("updateOneRating", this.updateOneRatingBloc)
 
+  }
+  async updateOneRatingBloc(v: BusinessRequest) {
+    const { params, authorization, rules, allow, } = v;
+    const { action, args } = params
+    const { where, select } = args;
+    const { prisma, auth, logger } = authorization;
+    const rating = await prisma.runAsRoot(() =>
+      prisma.rating.findUnique({
+        where: { id: where.id },
+        select: {
+          owner: {
+            select: { id: true }
+          }
+        }
+      }));
+
+    const ownerRule = onlyOwnerOfRecordAllowed(auth.uid)
+    await businessRulesEvaluate([ownerRule], rating)
 
   }
   async findUniqueUserBloc(v: BusinessRequest, next) {
@@ -54,9 +73,8 @@ export class AuthService {
     const { where, select } = args;
     const { prisma, auth, logger } = authorization;
     logger.debug("Validating business rule findUniqueUser");
-
+    
     await businessRulesEvaluate([isUserSensitiveInfo(where.id)], { ...select, ...auth })
-
   }
 
   async updateOneUserBloc(v: BusinessRequest, next) {
