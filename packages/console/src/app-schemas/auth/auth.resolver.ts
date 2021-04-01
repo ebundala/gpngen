@@ -7,6 +7,7 @@ import {
 import {
   AuthInput,
   AuthResult,
+  OrganizationCreateWithoutOwnerInput,
   SignOutResult, User
 } from 'src/models/graphql';
 import { AuthService } from './auth-service';
@@ -20,11 +21,12 @@ export class AuthResolver {
   @Mutation((returns) => AuthResult)
   async signup(
     @Args('credentials', { type: () => AuthInput }) credentials: AuthInput,
+    @Args('organization', { type: () => OrganizationCreateWithoutOwnerInput }) organization: OrganizationCreateWithoutOwnerInput,
     @Info() info,
     @Context() ctx: TenantContext
   ): Promise<AuthResult> {
     const {select} = ctx.prisma.getSelection(info).valueOf('user', 'User', { select: {  } });
-    const result = await this.authService.signup(credentials,ctx.prisma,select);
+    const result = await this.authService.signup(credentials, ctx.prisma, select, organization);
     //this.setAuth(result.user, ctx);
     return result;
   }

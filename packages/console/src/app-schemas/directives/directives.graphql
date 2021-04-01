@@ -1,0 +1,6 @@
+directive @file on  INPUT_FIELD_DEFINITION #FIELD_DEFINITION | INPUT_OBJECT
+#scalar Upload
+
+extend input AttachmentUncheckedCreateWithoutOrganizationsInput {
+    path: String! @file
+}

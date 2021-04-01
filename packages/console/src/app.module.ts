@@ -16,6 +16,7 @@ import { writeFileSync } from 'fs';
 import { printSchema } from 'graphql';
 import { join } from 'path';
 import { AuthModule } from './app-schemas/auth/auth.module';
+import { UploadDirective } from './app-schemas/directives/uploader.directive';
 //import { AppUserModule } from './app-schemas/User/UserModule';
 import { AuthMiddleware } from './auth.middleware';
 import { authorizationManager, AuthorizerOptions } from './authorization';
@@ -91,9 +92,9 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         './src/schemas/**/*.graphql',
         './src/app-schemas/**/*.graphql',
       ],
-      // schemaDirectives: {
-      //   auth: EnforcerDirective,
-      // },
+      schemaDirectives: {
+        file: UploadDirective,
+      },
       plugins: [
         {
           requestDidStart(

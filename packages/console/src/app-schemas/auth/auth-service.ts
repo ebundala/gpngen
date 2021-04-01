@@ -12,17 +12,24 @@ import {
   onlyConsumerCanCompleteOrder,
   onlyOwnerOrProviderOrManagerCanUpdateOrder,
   onlyOwnerhasAccess,
-  onlyProviderAndManagerCanProcessOrder, onlyServiceOfferedByOrg, onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization, onlyOneRatingPerConsumerOrganizationPair, onlyOwnerOfRecordAllowed
+  onlyProviderAndManagerCanProcessOrder,
+  onlyServiceOfferedByOrg,
+  onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization,
+  onlyOneRatingPerConsumerOrganizationPair,
+  onlyOwnerOfRecordAllowed
 } from 'src/business-rules/rules.definitions';
 import { businessRulesEvaluate } from '../../business-rules/rules.evalutor';
 import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
   AuthResult,
+  OrganizationCreateNestedManyWithoutOwnerInput,
+  OrganizationCreateWithoutOwnerInput,
   Role,
   SignOutResult,
   State,
-  User
+  User,
+  UserCreateInput
 } from '../../models/graphql';
 import { on } from 'node:events';
 @Injectable()
@@ -223,9 +230,9 @@ export class AuthService {
       onlyOneRating], { owner: data?.owner, orders: orders ?? [], ratings: ratings ?? [] });
 
   }
-  async signup(credentials: AuthInput, prisma: PrismaClient, select): Promise<AuthResult> {
+  async signup(credentials: AuthInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
 
-    const res = await this.signupWithEmail(credentials, prisma, select);
+    const res = await this.signupWithEmail(credentials, prisma, select, organization);
     if (!res.error) {
       const link = await this.firebaseApp.admin.auth().generateEmailVerificationLink(credentials.email);
       await this.mail.sendWelcomeEmail(res.user, link).catch((e) => { this.logger.debug(e) });
@@ -251,9 +258,12 @@ export class AuthService {
     }
   }
 
-  async signupWithEmail(data: AuthInput, prisma: PrismaClient, select): Promise<AuthResult> {
+  async signupWithEmail(data: AuthInput,
+    prisma: PrismaClient, select,
+    organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
     const { email, password, displayName, phoneNumber } = data;
     let user;
+    debugger
     try {
       if (!isEmail(email)) {
         throw new GraphQLError('Invalid Email');
@@ -263,28 +273,31 @@ export class AuthService {
         throw new GraphQLError('Username must be 3 characters or more');
       }
 
-      // prisma.overrideRole=Role.SUPERUSER;
       const users = prisma.user;
       const exist = await prisma.runAsRoot(() => {
         return users.findUnique({ where: { email } })
       })
-      //const exist = await users.findUnique({ where: { email }});
-      debugger
+
       if (exist && exist.id) {
         throw new GraphQLError('The email address is already in use by another account');
       }
       try {
         user = await this._createUserWithEmail(email, password, displayName, phoneNumber);
-
+        const data: UserCreateInput = {
+        id: user.uid,
+        displayName: user.displayName,
+        //  phoneNumber,
+        disabled: user.disabled,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        role: Role.CONSUMER,
+        }
+        if (organization) {
+          data.role = Role.MANAGER
+          data.organizations = { create: [organization] }
+        }
         const u2 = await prisma.runAsRoot(() => prisma.user.create({
-          data: {
-            id: user.uid,
-            displayName: user.displayName,
-            disabled: user.disabled,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            role: Role.CONSUMER,
-          },
+          data
         }));
 
         const setClaims = await this._setUserClaims(u2.id, u2.role);
