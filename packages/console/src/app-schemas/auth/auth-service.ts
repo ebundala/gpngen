@@ -53,6 +53,16 @@ export class AuthService {
     this.bloc.on("createOneRating", this.createOneRatingBloc)
     this.bloc.on("updateOneRating", this.updateOneRatingBloc)
 
+    this.bloc.at("createOneUser.data.organizations.create.logo.path", (v, i, next) => {
+      const { params, authorization, rules, allow, } = v;
+      const { action, args } = params
+      const { where, select } = args;
+      const { prisma, auth, logger } = authorization;
+
+      debugger
+      return next(v, i);
+    })
+
   }
   async updateOneRatingBloc(v: BusinessRequest) {
     const { params, authorization, rules, allow, } = v;
@@ -286,7 +296,7 @@ export class AuthService {
         const data: UserCreateInput = {
         id: user.uid,
         displayName: user.displayName,
-        //  phoneNumber,
+          phoneNumber,
         disabled: user.disabled,
         email: user.email,
         emailVerified: user.emailVerified,
@@ -294,6 +304,8 @@ export class AuthService {
         }
         if (organization) {
           data.role = Role.MANAGER
+          const { logo } = organization;
+          organization.logo.create = { path: "" }
           data.organizations = { create: [organization] }
         }
         const u2 = await prisma.runAsRoot(() => prisma.user.create({

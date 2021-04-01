@@ -27,29 +27,6 @@ export function authorizationManager(options: AuthorizerOptions) {
   
   prisma.$use(async (params, next) => {
     const { model, action, args, dataPath, runInTransaction } = params;
-    // debugger
-         //if running as root return emediately
-
-    if(prisma.runningAsRoot){
-      logger.log(`Prisma tenant:ROOT operation:${action} resource:${model} path:${dataPath?.join(".")}`);
-      return next(params);
-    }
-    
-    
-    let  auth:{role?:string,uid?:string} = options.auth??{role:Role.ANONYMOUS as string,uid:null};
-    // if(!options.auth || !options.auth.role){
-    //     auth.role=Role.ANONYMOUS as string;
-    // }
-    
-    //override role 
-    if(prisma.isRoleOverriden){
-      auth=prisma.getRole;
-      options.auth=auth;
-    }
-
-  
-    logger.log(`Prisma tenant:${auth.role} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
-
     const r = [];
     let path = "";
     let rw="read";
@@ -101,15 +78,41 @@ export function authorizationManager(options: AuthorizerOptions) {
       default:
         throw new GraphQLError('Unauthorized operation');
     }
-    
+
+
+
+
+    let auth: { role?: string, uid?: string } = options.auth ?? { role: Role.ANONYMOUS as string, uid: null };
+    // if(!options.auth || !options.auth.role){
+    //     auth.role=Role.ANONYMOUS as string;
+    // }
+
+    //override role 
+    if (prisma.isRoleOverriden) {
+      auth = prisma.getRole;
+      options.auth = auth;
+    }
     if(args)
     r.push(...getRulesFromInput(auth.role, args, `${path}`, rw))
-
-    enforcer.enableLog(true);
-    await enforcer.loadPolicy();
     r.push([auth.role,
       path,
-      rw])
+      rw]);
+
+    if (prisma.runningAsRoot) {
+      logger.log(`Prisma tenant:ROOT operation:${action} resource:${model} path:${dataPath?.join(".")}`);
+      const hooksResult = await businessRules.createHooks({
+        params,
+        rules: r,
+        allow: true,
+        authorization: options
+      });
+      return next(hooksResult.params);
+    } else {
+      logger.log(`Prisma tenant:${auth.role} operation:${action} resource:${model} path:${dataPath?.join(".")}`);
+    }
+    enforcer.enableLog(true);
+    await enforcer.loadPolicy();
+
     const res = await Promise
       .all(r.map((v) => reflect(enforce(...v))));
 
@@ -119,14 +122,20 @@ export function authorizationManager(options: AuthorizerOptions) {
  
 
     if (!allow) throw new GraphQLError('Unauthorized: insuficient permision');
-    //debugger
-    const bv= await businessRules.handleRequest({
+    debugger
+    const bv = await businessRules.handleBusinessRequest({
       params,
       rules:r,
       allow,
       authorization:options
     });
-      return next(params);
+    const hooksResult = await businessRules.createHooks({
+      params,
+      rules: r,
+      allow: true,
+      authorization: options
+    });
+    return next(hooksResult.params);
   });
 }
 

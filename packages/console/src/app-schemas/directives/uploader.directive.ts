@@ -1,15 +1,15 @@
 import {
     defaultFieldResolver,
     GraphQLObjectType,
-    GraphQLInputObjectType, GraphQLField, GraphQLInputField, GraphQLScalarType
+    GraphQLInputObjectType, GraphQLField, GraphQLInputField, GraphQLScalarType, GraphQLNonNull
 } from "graphql";
 import { SchemaDirectiveVisitor, } from "graphql-tools";
 import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork'
+import { uploadFile } from "./file.utils";
 
 export class UploadDirective extends SchemaDirectiveVisitor {
     visitInputFieldDefinition(field: GraphQLInputField) {
         debugger
-
 
         return this.wrapType(field)
 
@@ -46,38 +46,29 @@ export class UploadDirective extends SchemaDirectiveVisitor {
     // }
 
 
-    wrapType(field) {
-
+    wrapType(field: GraphQLInputField) {
         debugger
         if (field["_fieldWrapped"]) return field;
         field["_fieldWrapped"] = true;
-        field.type = new Upload();
-
+        const p = new Upload(this.args?.path);
+        
+        field.type = new GraphQLNonNull(p);
 
         return field;
     }
+
 }
 
-class Upload extends GraphQLScalarType {
-    constructor() {
+export class Upload extends GraphQLScalarType {
+    // private readonly _path: string
+    constructor(private readonly _path?: string) {
         super({
             name: 'Upload',
             description: 'The `Upload` scalar type represents a file upload.',
-            parseValue(value: FileUpload) {
-                debugger
-                const { filename,
-                    mimetype,
-                    encoding,
-                    createReadStream } = value;
-                if (!createReadStream) {
-                    throw new Error('Invalid upload stream')
-
-                }
-                const st = createReadStream();
-                debugger
-                return value + "mmmmm";
+            parseValue: (file: Promise<FileUpload>) => {
+                
+                return { file, path: this._path }
             },
-
             parseLiteral() {
                 throw new Error('‘Upload’ scalar literal unsupported.')
             },

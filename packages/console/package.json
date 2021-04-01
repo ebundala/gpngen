@@ -50,12 +50,17 @@
     "@nestjs/platform-express": "^7.5.1",
     "@prisma/client": "^2.17.0",
     "apollo-server-express": "^2.21.0",
+    "get-audio-duration": "^2.0.3",
     "graphql": "^15.5.0",
     "json-rules-engine": "^6.0.1",
+    "mime": "^2.5.2",
+    "mime-types": "^2.1.29",
     "prisma": "^2.17.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
+    "sharp": "^0.28.0",
+    "uuid": "^8.3.2",
     "validator": "^13.5.2"
   },
   "devDependencies": {
