@@ -1,6 +1,5 @@
 directive @file(path:String) on  INPUT_FIELD_DEFINITION #FIELD_DEFINITION | INPUT_OBJECT
 scalar Upload
-# directive to intercept files  and uploads them 
 
 extend input AttachmentCreateInput{
     path: String! @file(path:"../../../../public/uploads")
@@ -8,7 +7,6 @@ extend input AttachmentCreateInput{
 extend input AttachmentUncheckedCreateInput{
     path: String! @file(path:"../../../../public/uploads")
 }
-
 
 extend input AttachmentCreateManyInput{
     path: String! @file(path:"../../../../public/uploads")
@@ -39,3 +37,6 @@ extend input AttachmentCreateWithoutOrdersInput{
 extend input AttachmentUncheckedCreateWithoutOrdersInput{
     path: String! @file(path:"../../../../public/uploads")
 }
+
+
+

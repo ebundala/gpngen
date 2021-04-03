@@ -16,7 +16,7 @@ import { writeFileSync } from 'fs';
 import { printSchema } from 'graphql';
 import { join } from 'path';
 import { AuthModule } from './app-schemas/auth/auth.module';
-import { Upload, UploadDirective } from './app-schemas/directives/uploader.directive';
+import { Upload, UploadDirective, UploadTypeResolver } from '@mechsoft/apigen/test/prisma/app-schemas/directives/uploader.directive';
 //import { AppUserModule } from './app-schemas/User/UserModule';
 import { AuthMiddleware } from './auth.middleware';
 import { authorizationManager, AuthorizerOptions } from './authorization';
@@ -92,11 +92,21 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         './src/schemas/**/*.graphql',
         './src/app-schemas/**/*.graphql',
       ],
+
+      definitions: {
+        path: 'src/models/graphql.ts',
+        outputAs: 'class',
+        customScalarTypeMapping: {
+          Upload: 'Promise < FileUpload >',
+          DateTime: 'string'
+        },
+        additionalHeader: "import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork';"
+      },
       schemaDirectives: {
         file: UploadDirective,
       },
       resolvers: {
-        Upload: new Upload()
+        Upload: UploadTypeResolver
       },
       plugins: [
         {
@@ -176,7 +186,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         return schema;
       },
       debug: true,
-
+      uploads: true,
       playground: true,
     }),
     

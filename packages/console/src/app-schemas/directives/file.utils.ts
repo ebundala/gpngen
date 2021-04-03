@@ -128,7 +128,6 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
                     duration = 0;
                 }
             }
-
             return {
                 path: `${path}/${fname}`,
                 filename: fname,
@@ -140,6 +139,7 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
             }
         }
         );
+        
 
 }
 export interface FileData {

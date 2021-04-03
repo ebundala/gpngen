@@ -2,6 +2,7 @@ import { Mutation, QueriesAndMutations, Query } from '@paljs/types';
 import { DMMF } from '@prisma/client/runtime';
 import { getDMMF } from '@prisma/sdk';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { GraphQLSchema, printSchema } from 'graphql';
 import { join } from 'path';
 import pkgDir from 'pkg-dir';
 import { format, Options as PrettierOptions } from 'prettier';
@@ -178,4 +179,12 @@ export class Generators {
       parser,
     });
   }
+}
+export const mkdrIfNotExist = (path) => {
+  return !existsSync(path) && mkdirSync(path, { recursive: true });
+}
+export const writeSchemaToFile = (schema: GraphQLSchema, path: string, filename = 'schema.graphql') => {
+  const txt = printSchema(schema);
+  mkdrIfNotExist(path);
+  writeFileSync(join(path, filename), txt);
 }

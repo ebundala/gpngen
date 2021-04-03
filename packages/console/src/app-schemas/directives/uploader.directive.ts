@@ -6,6 +6,7 @@ import {
 import { SchemaDirectiveVisitor, } from "graphql-tools";
 import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork'
 import { uploadFile } from "./file.utils";
+import { IResolverOptions } from "apollo-server-express";
 
 export class UploadDirective extends SchemaDirectiveVisitor {
     visitInputFieldDefinition(field: GraphQLInputField) {
@@ -53,15 +54,16 @@ export class UploadDirective extends SchemaDirectiveVisitor {
         const p = new Upload(this.args?.path);
         
         field.type = new GraphQLNonNull(p);
-
+       // field['_path']=this.args?.path
         return field;
     }
 
 }
 
 export class Upload extends GraphQLScalarType {
-    // private readonly _path: string
-    constructor(private readonly _path?: string) {
+    private readonly _path: string
+    constructor(path?: string) {
+
         super({
             name: 'Upload',
             description: 'The `Upload` scalar type represents a file upload.',
@@ -76,10 +78,14 @@ export class Upload extends GraphQLScalarType {
             serialize() {
                 throw new Error('‘Upload’ scalar serialization unsupported.')
             }
-        })
+        });
+        this._path = path;
     }
 }
-
+export const UploadTypeResolver: IResolverOptions = {
+    __resolveType: () => Upload.name,
+    resolve: (_, args, ctx) => new Upload(args),
+}
 class UploadType extends GraphQLScalarType {
     constructor(type, context) {
         super({

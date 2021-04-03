@@ -103,7 +103,7 @@ model Organization {
   services    Service[]
   orders      Order[]
   staffs      User[]            @relation("staffOf")
-  location    Location          @relation(fields: [locationId], references: [id])
+  location    Location         @relation(fields: [locationId], references: [id])
   offers      ServiceCategory[]
   ratings     Rating[]
   owner       User              @relation("ownedBy", fields: [ownerId], references: [id])

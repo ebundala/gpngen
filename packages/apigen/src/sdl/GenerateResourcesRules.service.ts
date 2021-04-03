@@ -1,5 +1,5 @@
 import { AppLogger } from '@mechsoft/app-logger';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { GraphQLDefinitionsFactory } from '@nestjs/graphql';
 import { join } from 'path';
 import { generateResourcesRules } from '../gen.resources.rules';
@@ -7,42 +7,46 @@ import { CONFIG_OPTIONS, SdlGeneratorServiceOptions, TypingsGeneratorOptions } f
 import { Options } from './Generators';
 
 @Injectable()
-export class GenerateTypings {
+export class GenerateResourcesRules {
   private generator: TypingsGeneratorOptions;
   private options: Partial<Options>;
   private schemaPath: string;
   constructor(
     @Inject(CONFIG_OPTIONS)
-    { generator, customOptions,schemaPath }: SdlGeneratorServiceOptions,
+    { generator, customOptions, schemaPath }: SdlGeneratorServiceOptions,
     private readonly logger: AppLogger,
   ) {
     this.generator = generator;
     this.options = customOptions;
-    this.schemaPath=schemaPath;
-    this.logger.setContext(GenerateTypings.name);
+    this.schemaPath = schemaPath;
+    this.logger.setContext(GenerateResourcesRules.name);
   }
-  async run():Promise<void> {
-    if(this.options.authorization){
-      const {depth,rulesDir} = this.options.authorization;
-      this.logger.debug('Generating Auth rules type ');
-
-     await generateResourcesRules(this.schemaPath,rulesDir,depth??5)
-     this.logger.debug('Finished Generating Auth rules type ');
+  // async onModuleInit() {
+  //   await this.run();
+  // }
+  async run(): Promise<void> {
+    if (this.options.authorization) {
+      const { depth, rulesDir } = this.options.authorization;
+      this.logger.debug('Generating resources Auth rules ');
+      await generateResourcesRules(this.schemaPath, rulesDir, depth ?? 5)
+      this.logger.debug('Finished Generating resources Auth rules type ');
 
     }
     if (this.options.genTypes) {
 
-      const definitionsFactory = new GraphQLDefinitionsFactory();
-      this.logger.debug('Generating TS type ');
-      await definitionsFactory.generate({
-        typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
-        path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
-        outputAs: this.generator.outputAs || 'class',
-        watch: false,
-        debug: true,
-        federation: false,
-      });
-      this.logger.debug('Finished generating TS types');
+      // const definitionsFactory = new GraphQLDefinitionsFactory();
+      //  this.logger.debug('Generating TS type ');
+      // await definitionsFactory.generate(this.generator)
+
+      //   ...this.generator,
+      //   typePaths: this.generator.typePaths || ['./src/**/*.graphql'],
+      //   path: this.generator.path || join(process.cwd(), 'src/graphql.ts'),
+      //   outputAs: this.generator.outputAs || 'class',
+      //   watch: false,
+      //   debug: true,
+      //   federation: false,
+      // 
+      //  this.logger.debug('Finished generating TS types');
     }
   }
 }

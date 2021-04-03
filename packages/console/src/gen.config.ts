@@ -12,10 +12,13 @@ const options: Partial<SdlGeneratorServiceOptions> = {
       rulesDir:'./src/models'
       
   },
-    excludeFields: ['Id'],
- //   excludeQueriesAndMutationsByModel: {
-    
- //   },
+     excludeFields: ['Id'],
+    excludeQueriesAndMutationsByModel: {
+      'User': ['createOne', 'deleteMany',]
+    },
+    excludeQueriesAndMutations: [
+      'upsertOne', 'aggregate', 'deleteMany', 'updateMany', 'findCount'
+    ],
     excludeModels: [
       {
         name: 'CasbinRule',
@@ -27,8 +30,17 @@ const options: Partial<SdlGeneratorServiceOptions> = {
   },
   generator: {
     typePaths: ['./src/schemas/**/*.graphql','./src/app-schemas/**/*.graphql'],
-    path: join(process.cwd(), 'src/models/graphql.ts'),
+    path: join(process.cwd(), 'src/models/graphql.ts'),    
     outputAs: 'class',
+    customScalarTypeMapping: {
+      Upload: 'Promise < FileUpload >',
+      DateTime: 'string'
+    },
+    emitTypenameField: true,
+    debug: true,
+    watch: true,
+    additionalHeader: "import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork';"
+
   },
 };
 export default options;

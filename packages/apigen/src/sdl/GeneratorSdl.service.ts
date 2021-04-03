@@ -1,6 +1,6 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { AppLogger } from '@mechsoft/app-logger';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { sdlInputs } from '@paljs/plugins';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { print } from 'graphql/language/printer';
@@ -17,11 +17,13 @@ export class SdlGeneratorService extends Generators {
     super(schemaPath, customOptions);
     this.logger.setContext(SdlGeneratorService.name);
   }
-
-  async run():Promise<void> {
+  // async onModuleInit() {
+  //   await this.run();
+  // }
+  async run(): Promise<void> {
     this.logger.log('creating models begin');
     await this.createModels();
-    this.logger.log('creating models finish\n');
+    this.logger.log('c reating models finish\n');
     this.logger.log('creating inputs begin');
     this.createInputsTypes();
     this.logger.log('creating inputs finish\n');

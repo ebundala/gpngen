@@ -32,6 +32,7 @@ import {
   UserCreateInput
 } from '../../models/graphql';
 import { on } from 'node:events';
+import { uploadFile } from '../directives/file.utils';
 @Injectable()
 export class AuthService {
   constructor(
@@ -292,7 +293,9 @@ export class AuthService {
         throw new GraphQLError('The email address is already in use by another account');
       }
       try {
-        user = await this._createUserWithEmail(email, password, displayName, phoneNumber);
+        user = await this._createUserWithEmail(email, password, displayName, phoneNumber).catch((e) => {
+          throw new GraphQLError(e?.message ?? "Unknown error occurred")
+        });
         const data: UserCreateInput = {
         id: user.uid,
         displayName: user.displayName,
@@ -302,10 +305,13 @@ export class AuthService {
         emailVerified: user.emailVerified,
         role: Role.CONSUMER,
         }
-        if (organization) {
+        if (organization && organization.name) {
           data.role = Role.MANAGER
-          const { logo } = organization;
-          organization.logo.create = { path: "" }
+          const file = organization.logo.create.path;
+         // const fileData = await uploadFile(file);
+
+
+         // organization.logo.create.path = fileData.path;
           data.organizations = { create: [organization] }
         }
         const u2 = await prisma.runAsRoot(() => prisma.user.create({

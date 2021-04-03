@@ -1,5 +1,10 @@
-import { writeFileSync } from "fs";
+import {
+    mkdirSync,
+    writeFileSync,
+    existsSync
+} from "fs";
 import { join } from "path";
+import { mkdrIfNotExist } from "./sdl/Generators";
 import { dmmf, DMMF } from "./sdl/schema";
 
 export const generateResourcesRules = async (schemaPath: string, rulesPath: string, depth = 5) => {
@@ -120,9 +125,12 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
     // const list1=`export const MutationsRulesList=[\n${items.join(',\n')}\n]`
     // const list2=`export const QueriesRulesList=[\n${items2.join(',\n')}\n]`
     // writeFileSync(join(process.cwd(), rulesPath, 'rules.ts'), `${rules}${rules2}`)
-    
+     
+    const path = join(process.cwd(), rulesPath);
+     
+    mkdrIfNotExist(path);
 
-     writeFileSync(join(process.cwd(), rulesPath, 'mutationRuleslist.ts'), `${mutationsRules.join('\n')}`)
+    writeFileSync(join(path, 'mutationRuleslist.ts'), `${mutationsRules.join('\n')}`)
 
-     writeFileSync(join(process.cwd(), rulesPath, 'queriesRuleslist.ts'), `${queriesRules.join('\n')}`)
+    writeFileSync(join(path, 'queriesRuleslist.ts'), `${queriesRules.join('\n')}`)
 }
