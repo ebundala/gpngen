@@ -17,17 +17,10 @@ export class SdlGeneratorModule {
     this.logger.setContext(SdlGeneratorModule.name);
   }
 
-  async run(): Promise<void> {
 
-    this.logger.log("............SDL generation started............", SdlGeneratorModule.name)
-
-    //await this.sdlgen.run();
-    //await this.typings.run();
-  }
   static forRoot({
     schemaPath,
     customOptions,
-    generator,
     sdlOptions
   }: SdlGeneratorServiceOptions): DynamicModule {
     const modules: DynamicModule[] = []
@@ -42,7 +35,7 @@ export class SdlGeneratorModule {
       providers: [
         {
           provide: CONFIG_OPTIONS,
-          useValue: { schemaPath, customOptions, generator } as Partial<SdlGeneratorServiceOptions>,
+          useValue: { schemaPath, customOptions, sdlOptions } as SdlGeneratorServiceOptions,
         },
         SdlGeneratorService,
         GenerateResourcesRules

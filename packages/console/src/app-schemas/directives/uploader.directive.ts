@@ -1,13 +1,9 @@
 import {
-    defaultFieldResolver,
-    GraphQLObjectType,
-    GraphQLInputObjectType, GraphQLField, GraphQLInputField, GraphQLScalarType, GraphQLNonNull
+    GraphQLInputField, GraphQLScalarType, GraphQLNonNull
 } from "graphql";
 import { SchemaDirectiveVisitor, } from "graphql-tools";
-import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork'
-import { uploadFile } from "./file.utils";
+import { FileUpload } from '@apollographql/graphql-upload-8-fork'
 import { IResolverOptions } from "apollo-server-express";
-
 export class UploadDirective extends SchemaDirectiveVisitor {
     visitInputFieldDefinition(field: GraphQLInputField) {
         debugger
@@ -63,7 +59,6 @@ export class UploadDirective extends SchemaDirectiveVisitor {
 export class Upload extends GraphQLScalarType {
     private readonly _path: string
     constructor(path?: string) {
-
         super({
             name: 'Upload',
             description: 'The `Upload` scalar type represents a file upload.',
@@ -85,35 +80,4 @@ export class Upload extends GraphQLScalarType {
 export const UploadTypeResolver: IResolverOptions = {
     __resolveType: () => Upload.name,
     resolve: (_, args, ctx) => new Upload(args),
-}
-class UploadType extends GraphQLScalarType {
-    constructor(type, context) {
-        super({
-            name: `Upload`,
-
-            // For more information about GraphQLScalar type (de)serialization,
-            // see the graphql-js implementation:
-            // https://github.com/graphql/graphql-js/blob/31ae8a8e8312/src/type/definition.js#L425-L446
-
-            serialize(value) {
-                debugger;
-                // value = type.serialize(value);
-                //enforce here
-                const { enforcer, auth } = context;
-                return value;
-            },
-
-            parseValue(value) {
-                debugger
-                //enforce here
-                //return type.parseValue(value);
-                const { enforcer, auth } = context;
-                return value;
-            },
-            parseLiteral(ast) {
-                debugger
-                return type.parseLiteral(ast);
-            },
-        });
-    }
 }

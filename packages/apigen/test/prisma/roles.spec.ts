@@ -1,15 +1,15 @@
 import { Role, ruleGroup } from "@mechsoft/apigen";
 import { MutationsRulesList } from './mutationRuleslist';
-import { QueriesRulesList } from './queriesRuleslist';
+import { QueriesRulesList } from './generated/models/queriesRuleslist';
 export class ANONYMOUS extends Role {
 
     constructor() {
         super();
 
-       // this.addWriteRule([
-            //create user account           
+        // this.addWriteRule([
+        //create user account           
 
-       // ])
+        // ])
         this.addReadRule([
             //view service categories            
             ...ruleGroup(QueriesRulesList, 'findManyServiceCategory', {
@@ -443,7 +443,7 @@ export class SUPERUSER extends Role {
 
     constructor() {
         super();
-       // debugger;
+        // debugger;
         this.addParent(MANAGER.name)
         this.addParent(ANONYMOUS.name)
         this.addWriteRule([

@@ -3,9 +3,11 @@ import * as mime from 'mime-types';
 import { join } from 'path';
 import { AttachmentType } from 'src/models/graphql';
 import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork'
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { getAudioDurationInSeconds } from 'get-audio-duration'
+import { mkdrIfNotExist } from '@mechsoft/apigen';
+
 export const resizer = (rs: fs.ReadStream, ws: fs.WriteStream) => {
     const st = sharp()
         .resize({
@@ -107,10 +109,14 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
             throw new Error("Unsupported file type")
     }
     const fname = `${uuid}.${ext}`;
-    const p = join(__dirname, path, fname)
+    const p1 = join(__dirname, path);
+    mkdrIfNotExist(p1);
+    const p = join(p1, fname);
+
     const options = {
         encoding: encoding as BufferEncoding,
     }
+
     return writeStreamToFile(stream, p, t)
         .then(async (r: { path: string, size: number }) => {
             let duration = 0
@@ -128,8 +134,9 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
                     duration = 0;
                 }
             }
+            const url = `${path}/${fname}`.replace('../', '').replace('./', '')
             return {
-                path: `${path}/${fname}`,
+                path: url,
                 filename: fname,
                 mimetype: mimetype,
                 encoding: encoding,

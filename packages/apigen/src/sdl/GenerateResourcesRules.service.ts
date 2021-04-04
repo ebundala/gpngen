@@ -13,17 +13,15 @@ export class GenerateResourcesRules {
   private schemaPath: string;
   constructor(
     @Inject(CONFIG_OPTIONS)
-    { generator, customOptions, schemaPath }: SdlGeneratorServiceOptions,
+    { customOptions, schemaPath }: SdlGeneratorServiceOptions,
     private readonly logger: AppLogger,
   ) {
-    this.generator = generator;
+
     this.options = customOptions;
     this.schemaPath = schemaPath;
     this.logger.setContext(GenerateResourcesRules.name);
   }
-  // async onModuleInit() {
-  //   await this.run();
-  // }
+
   async run(): Promise<void> {
     if (this.options.authorization) {
       const { depth, rulesDir } = this.options.authorization;

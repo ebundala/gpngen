@@ -1,14 +1,14 @@
 import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { join } from 'path';
 import { getRoleGrouping, getRolePolicies } from '../../src';
-import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from './roles';
+import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from './roles.spec';
 const getDefaultPolicies = async () => {
-   const su = new SUPERUSER();
-   const mn= new MANAGER();
-   const pv = new PROVIDER();
-   const cs = new CONSUMER();
-   const an = new ANONYMOUS();
-  // debugger;
+    const su = new SUPERUSER();
+    const mn = new MANAGER();
+    const pv = new PROVIDER();
+    const cs = new CONSUMER();
+    const an = new ANONYMOUS();
+    // debugger;
     const superUser = getRolePolicies(su)
     const manager = getRolePolicies(mn)
     const provider = getRolePolicies(pv)
@@ -21,10 +21,10 @@ const getDefaultPolicies = async () => {
     const consumerG = getRoleGrouping(cs)
     const anonymousG = getRoleGrouping(an)
 
-    
-    superUserG.push(...managerG,...providerG,...consumerG,...anonymousG);
 
-    superUser.push(...manager,...provider,...consumer,...anonymous);
+    superUserG.push(...managerG, ...providerG, ...consumerG, ...anonymousG);
+
+    superUser.push(...manager, ...provider, ...consumer, ...anonymous);
     return { roleGroups: superUserG, policies: superUser };
 }
 
@@ -55,6 +55,6 @@ const createRoles = async () => {
     return cl.close();
 }
 
-createRoles().then(()=>console.log('completed')).catch(console.error)
+createRoles().then(() => console.log('completed')).catch(console.error)
 
 

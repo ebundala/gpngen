@@ -8,4 +8,4 @@ import { SdlGeneratorModule } from './sdl-generator.module';
         SdlGeneratorModule.forRoot(options)
     ],
 })
-export class GenModule { }
+export class GenModule { }*/

@@ -1,4 +1,5 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { Upload } from '../scalars/upload.scalar';
 import { AuthService } from './auth-service';
 import { AuthResolver } from './auth.resolver';
 

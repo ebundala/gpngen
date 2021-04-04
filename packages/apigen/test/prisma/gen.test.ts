@@ -12,6 +12,6 @@
 // })
 
 import { generate } from '../../src/index'
-import { options } from './gen.config.example'
+import { options } from './gen.config.example.spec'
 debugger
 generate(options)

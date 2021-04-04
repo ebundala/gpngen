@@ -5,6 +5,7 @@ input AuthInput {
 	password: String
 	displayName: String
 	phoneNumber: String
+	avator:Upload
 	mode:   AuthMode
 }
 enum AuthMode{

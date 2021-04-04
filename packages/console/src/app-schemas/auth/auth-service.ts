@@ -23,16 +23,15 @@ import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
   AuthResult,
-  OrganizationCreateNestedManyWithoutOwnerInput,
   OrganizationCreateWithoutOwnerInput,
   Role,
   SignOutResult,
   State,
   User,
-  UserCreateInput
+
 } from '../../models/graphql';
-import { on } from 'node:events';
 import { uploadFile } from '../directives/file.utils';
+import { Prisma } from '@prisma/client'
 @Injectable()
 export class AuthService {
   constructor(
@@ -271,8 +270,8 @@ export class AuthService {
 
   async signupWithEmail(data: AuthInput,
     prisma: PrismaClient, select,
-    organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
-    const { email, password, displayName, phoneNumber } = data;
+      organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
+    const { email, password, displayName, phoneNumber, avator } = data;
     let user;
     debugger
     try {
@@ -293,10 +292,16 @@ export class AuthService {
         throw new GraphQLError('The email address is already in use by another account');
       }
       try {
-        user = await this._createUserWithEmail(email, password, displayName, phoneNumber).catch((e) => {
+
+        user = await this._createUserWithEmail(
+          email,
+          password,
+          displayName,
+          phoneNumber,
+        ).catch((e) => {
           throw new GraphQLError(e?.message ?? "Unknown error occurred")
         });
-        const data: UserCreateInput = {
+        const data: Prisma.UserCreateInput = {
         id: user.uid,
         displayName: user.displayName,
           phoneNumber,
@@ -305,14 +310,18 @@ export class AuthService {
         emailVerified: user.emailVerified,
         role: Role.CONSUMER,
         }
+        if (avator) {
+          const avatorData = await uploadFile(avator);
+          data.avator = { create: avatorData }
+        }
+
         if (organization && organization.name) {
-          data.role = Role.MANAGER
+          data.role = Role.MANAGER;
           const file = organization.logo.create.path;
-         // const fileData = await uploadFile(file);
-
-
-         // organization.logo.create.path = fileData.path;
-          data.organizations = { create: [organization] }
+          const fileData = await uploadFile(file);
+          organization.logo.create = fileData;
+          
+          data.organizations = { create: [organization] as any[] }
         }
         const u2 = await prisma.runAsRoot(() => prisma.user.create({
           data

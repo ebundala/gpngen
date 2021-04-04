@@ -14,6 +14,5 @@ export type TypingsGeneratorOptions = {
 export interface SdlGeneratorServiceOptions {
   schemaPath: string;
   customOptions?: Partial<Options>;
-  generator?: TypingsGeneratorOptions;
   sdlOptions?: GqlModuleOptions
 }

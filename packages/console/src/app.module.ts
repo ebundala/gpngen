@@ -16,8 +16,7 @@ import { writeFileSync } from 'fs';
 import { printSchema } from 'graphql';
 import { join } from 'path';
 import { AuthModule } from './app-schemas/auth/auth.module';
-import { Upload, UploadDirective, UploadTypeResolver } from '@mechsoft/apigen/test/prisma/app-schemas/directives/uploader.directive';
-//import { AppUserModule } from './app-schemas/User/UserModule';
+import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import { AuthMiddleware } from './auth.middleware';
 import { authorizationManager, AuthorizerOptions } from './authorization';
 import { BusinessRulesModule } from './business.module';
@@ -93,15 +92,7 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         './src/app-schemas/**/*.graphql',
       ],
 
-      definitions: {
-        path: 'src/models/graphql.ts',
-        outputAs: 'class',
-        customScalarTypeMapping: {
-          Upload: 'Promise < FileUpload >',
-          DateTime: 'string'
-        },
-        additionalHeader: "import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork';"
-      },
+
       schemaDirectives: {
         file: UploadDirective,
       },
@@ -179,17 +170,11 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         
         return ctx;
       },
-      transformSchema: (schema) => {
-        const txt = printSchema(schema);
-
-        writeFileSync(join(process.cwd(), 'src/models/schema.g.graphql'), txt);
-        return schema;
-      },
       debug: true,
       uploads: true,
       playground: true,
     }),
-    
+
     /* ServeStaticModule.forRoot({
        rootPath: join(__dirname, '../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],

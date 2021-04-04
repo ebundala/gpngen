@@ -1,7 +1,8 @@
-import { SdlGeneratorServiceOptions } from '@mechsoft/apigen';
+import { SdlGeneratorServiceOptions, writeSchemaToFile } from '@mechsoft/apigen';
 import { join } from 'path';
+import { Upload, UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 
-const options: Partial<SdlGeneratorServiceOptions> = {
+const options: SdlGeneratorServiceOptions = {
   schemaPath: './prisma/schema.prisma',
 
   customOptions: {
@@ -12,7 +13,7 @@ const options: Partial<SdlGeneratorServiceOptions> = {
       rulesDir:'./src/models'
       
   },
-     excludeFields: ['Id'],
+    // excludeFields: ['Id'],
     excludeQueriesAndMutationsByModel: {
       'User': ['createOne', 'deleteMany',]
     },
@@ -28,19 +29,32 @@ const options: Partial<SdlGeneratorServiceOptions> = {
     ],
     output: './src/schemas',
   },
-  generator: {
-    typePaths: ['./src/schemas/**/*.graphql','./src/app-schemas/**/*.graphql'],
-    path: join(process.cwd(), 'src/models/graphql.ts'),    
-    outputAs: 'class',
-    customScalarTypeMapping: {
-      Upload: 'Promise < FileUpload >',
-      DateTime: 'string'
-    },
-    emitTypenameField: true,
-    debug: true,
-    watch: true,
-    additionalHeader: "import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork';"
 
-  },
+  sdlOptions: {
+    typePaths: ['./src/schemas/**/*.graphql','./src/app-schemas/**/*.graphql'],
+    definitions: {
+      path: 'src/models/graphql.ts',
+        outputAs: 'class',
+        customScalarTypeMapping: {
+            Upload: 'Promise < FileUpload >',
+            DateTime: 'string'
+        },
+      additionalHeader: "import { FileUpload } from '@apollographql/graphql-upload-8-fork';"
+    },
+    transformSchema: (schema) => {
+      writeSchemaToFile(schema, join(process.cwd(), 'src/models'));
+      return schema;
+    },
+    debug: true,
+    uploads: true,
+    playground: false,
+    schemaDirectives: {
+      file: UploadDirective,
+    },
+    resolvers: {
+      Upload: UploadTypeResolver
+    },
+    sortSchema: true,
+  }
 };
 export default options;
