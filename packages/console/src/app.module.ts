@@ -10,7 +10,10 @@ import { GraphQLModule } from '@nestjs/graphql';
 import {
   GraphQLRequestContext,
   GraphQLRequestContextWillSendResponse,
-  GraphQLRequestListener
+  GraphQLRequestListener,
+  GraphQLRequestContextResponseForOperation,
+  GraphQLResponse,
+  ValueOrPromise
 } from 'apollo-server-plugin-base';
 import { writeFileSync } from 'fs';
 import { printSchema } from 'graphql';
@@ -18,8 +21,9 @@ import { join } from 'path';
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import { AuthMiddleware } from './auth.middleware';
-import { authorizationManager, AuthorizerOptions } from './authorization';
-import { BusinessRulesModule } from './business.module';
+import { BusinessRulesManagerModule } from './business-rules/business-rules-manager.module';
+//import { authorizationManager, AuthorizerOptions } from './authorization';
+//import { BusinessRulesManagerModule } from './business-rules/business-rules-manager.module';
 import modules from './schemas';
 
 
@@ -27,8 +31,8 @@ import modules from './schemas';
 
 
 const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
-  
-  /* didResolveSource?(
+  /*
+   didResolveSource?(
      requestContext: GraphQLRequestContextDidResolveSource<TenantContext>,
    ): ValueOrPromise<void>;
    parsingDidStart?(
@@ -42,50 +46,48 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
    ): ValueOrPromise<void>;
    didEncounterErrors?(
      requestContext: GraphQLRequestContextDidEncounterErrors<TenantContext>,
-   ): ValueOrPromise<void>;
-   // If this hook is defined, it is invoked immediately before GraphQL execution
-   // would take place. If its return value resolves to a non-null
-   // GraphQLResponse, that result is used instead of executing the query.
-   // Hooks from different plugins are invoked in series and the first non-null
-   // response is used.
-   responseForOperation?(
-     requestContext: GraphQLRequestContextResponseForOperation<TenantContext>,
-   ): ValueOrPromise<GraphQLResponse | null>;
-   executionDidStart?(
-     requestContext: GraphQLRequestContextExecutionDidStart<TenantContext>,
-   ):
-     | GraphQLRequestExecutionListener
-     | GraphQLRequestListenerExecutionDidEnd
-     | void;
- */
+   ): ValueOrPromise<void>;*/
+  // If this hook is defined, it is invoked immediately before GraphQL execution
+  // would take place. If its return value resolves to a non-null
+  // GraphQLResponse, that result is used instead of executing the query.
+  // Hooks from different plugins are invoked in series and the first non-null
+  // response is used.
+  // responseForOperation(
+  //   requestContext: GraphQLRequestContextResponseForOperation<TenantContext>,
+  // ): ValueOrPromise<GraphQLResponse | null> {
+  //   debugger;
+  //   console.log('responseForOperation');
+  //   return null
+  // },
+  /*  executionDidStart?(
+      requestContext: GraphQLRequestContextExecutionDidStart<TenantContext>,
+    ):
+      | GraphQLRequestExecutionListener
+      | GraphQLRequestListenerExecutionDidEnd
+      | void;
+  */
 
   async willSendResponse(
     requestContext: GraphQLRequestContextWillSendResponse<TenantContext>,
   ) {
-    //debugger;
-    //console.log('willSendResponse');
     const { context, request, response } = requestContext;
     const { tenantId, prisma, logger, auth } = context;
-    
-       await (context.enforcer.getAdapter() as PrismaAdapter).close()      
-       await prisma.$disconnect();
-      
 
+    await (context.enforcer.getAdapter() as PrismaAdapter).close()
+    await prisma.$disconnect();
     logger?.debug(
       `Disconected from prisma server tenantId:${tenantId}`,
       'PrismaConnectionManager',
     );
-   
-    // }
   },
 };
 
-@Module({  
+@Module({
   imports: [
-    ConfigModule.forRoot({isGlobal:true}),
+    ConfigModule.forRoot({ isGlobal: true }),
     FirebaseModule,
-    MailModule.forRoot({apikey:process.env.SENDGRID_API_KEY}),
-    
+    MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
+
     GraphQLModule.forRoot({
       typePaths: [
         './src/schemas/**/*.graphql',
@@ -112,8 +114,8 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         // const p = new PC({
         //   log: ['error', 'warn'],
         // });
-        
-        const { token, logger,bloc,auth } = req;
+
+        const { token, logger, bloc, auth } = req;
 
         let client: PrismaClient;
 
@@ -136,28 +138,30 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
 
         if (!client) {
           client = new PrismaClient({
-            log: ['error', 'warn','query','info'],
+            log: ['error', 'warn', 'query', 'info'],
           });
         }
-        const enforcerOptions={
-          path:'./src/authorization/rbac_model.conf',
+        const enforcerOptions = {
+          path: './src/authorization/rbac_model.conf',
           adapter: await PrismaAdapter.newAdapter({
-              log: ['error', 'warn','query','info'],
-            }) //(new PrismaAdapter()).setAdapter(client)
+            log: ['error', 'warn', 'query', 'info'],
+          }) //(new PrismaAdapter()).setAdapter(client)
         }
 
-       const enforcer = new CasbinService(enforcerOptions);
-        const authOptions:AuthorizerOptions={
-          tenantId: token ?? 'tenant.id',
-          auth: auth,
-          token: token,
-          enforcer: enforcer,
-          prisma: client,
-          logger,
-          businessRules: bloc
-        }
-        authorizationManager(authOptions);      
-        
+        const enforcer = new CasbinService(enforcerOptions);
+        enforcer.enableLog(true);
+        await enforcer.loadPolicy();
+        // const authOptions: AuthorizerOptions = {
+        //   tenantId: token ?? 'tenant.id',
+        //   auth: auth,
+        //   token: token,
+        //   enforcer: enforcer,
+        //   prisma: client,
+        //   logger,
+        //   businessRules: bloc
+        // }
+       // authorizationManager(authOptions);
+
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
           auth: req,
@@ -166,13 +170,14 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
           prisma: client,
           logger,
         };
-        
-        
+
+
         return ctx;
       },
       debug: true,
       uploads: true,
       playground: true,
+      extensions: []
     }),
 
     /* ServeStaticModule.forRoot({
@@ -184,9 +189,9 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
     // CasbinModule.forRootAsync({
     //   model: './src/authorization/rbac_model.conf',
     // }),
-   ...modules,
-  AuthModule,
-  BusinessRulesModule
+    ...modules,
+    AuthModule,
+    BusinessRulesManagerModule
   ],
 })
 

@@ -4,8 +4,6 @@ import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
 import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
-import { Engine, EngineResult, Event, Fact, Rule, TopLevelCondition } from 'json-rules-engine';
-import { BusinessRequest, BusinessRules } from 'src/businesrules';
 import {
   canCreateOnlyOneOrganization, isUserSensitiveInfo,
   onlyConnectActiveOffers, onlyConnectOwnerSelf,
@@ -17,8 +15,7 @@ import {
   onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization,
   onlyOneRatingPerConsumerOrganizationPair,
   onlyOwnerOfRecordAllowed
-} from 'src/business-rules/rules.definitions';
-import { businessRulesEvaluate } from '../../business-rules/rules.evalutor';
+} from '../../business-rules/rules.definitions';
 import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
@@ -32,43 +29,58 @@ import {
 } from '../../models/graphql';
 import { uploadFile } from '../directives/file.utils';
 import { Prisma } from '@prisma/client'
+import { BusinessRequest, BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
+import { BlocValidate } from '../../business-rules/busines-rule-hook.decorator';
+import { BlocAttach } from 'src/business-rules/busines-rule-validation.decorator';
+import { Bloc } from 'src/business-rules/busines-rules-container.decorator';
 @Injectable()
+  @Bloc()
 export class AuthService {
   constructor(
     private readonly firebaseApp: FirebaseService,
     private readonly httpService: HttpService,
     private readonly logger: AppLogger,
     private readonly mail: MailService,
-    private readonly bloc: BusinessRules
+    private readonly bloc: BusinessRulesManager
   ) {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
     process.env.DEBUG = "json-rules-engine"
-    this.bloc.on("updateOneUser", this.updateOneUserBloc)
-    this.bloc.on("findUniqueUser", this.findUniqueUserBloc)
-    this.bloc.on("createOneOrganization", this.createOneOrganizationBloc)
-    this.bloc.on("createOneOrder", this.createOneOrderBloc)
-    this.bloc.on("updateOneOrder", this.updateOneOrderBloc)
-    this.bloc.on("createOneRating", this.createOneRatingBloc)
-    this.bloc.on("updateOneRating", this.updateOneRatingBloc)
+    // this.bloc.on("updateOneUser", this.updateOneUserBloc)
+    // this.bloc.on("findUniqueUser", this.findUniqueUserBloc)
+    // this.bloc.on("createOneOrganization", this.createOneOrganizationBloc)
+    // this.bloc.on("createOneOrder", this.createOneOrderBloc)
+    // this.bloc.on("updateOneOrder", this.updateOneOrderBloc)
+    // this.bloc.on("createOneRating", this.createOneRatingBloc)
+    // this.bloc.on("updateOneRating", this.updateOneRatingBloc)
 
-    this.bloc.at("createOneUser.data.organizations.create.logo.path", (v, i, next) => {
-      const { params, authorization, rules, allow, } = v;
-      const { action, args } = params
-      const { where, select } = args;
-      const { prisma, auth, logger } = authorization;
+    // this.bloc.at("createOneUser.data.organizations.create.logo.path", (v, next) => {
+    //   const { args, rules, allow, context } = v;
+    //   const { where, select } = args;
+    //   const { prisma, auth, logger } = context;
 
-      debugger
-      return next(v, i);
-    })
+    //   debugger
+    //   return next(v);
+    // })
 
   }
+  @BlocAttach('signup.input.credentials.avator')
+  async avator(args, next) {
+    debugger
+    return next(args)
+  }
+
+  @BlocValidate('signup.input.credentials.avator')
+  async avatorRule(args) {
+    debugger
+    return { rules: [], facts: { test: true } }
+  }
+  @BlocValidate('updateOneRating')
   async updateOneRatingBloc(v: BusinessRequest) {
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
-    const { where, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { args, rules, allow, context } = v;
+      const { where, select } = args;
+    const { prisma, auth, logger } = context;
     const rating = await prisma.runAsRoot(() =>
       prisma.rating.findUnique({
         where: { id: where.id },
@@ -80,53 +92,50 @@ export class AuthService {
       }));
 
     const ownerRule = onlyOwnerOfRecordAllowed(auth.uid)
-    await businessRulesEvaluate([ownerRule], rating)
-
+    return { rules: [ownerRule], facts: rating }
   }
-  async findUniqueUserBloc(v: BusinessRequest, next) {
+  async findUniqueUserBloc(v: BusinessRequest) {
 
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
-    const { where, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { args, rules, allow, context } = v;
+      const { where, select } = args;
+    const { prisma, auth, logger } = context;
     logger.debug("Validating business rule findUniqueUser");
-    
-    await businessRulesEvaluate([isUserSensitiveInfo(where.id)], { ...select, ...auth })
+    const facts = { ...select, ...auth };
+    return { rules: [isUserSensitiveInfo(where.id)], facts }
   }
 
-  async updateOneUserBloc(v: BusinessRequest, next) {
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
+  async updateOneUserBloc(v: BusinessRequest) {
+    const { args, rules, allow, context } = v;
     const { where, select } = args;
-    const { prisma, auth, logger } = authorization;
-    await businessRulesEvaluate([onlyOwnerhasAccess(where.id)], auth)
+    const { prisma, auth, logger } = context;
+    return { rules: [onlyOwnerhasAccess(where.id)], facts: auth }
   }
 
   async createOneOrganizationBloc(v: BusinessRequest) {
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
+    const { args, rules, allow, context } = v;
     const { where, data, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { prisma, auth, logger } = context;
     const user = await prisma.runAsRoot(() => prisma.user.findUnique({ where: { id: auth.uid }, include: { organizations: true } }))
     const serviceCategories = (await prisma
       .runAsRoot(() => prisma.serviceCategory.findMany({
         where: { state: State.APPROVED },
         select: { id: true }
       }))).map((v) => v.id);
-
-    await businessRulesEvaluate([
+    const facts = { ...user, ...data, /*offers: { connect: { id: data?.offers?.connect[0]?.id } }*/ }
+    return {
+      rules: [
       onlyConnectOwnerSelf(auth.uid),
       onlyConnectActiveOffers(serviceCategories),
       canCreateOnlyOneOrganization()],
-      { ...user, ...data, /*offers: { connect: { id: data?.offers?.connect[0]?.id } }*/ })
+      facts
+    };
 
   }
 
   async createOneOrderBloc(v: BusinessRequest) {
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
+    const { args, rules, allow, context } = v;
     const { where, data, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { prisma, auth, logger } = context;
     debugger
     const service = await prisma.runAsRoot(() => prisma.service.findFirst({
       where: {
@@ -138,16 +147,17 @@ export class AuthService {
       select: { id: true, state: true, organization: { select: { id: true,/* state:true */ } } }
     }));
 
-    await businessRulesEvaluate([
+    return {
+      rules: [
       onlyConnectOwnerSelf(auth.uid),
       onlyServiceOfferedByOrg(service?.id, service?.organization?.id)
-    ], data)
+      ], facts: data
+    }
   }
   async updateOneOrderBloc(v: BusinessRequest) {
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
+    const { args, rules, allow, context } = v;
     const { where, data, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { prisma, auth, logger } = context;
 
     const order = await prisma.runAsRoot(() => prisma.order.findUnique({
       where: {
@@ -178,22 +188,23 @@ export class AuthService {
     }));
     //TODO prevent updating quantity for approved orders
     //TODO add a concept of service provider based on services for organization 
-    await businessRulesEvaluate([
+    const facts = { ...auth, state: data?.state?.set };
+    return {
+      rules: [
       onlyOwnerOrProviderOrManagerCanUpdateOrder(
         order?.owner?.id,
         order?.organization?.owner?.id,
         order?.organization?.staffs?.map((v) => v.id)),
       onlyProviderAndManagerCanProcessOrder(order?.owner?.id),
       onlyConsumerCanCompleteOrder(order?.owner?.id)
-    ], { ...auth, state: data?.state?.set });
+      ], facts
+    };
 
   }
-  async createOneRatingBloc(v: BusinessRequest, next) {
-
-    const { params, authorization, rules, allow, } = v;
-    const { action, args } = params
+  async createOneRatingBloc(v: BusinessRequest) {
+    const { args, rules, allow, context } = v;
     const { where, data, select } = args;
-    const { prisma, auth, logger } = authorization;
+    const { prisma, auth, logger } = context;
 
     const { orders, ratings } = (await prisma.runAsRoot(() =>
       prisma.user.findUnique({
@@ -230,16 +241,14 @@ export class AuthService {
           }
         }
       }))) ?? {};
-    debugger
+
     const ordersRule = onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization()
     const connectSelf = onlyConnectOwnerSelf(auth.uid);
     const onlyOneRating = onlyOneRatingPerConsumerOrganizationPair();
-    await businessRulesEvaluate([
-      connectSelf
-      , ordersRule,
-      onlyOneRating], { owner: data?.owner, orders: orders ?? [], ratings: ratings ?? [] });
-
+    const facts = { owner: data?.owner, orders: orders ?? [], ratings: ratings ?? [] };
+    return { rules: [connectSelf, ordersRule, onlyOneRating], facts };
   }
+
   async signup(credentials: AuthInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select, organization);
@@ -362,7 +371,7 @@ export class AuthService {
       .delete({ where: { id: uid } }))
       .then(() => true)
       .catch(() => false);
-    return remove1 && remove2;
+    return remove1 || remove2;
   }
 
   async signInWithEmail(credentials: Partial<AuthInput>, prisma: PrismaClient, select) {

@@ -11,4 +11,7 @@ export interface TenantContext extends BaseContext {
     auth: any;
     logger: AppLogger;
     prisma: PrismaClient;
+    rules?: string[][];
+    select?: any;
+
 }

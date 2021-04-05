@@ -1,5 +1,5 @@
 import { Rule } from "json-rules-engine"
-import { Role, State, User } from "../models/graphql"
+import { Role, State, } from "../models/graphql"
 
 
 export const onlyOwnerhasAccess = (id: string) => new Rule({
