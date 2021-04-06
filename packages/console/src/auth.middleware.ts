@@ -18,8 +18,8 @@ export class AuthMiddleware implements NestMiddleware {
       const [realm, token] = headers.authorization.split(' ');
       req.token = token;
       //TODO remove below line after debugging
-
       req.auth = { uid: realm, role: token }
+
         next();
       //  await this.app.admin.auth().verifySessionCookie(token,false)//TODO set true to verify revoked tokens
       //   .then((claims)=>{

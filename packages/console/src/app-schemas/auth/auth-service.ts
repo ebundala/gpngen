@@ -33,6 +33,7 @@ import { BusinessRequest, BusinessRulesManager } from '../../business-rules/busi
 import { BlocValidate } from '../../business-rules/bloc-validation.decorator';
 import { BlocAttach } from 'src/business-rules/bloc-hook.decorator';
 import { Bloc } from 'src/business-rules/busines-rules-container.decorator';
+import { TenantContext } from '@mechsoft/common';
 @Injectable()
   @Bloc()
 export class AuthService {
@@ -41,43 +42,24 @@ export class AuthService {
     private readonly httpService: HttpService,
     private readonly logger: AppLogger,
     private readonly mail: MailService,
-    private readonly bloc: BusinessRulesManager
   ) {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
-    process.env.DEBUG = "json-rules-engine"
-    // this.bloc.on("updateOneUser", this.updateOneUserBloc)
-    // this.bloc.on("findUniqueUser", this.findUniqueUserBloc)
-    // this.bloc.on("createOneOrganization", this.createOneOrganizationBloc)
-    // this.bloc.on("createOneOrder", this.createOneOrderBloc)
-    // this.bloc.on("updateOneOrder", this.updateOneOrderBloc)
-    // this.bloc.on("createOneRating", this.createOneRatingBloc)
-    // this.bloc.on("updateOneRating", this.updateOneRatingBloc)
-
-    // this.bloc.at("createOneUser.data.organizations.create.logo.path", (v, next) => {
-    //   const { args, rules, allow, context } = v;
-    //   const { where, select } = args;
-    //   const { prisma, auth, logger } = context;
-
-    //   debugger
-    //   return next(v);
-    // })
-
   }
-  @BlocAttach('signup.input.credentials.avator')
-  async avator(args, next) {
-    debugger
-    return next(args)
-  }
+  // @BlocAttach('signup.input.credentials.avator')
+  // async avator(args, next) {
+  //   debugger
+  //   return next(args)
+  // }
 
-  @BlocValidate('signup.input.credentials.avator')
-  async avatorRule(args) {
-    debugger
-    return { rules: [], facts: { test: true } }
-  }
+  // @BlocValidate('signup.input.credentials.avator')
+  // async avatorRule(args) {
+  //   debugger
+  //   return { rules: [], facts: { test: true } }
+  // }
   @BlocValidate('updateOneRating')
-  async updateOneRatingBloc(v: BusinessRequest) {
+  async updateOneRatingBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
       const { where, select } = args;
     const { prisma, auth, logger } = context;
@@ -94,24 +76,25 @@ export class AuthService {
     const ownerRule = onlyOwnerOfRecordAllowed(auth.uid)
     return { rules: [ownerRule], facts: rating }
   }
-  async findUniqueUserBloc(v: BusinessRequest) {
 
+  @BlocValidate('findUniqueUser')
+  async findUniqueUserBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
       const { where, select } = args;
     const { prisma, auth, logger } = context;
-    logger.debug("Validating business rule findUniqueUser");
     const facts = { ...select, ...auth };
     return { rules: [isUserSensitiveInfo(where.id)], facts }
   }
-
-  async updateOneUserBloc(v: BusinessRequest) {
+  @BlocValidate('updateOneUser')
+  async updateOneUserBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
     const { where, select } = args;
     const { prisma, auth, logger } = context;
     return { rules: [onlyOwnerhasAccess(where.id)], facts: auth }
   }
 
-  async createOneOrganizationBloc(v: BusinessRequest) {
+  @BlocValidate('createOneOrganization')
+  async createOneOrganizationBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -132,7 +115,8 @@ export class AuthService {
 
   }
 
-  async createOneOrderBloc(v: BusinessRequest) {
+  @BlocValidate('createOneOrder')
+  async createOneOrderBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -154,7 +138,9 @@ export class AuthService {
       ], facts: data
     }
   }
-  async updateOneOrderBloc(v: BusinessRequest) {
+
+  @BlocValidate('updateOneOrder')
+  async updateOneOrderBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -201,7 +187,9 @@ export class AuthService {
     };
 
   }
-  async createOneRatingBloc(v: BusinessRequest) {
+
+  @BlocValidate('createOneRating')
+  async createOneRatingBloc(v: BusinessRequest<TenantContext>) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -252,7 +240,7 @@ export class AuthService {
   async signup(credentials: AuthInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select, organization);
-    if (!res.error) {
+    if (!res?.error) {
       const link = await this.firebaseApp.admin.auth().generateEmailVerificationLink(credentials.email);
       await this.mail.sendWelcomeEmail(res.user, link).catch((e) => { this.logger.debug(e) });
     }

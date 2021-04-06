@@ -1,4 +1,4 @@
-directive @file(path:String) on  INPUT_FIELD_DEFINITION #FIELD_DEFINITION | INPUT_OBJECT
+directive @file(path:String) on  INPUT_FIELD_DEFINITION
 scalar Upload
 
 extend input AttachmentCreateInput{
