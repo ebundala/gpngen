@@ -2,8 +2,7 @@ import { TenantContext } from '@mechsoft/common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
-import { BlocAttach } from 'src/business-rules/busines-rule-validation.decorator';
-import { BusinessRequest, BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
+import { BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
 
 @Injectable()
 export class AuthorizerGuard implements CanActivate {
@@ -32,10 +31,10 @@ export class AuthorizerGuard implements CanActivate {
           select,
           allow
         };
-        if (!allow) {
+        if (allow) {
           debugger
           const req2 = await this.bloc.handleHookRequest(req);
-          await this.bloc.handleBusinessRequest(req);
+          await this.bloc.handleBusinessRequest(req2);
 
         }
         return allow

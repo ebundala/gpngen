@@ -42,17 +42,17 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                 const method = i[s];
                 const validator: string = Reflect.getMetadata(`${BUSINESS_LOGIC_VALIDATOR}/${s}`, BusinessRulesManager)
                 const hook: string = Reflect.getMetadata(`${BUSINESS_LOGIC_HOOK}/${s}`, BusinessRulesManager)
-                this.logger.log(`Bloc: ${s} `)
+
 
                 if (hook) {
                     //it is a hook 
                     this.bloc.at(hook, method);
-                    this.logger.log(`Hook: ${hook}`)
+                    this.logger.log(`BLOC Hook: ${hook}`)
                 }
                 else if (validator) {
                     //it is a validator
                     this.bloc.on(validator, method)
-                    this.logger.log(`Validator: ${validator}`)
+                    this.logger.log(`BLOC Validator: ${validator}`)
                 }
 
             })
