@@ -51,7 +51,9 @@
     "@prisma/client": "^2.17.0",
     "apollo-server-express": "^2.21.0",
     "get-audio-duration": "^2.0.3",
+    "get-value": "^3.0.1",
     "graphql": "^15.5.0",
+    "has-value": "^2.0.2",
     "json-rules-engine": "^6.0.1",
     "mime": "^2.5.2",
     "mime-types": "^2.1.29",
@@ -59,6 +61,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3",
+    "set-value": "^3.0.2",
     "sharp": "^0.28.0",
     "uuid": "^8.3.2",
     "validator": "^13.5.2"

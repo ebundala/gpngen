@@ -59,7 +59,7 @@ export class AuthService {
   //   return { rules: [], facts: { test: true } }
   // }
   @BlocValidate('updateOneRating')
-  async updateOneRatingBloc(v: BusinessRequest<TenantContext>) {
+  async updateOneRatingBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
       const { where, select } = args;
     const { prisma, auth, logger } = context;
@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   @BlocValidate('findUniqueUser')
-  async findUniqueUserBloc(v: BusinessRequest<TenantContext>) {
+  async findUniqueUserBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
       const { where, select } = args;
     const { prisma, auth, logger } = context;
@@ -86,7 +86,7 @@ export class AuthService {
     return { rules: [isUserSensitiveInfo(where.id)], facts }
   }
   @BlocValidate('updateOneUser')
-  async updateOneUserBloc(v: BusinessRequest<TenantContext>) {
+  async updateOneUserBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
     const { where, select } = args;
     const { prisma, auth, logger } = context;
@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   @BlocValidate('createOneOrganization')
-  async createOneOrganizationBloc(v: BusinessRequest<TenantContext>) {
+  async createOneOrganizationBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -116,7 +116,7 @@ export class AuthService {
   }
 
   @BlocValidate('createOneOrder')
-  async createOneOrderBloc(v: BusinessRequest<TenantContext>) {
+  async createOneOrderBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -140,7 +140,7 @@ export class AuthService {
   }
 
   @BlocValidate('updateOneOrder')
-  async updateOneOrderBloc(v: BusinessRequest<TenantContext>) {
+  async updateOneOrderBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;
@@ -189,7 +189,7 @@ export class AuthService {
   }
 
   @BlocValidate('createOneRating')
-  async createOneRatingBloc(v: BusinessRequest<TenantContext>) {
+  async createOneRatingBloc(v: BusinessRequest) {
     const { args, rules, allow, context } = v;
     const { where, data, select } = args;
     const { prisma, auth, logger } = context;

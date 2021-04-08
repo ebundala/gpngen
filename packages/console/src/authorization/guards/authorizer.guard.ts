@@ -3,22 +3,23 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
-
+import * as setValue from 'set-value';
 @Injectable()
 export class AuthorizerGuard implements CanActivate {
   constructor(private readonly bloc: BusinessRulesManager) { }
   canActivate(
     ctx: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    debugger
+   // debugger
     const gqlHost = GqlExecutionContext.create(ctx);
     const root = gqlHost.getRoot()
     const args = gqlHost.getArgs()
     const context: TenantContext = gqlHost.getContext()
     const info = gqlHost.getInfo();
     const select = context?.prisma.getSelection(info).value
-    const role = context.auth?.role ?? 'ANONYMOUS';
-    const rules = this.getRulesFromInput(role, { input: args, select }, info?.fieldName, 'allow')
+    const role = context?.auth.role ?? 'ANONYMOUS';
+    const rules = this.getRulesFromInput(role, { input: args, select }, info?.fieldName, 'allow');
+    const rulesAst = this.getRulesAst(rules);
     const enforcer = context.enforcer;
     context.rules = rules;
     context.select = select;
@@ -32,10 +33,9 @@ export class AuthorizerGuard implements CanActivate {
           allow
         };
         if (allow) {
-          debugger
+         // debugger
           const req2 = await this.bloc.handleHookRequest(req);
           await this.bloc.handleBusinessRequest(req2);
-
         }
         return allow
       });
@@ -92,4 +92,18 @@ export class AuthorizerGuard implements CanActivate {
     return r;
 
   }
+
+  getRulesAst(rules: string[][]) {
+
+    const ast = {};
+    for (let i = 0; i < rules.length; i++) {
+      let rule = rules[i]
+
+      const s = rule.slice(0, rule.length - 1).join('.');
+      const v = rule[rule.length - 1];
+      setValue(ast, s, v)
+    }
+    return ast;
+  }
+
 }

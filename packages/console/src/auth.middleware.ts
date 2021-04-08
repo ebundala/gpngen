@@ -15,8 +15,10 @@ export class AuthMiddleware implements NestMiddleware {
     req.logger = this.logger;
 
     if (headers && headers.authorization) {
+
       const [realm, token] = headers.authorization.split(' ');
       req.token = token;
+
       //TODO remove below line after debugging
       req.auth = { uid: realm, role: token }
 
