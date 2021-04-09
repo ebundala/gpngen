@@ -13,6 +13,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "start:policy:prod": "node dist/src/main.policy",
     "api:gen": "rimraf src/schemas && ts-node --script-mode src/api.gen.ts",
     "dependencies": "yarn install",
     "start:docker:debug": " yarn run prisma:studio & yarn run prisma:generate && nest start --debug 0.0.0.0:9229 --watch",

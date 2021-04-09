@@ -4,12 +4,14 @@ import {
     ASTNode, print,
     ObjectTypeDefinitionNode,
     visit,
-    FieldDefinitionNode
+    FieldDefinitionNode,
+    GraphQLResolveInfo
 } from "graphql";
 import { join } from "path";
+import * as setValue from 'set-value';
 
 
-const getRulesAstFromInput = (role: string, data, path: string, action: string) => {
+/* const getRulesAstFromInput = (role: string, data, path: string, action: string) => {
     const r: string[][] = [];
     if (data instanceof Array) {
         for (let i = 0; i < data.length; i++) {
@@ -50,17 +52,31 @@ const getRulesAstFromInput = (role: string, data, path: string, action: string) 
 
     return r;
 
-}
+} */
 
-export const createPolicySchema = () => {
 
-    const path = join(process.cwd(), 'packages/console/src/authorization/policy')
-    const file = join(path, '../../models', 'schema.graphql')
+
+
+export const createPolicySchema = (dir: string, schemaRelativePath: string) => {
+
+    const path = join(process.cwd(), dir)
+    const file = join(path, schemaRelativePath)
     const text = readFileSync(file)
     const ast: ASTNode = gql`
     enum PERMISSION{
         allow
         deny
+    }
+    enum OPERATION{
+        create
+        update
+        delete
+        view
+    }
+    input PolicyOperation{
+           role: Role!
+           operation: OPERATION!
+           parent: [Role!]
     }
     ${text}`;
 
@@ -124,14 +140,8 @@ export const createPolicySchema = () => {
     const operations2: OperationDef[] = [];
     const operations3: OperationDef[] = [];
     const ast2: ASTNode = visit(ast, {
-        ObjectTypeDefinition: {
-            leave(node, key, parent, path, ancestors) {
-
-            }
-        },
         InputValueDefinition: {
             leave(node) {
-                //debugger                
                 const [f, t] = getFieldType(node);
                 return overideInputFieldDefinition(f, t, 'PERMISSION');
             }
@@ -139,13 +149,16 @@ export const createPolicySchema = () => {
 
         FieldDefinition: {
             leave(node, key, p, path, ancestors) {
-                //debugger
                 const parent = ancestors[ancestors.length - 1] as ObjectTypeDefinitionNode
                 const name = parent?.name?.value;
-                let args = 'action: PERMISSION';
+                const [f, t, a] = getFieldType(node)
+                let args;
+                if (checkScaler(t)) {
+                    args = 'action: PERMISSION';
+                }
                 if (name === 'Query' || name === 'Mutation' || name == 'Subscription') {
 
-                    args = 'role: Role!, parent:[Role!], view: Boolean'
+                    args = 'role: Role!, parent:[Role!], action: OPERATION!'
                     let op;
                     switch (name) {
                         case 'Mutation':
@@ -165,7 +178,7 @@ export const createPolicySchema = () => {
                             break
                     }
                 }
-                const [f, t, a] = getFieldType(node)
+
                 return overideFieldDefinition(f, t, 'PERMISSION', `${args ? args : ''}${a && args ? ',' : ''}${a ?? ''}`);
 
             }
@@ -183,52 +196,75 @@ export const createPolicySchema = () => {
     writeFileSync(join(path, 'policy.mutations.resolvers.ts'), mutations)
 
     writeFileSync(join(path, 'policy.subscriptions.resolvers.ts'), subscriptions)
-
+    
     return ast2
 }
 
 
-export const createRuleAst = (op: ASTNode) => {
-
+export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) => {
+   // debugger
     const ast = visit(op, {
+        Variable: {
+            leave(node) {
+                return node.name.value ?? fieldValue
+            }
+        },
+        NullValue: {
+            leave(node) {
+                return fieldValue ?? undefined
+            }
+        },
         EnumValue: {
             leave(node) {
-                // debugger
-                return node.value
+                return node.value ?? fieldValue ?? undefined
             }
         },
         BooleanValue: {
             leave(node) {
-                debugger
-                return node.value
+                return fieldValue ?? node.value ?? undefined
+            }
+        },
+
+        StringValue: {
+            leave(node) {
+                return node.value ?? fieldValue ?? undefined
+            }
+        },
+        IntValue: {
+            leave(node) {
+                return node.value ?? fieldValue ?? undefined
+            }
+        },
+        FloatValue: {
+            leave(node) {
+                return node.value ?? fieldValue ?? undefined
             }
         },
         ObjectField: {
             leave(node) {
-                // debugger
-                return { ...node, kv: node.value }
+                return { ...node, kv: node.value ?? fieldValue ?? undefined }
             }
         },
         ListValue: {
             leave(node) {
-                // debugger
-                return node.values
+                return node.values ?? fieldValue ?? undefined
             }
         },
         ObjectValue: {
             leave(node) {
-                // debugger
-                let kv = {}
+                let kv = {};
+
                 node.fields.forEach((v) => {
-                    kv[v.name.value] = (v as any).kv;
+                    const value = (v as any).kv;
+                    kv[v.name.value] = value;
                 })
+                if (Object.entries(kv).length === 0) return fieldValue ?? undefined
                 return kv
             }
         },
 
         Field: {
-            leave(node, key, parent, path, ancestors) {
-                //  debugger
+            leave(node) {
                 const name = node.name.value;
                 const v: any = {};
                 node.arguments.forEach((a) => {
@@ -239,28 +275,54 @@ export const createRuleAst = (op: ASTNode) => {
                 const noInput = Object.keys(input ?? {}).length === 0;
                 let fields = {};
                 if (select) {
-                    fields['select'] = select
+                    fields = { select }
                 }
                 if (!noInput) {
-                    fields['input'] = input;
+                    //fields['input'] = input;
+                    fields = { ...fields, ...input }
+
                 }
                 if (!select && noInput && action) {
                     fields = action
                 }
-
+                else if (Object.entries(fields).length === 0) {
+                    fields = fieldValue ?? undefined;
+                }
                 return { ...node, "fv": { [name]: fields } }
 
             }
         },
+        FragmentDefinition: {
+            leave(node) {
+                //debugger
+                return node.selectionSet
+            }
+        },
+        InlineFragment: {
+            leave(node) {
+                // debugger
+                return { ...node, fv: node.selectionSet }
+
+            }
+        },
+        FragmentSpread: {
+            leave(node) {
+                // debugger
+                let fragDefAst
+                if (fragments) {
+                    fragDefAst = createRuleAst(fragments[node.name.value], fieldValue, fragments)
+                    
+                }
+                return { ...node, fv: fragDefAst }
+           }
+       },
         SelectionSet: {
             leave(node) {
-                //  debugger
                 let f = {};
+              //  debugger
                 node.selections.forEach((v) => {
-                    if (v.kind === 'Field')
                         f = { ...f, ...(v as any).fv };
                 })
-
                 return f;
             }
         },
@@ -270,14 +332,74 @@ export const createRuleAst = (op: ASTNode) => {
             }
         }
     })
+   // debugger
 
-    //debugger
     return ast;
 }
 
-//createRuleAst();
-//createPolicySchema()
+export const getRulesFromAccessAst = (role: string,
+    data, path: string, action: string, useValue = false) => {
+    const r: string[][] = [];
+    const getAction = (v) => {
+        return useValue ? v.toString() : action
+    }
+    //add root rule if not added
+    if (!/\./.test(path)) {
+        r.push([role, `${path}`, 'allow'])
+    }
+    if (data instanceof Array) {
+        for (let i = 0; i < data.length; i++) {
+            const v = data[i];
+            if (typeof v === 'object') {
+                r.push(...getRulesFromAccessAst(role, v, `${path}`, action, useValue))
+            }
+            else if (!r.find(([r, p, a]) => r === role && path === p && action === a)) {
+                r.push([role, `${path}`, getAction(v)]);
+            }
+        }
+    } else if (typeof data === 'object') {
 
+        const v = Object.entries(data ?? {})
+        //handle empty objects/promises
+        if (v.length === 0) {
+            r.push([role, `${path}`, getAction(v)])
+            return r;
+        }
+        for (let i = 0; i < v.length; i++) {
+            const [k1, v1] = v[i];
+            const t = typeof v1;
+            if (k1 === 'select' && /select/.test(path)) {
+                if (t !== 'object') {
+                    r.push([role, `${path}`, getAction(v1)])
+                }
+                else {
+                    r.push(...getRulesFromAccessAst(role, v1, `${path}`, action, useValue))
+                }
+            } else if (t !== 'object') {
+                r.push([role, `${path}.${k1}`, getAction(v1)])
+            }
+            else {
+                r.push(...getRulesFromAccessAst(role, v1, `${path}.${k1}`, action, useValue))
+            }
+        }
+    }
+
+    return r;
+
+}
+
+export const getAcessAst = ({ operation, fragments, fieldName }) => {
+    const { select, ...input } = createRuleAst(operation, true, fragments)[fieldName];
+    return { select, input }
+}
+export const rulesToAst = (rules: string[][]) => {
+    let value = {}
+    for (let i = 0; i < rules.length; i++) {
+        const [role, rule, v] = rules[i]
+        setValue(value, rule, v)
+    }
+    return value;
+}
 const resolverTemplate = (operation: OperationDef[], prefix: string) => `
 import { Resolver, Query,Mutation,Subscription, Info, Args, Context, Parent } from '@nestjs/graphql';
 import { TenantContext } from '@mechsoft/common';
@@ -304,3 +426,5 @@ ${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() i
     return this.service.handle(parent, args, ctx, info);
   }
 `
+
+

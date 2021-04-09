@@ -23,17 +23,11 @@ import { PolicyModule } from "./authorization/policy/PolicyModule";
         FirebaseModule,
         MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
         GraphQLModule.forRoot({
-            // path: '/_policies',
             typePaths: [
                 './src/authorization/policy/policy.graphql'
-                //'./src/models/policy.graphql'
-                //'./src/schemas/**/*.graphql',
-                // './src/app-schemas/**/*.graphql',
+
             ],
-            // transformSchema: (schema) => {
-            //     debugger
-            //     return schema;
-            // },
+
             context: async ({ req }): Promise<TenantContext> => {
                 const { token, logger, bloc, auth } = req;
                 let client: PrismaClient;

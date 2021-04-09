@@ -99,6 +99,40 @@ services:
           memory: 1g
       restart_policy:
         condition: on-failure
+  app-policy:
+    image: ${NODE_TAG}
+    working_dir: /home/app/packages/console
+    environment:
+      # google credentials
+        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+        FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+        STORAGE_BUCKET: ${STORAGE_BUCKET}
+        FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      #sendgrid email
+        SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+        SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
+        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
+        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
+        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+    command: yarn run start:policy:prod
+    depends_on:
+      - db
+    ports:
+      - 4000:4000
+     # - 9229:9229 #debugger port disable in production
+     # - 5555:5555 #prisma studio disable in production
+    volumes:
+      - ./:/home/app
+    networks:
+      webnet:
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1g
+      restart_policy:
+        condition: on-failure
 networks:
   webnet:
 volumes:
