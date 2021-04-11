@@ -1,0 +1,139 @@
+
+fragment attachment on Attachment{
+      id(action:allow)
+      path(action:allow)
+      mimetype(action:allow)
+      placement(action:allow)
+      size(action:allow)
+      encoding(action:allow)
+      createdAt(action:allow)
+      updatedAt(action:allow)
+}
+fragment organization on Organization{
+  id(action:allow)
+      name(action:allow)
+  description(action:allow)
+      logo{
+        ...attachment
+      }
+}
+fragment location on Location{
+  id(action:allow)
+  name(action:allow)
+}
+fragment user on User{
+     id(action:allow)
+     displayName(action:allow)
+   #  email(action:allow)
+     emailVerified(action:allow)
+     disabled(action:allow)
+     state(action:allow)
+     role(action:allow)
+     createdAt(action:allow)
+     updatedAt(action:allow)
+}
+fragment service on Service{
+  id(action:allow)
+  name(action:allow)
+  description(action:allow)
+  price(action:allow)
+  state(action:allow)
+  image{
+    ...attachment
+  }
+}
+fragment order on Order{
+  id(action:allow)
+  state(action:allow)
+  owner{
+    ...user
+     email(action:allow)
+     avator{
+      ...attachment
+    }
+    location{
+      ...location
+    }
+  }
+  service{
+    ...service
+  }
+  organization{
+    ...organization
+  }
+}
+fragment rating on Rating{
+  id(action:allow)
+      value(action:allow)
+      comment(action:allow)
+      createdAt(action:allow)
+      updatedAt(action:allow)
+}
+mutation updataOrganization{
+  updateOneOrganization(
+    role:MANAGER
+    parent:[PROVIDER]
+    action: create
+    where:{
+      id:allow
+    }
+    data:{
+      
+      offers:{
+        disconnect:{
+          id:allow
+        }
+        connect:{
+          id:allow
+        }
+      }
+     location:{
+      create:{
+        name:allow
+      }
+    }
+      logo:{
+        create:{
+          path:allow
+          placement:allow
+          mimetype:allow
+        }
+      }
+      staffs:{
+        disconnect:{
+          id:allow
+        }
+        connect:{
+          id:allow
+          email:allow
+        }
+      }
+    }
+  ){
+    status(action:allow)
+    message(action:allow)
+    data{
+      ...organization
+      services{
+        ...service
+      }
+      orders{
+        ...order
+      }
+      location{
+        ...location
+      }
+      ratings{
+        ...rating
+      }
+      staffs{
+        ...user
+        email(action:allow)
+      }
+      owner{
+        ...user
+        email(action:allow)
+      }
+    }
+  }
+}

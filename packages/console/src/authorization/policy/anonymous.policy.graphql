@@ -1,0 +1,76 @@
+query findcategory {
+  findManyServiceCategory(
+    role: ANONYMOUS
+    action:create
+    where:{
+      state:{
+        equals:allow
+        in:allow
+        notIn:allow
+        not:{
+          equals:allow
+        }
+      }
+    }
+    orderBy:{
+      name:allow
+      createdAt:allow
+    }
+  ){
+   status(action:allow)
+   message(action: allow)
+    data{
+      id(action:allow)
+      name(action:allow)
+      updatedAt(action:allow)
+      createdAt(action:allow)
+    }
+}
+} 
+mutation signup {
+  signup(
+    role: ANONYMOUS
+    action: create
+    credentials: {
+      email: allow
+      password: allow
+      displayName: allow
+      avator: allow
+    }
+    organization: {
+      name: allow
+      description: allow
+      location: { create: { name: allow } }
+      logo: { create: { path: allow } }
+    }
+  ) {
+    message(action: allow)
+    error(action: allow)
+    user {
+      id(action: allow)
+      disabled(action: allow)
+      emailVerified(action: allow)
+      displayName(action: allow)
+      phoneNumber(action: allow)
+      email(action: allow)
+      role(action: allow)
+      createdAt(action: allow)
+      updatedAt(action: allow)
+      avator {
+        id(action: allow)
+        path(action: allow)
+        mimetype(action: allow)
+      }
+      organizations(where: { name: { equals: allow } }) {
+        id(action: allow)
+        name(action: allow)
+        logo {
+          id(action: allow)
+          path(action: allow)
+          mimetype(action: allow)
+        }
+      }
+    }
+  }
+}
+

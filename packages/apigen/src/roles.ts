@@ -1,49 +1,26 @@
 
 export interface BaseRole{
-  //TODO limit duplicates
-    parents?: string[];//BaseRole<MutationRules,QueriesRules>
-    readRules?:string[]
-    writeRules?:string[]
-   addReadRule?(v :string[]): boolean
-   removeReadRule?(v :string): boolean
-
-   addWriteRules?(v:string[]):boolean
-   removeWriteRule?(v:string):boolean
+  parents?: string[];
+  rules?: string[][]
+    
+  addRule?(v: string[]): boolean
+  removeRule?(v: string): boolean
    addParent?(p:string):boolean
    removeParent?(p:string):boolean
 }
 export class Role implements BaseRole{
    public parents?:string[]=[];
-   public readRules?:string[]=[];
-  public  writeRules?:string[]=[];
-    addReadRule(v:string[]){
-        return this.readRules.push(...v)>0
+  public rules?: string[][] = [];
+  addRule(v: string[]) {
+    return this.rules.push(v) > 0
     }
-    addWriteRule(v:string[]){
-       return this.writeRules.push(...v)>0
-    }
+
     addParent(p:string): boolean{
       return this.parents.push(p)>0
     }
-    removeReadRule?(v :string): boolean{
-      const i=  this.readRules.indexOf(v);
-      if(i>-1){
-          const p1=this.readRules.splice(i,1);
-          return p1.length===1
 
-      }
-      return false;
-    }
 
-    removeWriteRule?(v:string):boolean{
-      const i=  this.writeRules.indexOf(v);
-      if(i>-1){
-          const p1=this.parents.splice(i,1);
-          return p1.length===1
 
-      }
-      return false;
-    }
     removeParent?(p:string):boolean {
       const i=  this.parents.indexOf(p);
       if(i>-1){
@@ -56,22 +33,16 @@ export class Role implements BaseRole{
 } 
 
 export const getRolePolicies= (role:Role)=>{
-  const {readRules,writeRules,parents}=role;
-  const policies: string[][]=[];
-  if(readRules&&readRules.length){
-    const rules=  readRules.map((v)=>{
-          return [role.constructor.name,v,'read'];
-      });
-      policies.push(...rules)
-  }
-  if(writeRules&&writeRules.length){
-    const rules2=  writeRules.map((v)=>{
-          return [role.constructor.name,v,'write'];
-      });
-      policies.push(...rules2)
-  }
+  const { rules, parents } = role;
+  // const policies: string[][]=[];
+  // if (rules && rules.length) {
+  //   const rules1 = rules.map((v) => {
+  //     return [ ...v];
+  //     });
+  //   policies.push(...rules1)
+  // }
  
-  return policies;
+  return rules;
 }
 export const getRoleGrouping = (role:Role)=>{
   const {parents}=role;

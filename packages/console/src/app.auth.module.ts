@@ -7,12 +7,8 @@ import { PrismaClient } from "@mechsoft/prisma-client";
 import { AuthMiddleware } from "./auth.middleware";
 import { ConfigModule } from "@nestjs/config";
 import { FirebaseModule } from "@mechsoft/firebase-admin";
-import { AuthModule } from "./app-schemas/auth/auth.module";
 import { BusinessRulesManagerModule } from "./business-rules/business-rules-manager.module";
 import { MailModule } from "@mechsoft/mailer";
-import modules from './schemas';
-import { createPolicySchema } from "../prisma/rule.ast";
-import { SchemaDefinitionNode } from "graphql";
 import { PolicyModule } from "./authorization/policy/PolicyModule";
 
 

@@ -1,0 +1,216 @@
+fragment attachment on Attachment{
+      id(action:allow)
+      path(action:allow)
+      mimetype(action:allow)
+      placement(action:allow)
+      size(action:allow)
+      encoding(action:allow)
+      createdAt(action:allow)
+      updatedAt(action:allow)
+}
+fragment organization on Organization{
+  id(action:allow)
+      name(action:allow)
+  description(action:allow)
+      logo{
+        ...attachment
+      }
+}
+fragment location on Location{
+  id(action:allow)
+  name(action:allow)
+}
+fragment user on User{
+     id(action:allow)
+     displayName(action:allow)
+   #  email(action:allow)
+     emailVerified(action:allow)
+     disabled(action:allow)
+     state(action:allow)
+     role(action:allow)
+     createdAt(action:allow)
+     updatedAt(action:allow)
+}
+fragment order on Order{
+  id(action:allow)
+  state(action:allow)
+  owner{
+    ...user
+     email(action:allow)
+     avator{
+      ...attachment
+    }
+    location{
+      ...location
+    }
+  }
+  service{
+    ...service
+  }
+  organization{
+    ...organization
+  }
+}
+fragment service on Service{
+  id(action:allow)
+  name(action:allow)
+  description(action:allow)
+  price(action:allow)
+  state(action:allow)
+  image{
+    ...attachment
+  }
+}
+
+mutation updateOrderProvider{
+  updateOneOrder(
+    role:PROVIDER
+    parent:[CONSUMER]
+    action: create
+    where:{
+      id:allow
+    }
+    data:{
+      state:{
+        set:allow
+      }
+      receipt:{
+        disconnect:allow
+        connect:{
+          id:allow
+        }
+      }
+    }
+  ){
+      status(action:allow)
+     
+      
+    }
+}
+
+mutation createService{
+  createOneService(
+    role:PROVIDER
+    parent:[CONSUMER]
+    action:create
+    data:{
+      name:allow
+      description:allow
+      price:allow
+      category:{
+        connect:{
+          id:allow
+        }
+      }
+      organization:{
+        connect:{
+          id:allow
+        }
+      }
+      image:{
+        create:{
+          path:allow
+          mimetype:allow
+          
+        }
+      }
+    }
+  ){
+   status(action:allow)
+    message(action:allow)
+    data{
+      ...service
+      category{
+        id(action:allow)
+        name(action:allow)
+      }
+      
+    }
+  }
+}
+
+
+mutation updateService{
+  updateOneService(
+    role:PROVIDER
+    parent:[CONSUMER]
+    action:create
+    where:{
+      id:allow
+    }
+    data:{
+      name:{set:allow}
+      description:{set:allow}
+      price:{set:allow}
+      category:{
+        connect:{
+          id:allow
+        }
+      }
+      organization:{
+        connect:{
+          id:allow
+        }
+      }
+      image:{
+        connect:{
+          id:allow
+        }
+        create:{
+          path:allow
+          mimetype:allow
+          
+        }
+      }
+    }
+  ){
+   status(action:allow)
+    message(action:allow)
+    data{
+      ...service
+      category{
+        id(action:allow)
+        name(action:allow)
+      }
+      
+    }
+  }
+}
+
+
+
+query findUniqueOrganization{
+  findUniqueOrganization(
+    role: PROVIDER,
+    parent:[CONSUMER],
+    action: create,
+    where:{id:allow}
+  ){
+    data{
+      orders{
+        ...order
+      }
+    }
+  }
+}
+
+
+query findManyOrder{
+  findManyOrder(
+    role: PROVIDER
+    parent: [CONSUMER]
+    action: create
+    where:{
+      organization:{
+        id:{
+          equals:allow
+        }
+      }
+    }
+    
+    
+  ){
+    status(action:allow)
+    
+  }
+}

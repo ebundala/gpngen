@@ -3,8 +3,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
-import * as setValue from 'set-value';
-import { createRuleAst, getAcessAst, getRulesFromAccessAst } from 'prisma/rule.ast';
+import { getAcessAst, getRulesFromAccessAst } from 'src/authorization/policy/rule.ast';
 @Injectable()
 export class AuthorizerGuard implements CanActivate {
   constructor(private readonly bloc: BusinessRulesManager) { }

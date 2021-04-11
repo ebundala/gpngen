@@ -1,32 +1,13 @@
-import { Role, ruleGroup } from "@mechsoft/apigen";
-import { findManyServiceCategoryRules } from "../../models/queriesRuleslist";
+import { Role, } from "@mechsoft/apigen";
+import { join } from "path";
+import { getRulesFromFile } from "../policy/rule.ast";
 
 export class ANONYMOUS extends Role {
     constructor() {
         super();
-       // this.addWriteRule([
-            //create user account           
-       // ])
-        this.addReadRule([
-            //view service categories            
-            ...ruleGroup('findManyServiceCategory', findManyServiceCategoryRules, {
-                exclude: [
-                    'where',
-                    'orderBy',
-                    'distinct',
-                    'select.organizations',
-                    'select.services',
-                    'select.state'
-                ],
-                include: [
-                    'where.state',
-                    'orderBy.name',
-                    'orderBy.createdAt'
-                ]
-            }, true)
+        const dir = join(process.cwd(), 'packages/console/src/authorization/policy')
+        this.rules = getRulesFromFile(join(dir, 'anonymous.policy.graphql'), ANONYMOUS.name)
 
-
-        ]);
     }
 
 

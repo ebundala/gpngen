@@ -1,5 +1,5 @@
 
-import { Resolver, Query,Mutation,Subscription, Info, Args, Context, Parent } from '@nestjs/graphql';
+import { Resolver, Mutation, Info, Args, Context, Parent } from '@nestjs/graphql';
 import { TenantContext } from '@mechsoft/common';
 import { PolicyService } from './policy.service';
 import { AuthorizerGuard } from '../guards/authorizer.guard';

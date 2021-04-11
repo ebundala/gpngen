@@ -5,7 +5,10 @@ import {
     ObjectTypeDefinitionNode,
     visit,
     FieldDefinitionNode,
-    GraphQLResolveInfo
+    GraphQLResolveInfo,
+    DocumentNode,
+    FragmentDefinitionNode,
+    OperationDefinitionNode
 } from "graphql";
 import { join } from "path";
 import * as setValue from 'set-value';
@@ -336,7 +339,48 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) =>
 
     return ast;
 }
-
+export const getRulesFromFile = (path: string, role: string) => {
+    const text = readFileSync(path);
+    const ast: DocumentNode = gql`${text}`;
+    debugger
+    const operations: OperationDefinitionNode[] = []
+    const fragments: { [key: string]: FragmentDefinitionNode } = {};
+    ast.definitions.forEach((v) => {
+        if (v.kind === 'OperationDefinition') {
+            operations.push(v)
+        }
+        else if (v.kind === 'FragmentDefinition') {
+            fragments[v.name.value] = v;
+        }
+    })
+    const policies = operations.map((operation) => {
+        filterAdminArgs(operation)
+        const fieldName = (operation?.selectionSet?.selections[0] as any)?.name?.value
+        const accessAst = getAcessAst({ operation, fragments, fieldName });
+        const rules = getRulesFromAccessAst(role, accessAst, fieldName, 'deny', true)
+        return rules;
+    }).reduce((p, c, i, v) => {
+        p.push(...c)
+        return p
+    });
+    return policies;
+}
+export const filterAdminArgs = (operation: OperationDefinitionNode): OperationDefinitionNode => {
+    if (operation.selectionSet) {
+        operation.selectionSet.selections = (operation?.selectionSet?.selections as any[]).map(v => {
+            let args = [];
+            (v.arguments as any[]).forEach(a => {
+                const name = a?.name?.value;
+                if (!/role/.test(name) && !/parent/.test(name) && !/action/.test(name)) {
+                    args.push(a)
+                }
+            });
+            v.arguments = args;
+            return v;
+        });
+    }
+    return operation
+}
 export const getRulesFromAccessAst = (role: string,
     data, path: string, action: string, useValue = false) => {
     const r: string[][] = [];

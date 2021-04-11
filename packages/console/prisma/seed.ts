@@ -3,7 +3,7 @@ import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { join } from 'path';
 import { Role, State, User, UserCreateInput, } from '../src/models/graphql';
 import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from '../src/authorization/roles/roles';
-import { createPolicySchema } from './rule.ast';
+import { createPolicySchema } from '../src/authorization/policy/rule.ast';
 
 // const users: UserCreateInput[] = [
 //     //consumers
@@ -231,5 +231,5 @@ const createRoles = async () => {
     return cl.close();
 }
 
-//createRoles().then(()=>console.log('completed')).catch(console.error)
+createRoles().then(() => console.log('completed')).catch(console.error)
 

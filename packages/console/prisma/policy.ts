@@ -1,8 +1,9 @@
 import { gql } from 'apollo-server-express'
-import { createPolicySchema, createRuleAst } from './rule.ast'
+import { join } from 'path';
+import { createPolicySchema, createRuleAst, getRulesFromFile } from '../src/authorization/policy/rule.ast'
 const dir='packages/console/src/authorization/policy'
 const schemaRelativePath='../../models/schema.graphql';
-createPolicySchema(dir,schemaRelativePath)
+//createPolicySchema(dir,schemaRelativePath)
 
 const op = gql`
 query {
@@ -110,5 +111,5 @@ query {
   }
 
   `
-
+getRulesFromFile(join(dir, 'consumer.policy.graphql'), 'ANONYMOUS')
 //createRuleAst(op)
