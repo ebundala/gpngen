@@ -29,7 +29,12 @@ import {
 } from '../../models/graphql';
 import { uploadFile } from '../directives/file.utils';
 import { Prisma } from '@prisma/client'
-import { BusinessRequest, BusinessRulesManager, BlocAttach, BlocValidate, Bloc } from '@mechsoft/business-rules-manager'
+import {
+  BusinessRequest,
+  BusinessRulesManager,
+  BlocAttach,
+  BlocValidate, Bloc
+} from '@mechsoft/business-rules-manager'
 
 import { TenantContext } from '@mechsoft/common';
 @Injectable()
@@ -58,9 +63,9 @@ export class AuthService {
   // }
   @BlocValidate('updateOneRating')
   async updateOneRatingBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-      const { where, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { where } = args;
+    const { prisma, auth } = context;
     const rating = await prisma.runAsRoot(() =>
       prisma.rating.findUnique({
         where: { id: where.id },
@@ -77,25 +82,27 @@ export class AuthService {
 
   @BlocValidate('findUniqueUser')
   async findUniqueUserBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-      const { where, select } = args;
-    const { prisma, auth, logger } = context;
-    const facts = { ...select, ...auth };
+
+    debugger
+    const { args, context } = v;
+    const { where } = args;
+    const { auth, select } = context;
+    const facts = { ...select.data.select, ...auth };
     return { rules: [isUserSensitiveInfo(where.id)], facts }
   }
   @BlocValidate('updateOneUser')
   async updateOneUserBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-    const { where, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { where } = args;
+    const { auth } = context;
     return { rules: [onlyOwnerhasAccess(where.id)], facts: auth }
   }
 
   @BlocValidate('createOneOrganization')
   async createOneOrganizationBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-    const { where, data, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { data } = args;
+    const { prisma, auth } = context;
     const user = await prisma.runAsRoot(() => prisma.user.findUnique({ where: { id: auth.uid }, include: { organizations: true } }))
     const serviceCategories = (await prisma
       .runAsRoot(() => prisma.serviceCategory.findMany({
@@ -115,9 +122,9 @@ export class AuthService {
 
   @BlocValidate('createOneOrder')
   async createOneOrderBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-    const { where, data, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { data } = args;
+    const { prisma, auth } = context;
     debugger
     const service = await prisma.runAsRoot(() => prisma.service.findFirst({
       where: {
@@ -139,9 +146,9 @@ export class AuthService {
 
   @BlocValidate('updateOneOrder')
   async updateOneOrderBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-    const { where, data, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { where, data } = args;
+    const { prisma, auth } = context;
 
     const order = await prisma.runAsRoot(() => prisma.order.findUnique({
       where: {
@@ -188,9 +195,9 @@ export class AuthService {
 
   @BlocValidate('createOneRating')
   async createOneRatingBloc(v: BusinessRequest) {
-    const { args, rules, allow, context } = v;
-    const { where, data, select } = args;
-    const { prisma, auth, logger } = context;
+    const { args, context } = v;
+    const { data } = args;
+    const { prisma, auth } = context;
 
     const { orders, ratings } = (await prisma.runAsRoot(() =>
       prisma.user.findUnique({
@@ -322,7 +329,6 @@ export class AuthService {
           data
         }));
 
-        const setClaims = await this._setUserClaims(u2.id, u2.role);
         const u3 = await prisma.runAs(u2, () => prisma.user.findUnique({ where: { id: u2.id }, select })) as User;
         return {
           error: false,
@@ -473,7 +479,7 @@ export class AuthService {
       .then(() => ({
         status: true,
         message: 'Session destroyed successfully',
-      })).catch(({ message }) => {
+      })).catch(() => {
         return {
           status: false,
           message: 'Operation Failed'

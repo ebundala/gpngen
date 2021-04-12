@@ -103,30 +103,11 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
         },
       ],
       context: async ({ req }): Promise<TenantContext> => {
-        // const p = new PC({
-        //   log: ['error', 'warn'],
-        // });
+
 
         const { token, logger, bloc, auth } = req;
 
         let client: PrismaClient;
-
-        // if (token) {
-        //   logger?.debug(`token ${token}`, GraphQLModule.name);
-        //   const tenant = await p.tenant.findUnique({ where: { id: token } });
-        //   await p.$disconnect();
-        //   if (tenant && tenant.url) {
-        //     //throw new GraphQLError(`Invalid tenant ${token}`);
-        //     client = new PrismaClient({
-        //       datasources: {
-        //         db: {
-        //           url: tenant.url,
-        //         },
-        //       },
-        //       log: ['error', 'warn'],
-        //     });
-        //   }
-        // }
 
         if (!client) {
           client = new PrismaClient({
@@ -137,26 +118,17 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
           path: './src/authorization/rbac_model.conf',
           adapter: await PrismaAdapter.newAdapter({
             log: ['error', 'warn', 'query', 'info'],
-          }) //(new PrismaAdapter()).setAdapter(client)
+          })
         }
 
         const enforcer = new CasbinService(enforcerOptions);
         enforcer.enableLog(true);
         await enforcer.loadPolicy();
-        // const authOptions: AuthorizerOptions = {
-        //   tenantId: token ?? 'tenant.id',
-        //   auth: auth,
-        //   token: token,
-        //   enforcer: enforcer,
-        //   prisma: client,
-        //   logger,
-        //   businessRules: bloc
-        // }
-       // authorizationManager(authOptions);
+
 
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
-          auth: req,
+          auth: req.auth,
           token: token,
           enforcer: enforcer,
           prisma: client,

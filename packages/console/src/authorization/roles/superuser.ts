@@ -5,7 +5,7 @@ export class SUPERUSER extends Role {
 
     constructor() {
         super();
-        debugger;
+      //  debugger;
         this.addParent(MANAGER.name)
       this.addParent(ANONYMOUS.name)
 

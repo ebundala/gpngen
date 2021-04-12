@@ -158,8 +158,6 @@ import { createPolicySchema } from "@mechsoft/enforcer";
 //     }
 // ]
 
-
-
 const getDefaultPolicies = async () => {
    const su = new SUPERUSER();
    const mn= new MANAGER();
@@ -167,7 +165,7 @@ const getDefaultPolicies = async () => {
    const cs = new CONSUMER();
    const an = new ANONYMOUS();
 
-    debugger;
+    //debugger;
     const superUser = getRolePolicies(su)
     const manager = getRolePolicies(mn)
     const provider = getRolePolicies(pv)
@@ -181,8 +179,7 @@ const getDefaultPolicies = async () => {
     const anonymousG = getRoleGrouping(an)
 
     
-    superUserG.push(...managerG,...providerG,...consumerG,...anonymousG);
-
+    superUserG.push(...managerG, ...providerG, ...consumerG, ...anonymousG);
     superUser.push(...manager,...provider,...consumer,...anonymous);
     return { roleGroups: superUserG, policies: superUser };
 }

@@ -8,12 +8,12 @@ export class EngineConfig {
 }
 export const businessRulesEvaluate = async ({ rules, facts, options }: EngineConfig) => {
 
-    const engine = new Engine(rules, options);
-    const { events, failureEvents }: EngineResult = await engine.run(facts).catch((r) => r)
+    const engine = new Engine(rules, options ?? { allowUndefinedFacts: true });
+    const { events, failureEvents, results, failureResults }: EngineResult = await engine.run(facts);//.catch((r) => r)
     engine.stop();
     if (events?.length > 0) {
         const message = events[0]?.params?.message ?? 'Operation not permited error'
-        throw new HttpException(message, HttpStatus.FORBIDDEN)
+        throw new HttpException({ status: false, message, data: null }, HttpStatus.FORBIDDEN)
     }
 
 }

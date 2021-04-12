@@ -160,11 +160,15 @@ export const createPolicySchema = (dir: string, schemaRelativePath: string) => {
 }
 
 
-export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) => {
+export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, variableValues?: any) => {
     // debugger
     const ast = visit(op, {
         Variable: {
             leave(node) {
+                //debugger
+                if (variableValues) {
+                    return variableValues[node.name.value] ?? fieldValue
+                }
                 return node.name.value ?? fieldValue
             }
         },
@@ -251,6 +255,7 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) =>
 
             }
         },
+
         FragmentDefinition: {
             leave(node) {
                 //debugger
@@ -298,7 +303,7 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) =>
 export const getRulesFromFile = (path: string, role: string) => {
     const text = readFileSync(path);
     const ast: DocumentNode = gql`${text}`;
-    debugger
+
     const operations: OperationDefinitionNode[] = []
     const fragments: { [key: string]: FragmentDefinitionNode } = {};
     ast.definitions.forEach((v) => {
@@ -312,7 +317,7 @@ export const getRulesFromFile = (path: string, role: string) => {
     const policies = operations.map((operation) => {
         filterAdminArgs(operation)
         const fieldName = (operation?.selectionSet?.selections[0] as any)?.name?.value
-        const accessAst = getAcessAst({ operation, fragments, fieldName });
+        const accessAst = getAcessAst({ operation, fragments, fieldName, variableValues: {} });
         const rules = getRulesFromAccessAst(role, accessAst, fieldName, 'deny', true)
         return rules;
     }).reduce((p, c, i, v) => {
@@ -368,6 +373,9 @@ export const getRulesFromAccessAst = (role: string,
         for (let i = 0; i < v.length; i++) {
             const [k1, v1] = v[i];
             const t = typeof v1;
+            if (!v1 || /\_\_typename/.test(k1)) {
+                continue
+            }
             if (k1 === 'select' && /select/.test(path)) {
                 if (t !== 'object') {
                     r.push([role, `${path}`, getAction(v1)])
@@ -375,7 +383,7 @@ export const getRulesFromAccessAst = (role: string,
                 else {
                     r.push(...getRulesFromAccessAst(role, v1, `${path}`, action, useValue))
                 }
-            } else if (t !== 'object') {
+            } else if (t !== 'object' && v1) {
                 r.push([role, `${path}.${k1}`, getAction(v1)])
             }
             else {
@@ -388,9 +396,13 @@ export const getRulesFromAccessAst = (role: string,
 
 }
 
-export const getAcessAst = ({ operation, fragments, fieldName }) => {
-    const { select, ...input } = createRuleAst(operation, true, fragments)[fieldName];
+export const getAcessAst = ({ operation, fragments, variableValues, fieldName }) => {
+    const { select, ...input } = createRuleAst(operation, true, fragments, variableValues)[fieldName];
+    if (Object.keys(input).length)
     return { select, input }
+    else {
+        return { select }
+    }
 }
 export const rulesToAst = (rules: string[][]) => {
     let value = {}
@@ -400,6 +412,7 @@ export const rulesToAst = (rules: string[][]) => {
     }
     return value;
 }
+
 const resolverTemplate = (operation: OperationDef[], prefix: string) => `
 import { Resolver, Query,Mutation,Subscription, Info, Args, Context, Parent } from '@nestjs/graphql';
 import { TenantContext } from '@mechsoft/common';

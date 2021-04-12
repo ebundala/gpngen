@@ -8,14 +8,10 @@ const options: SdlGeneratorServiceOptions = {
   customOptions: {
     onDelete: true,
     genTypes: true,
-    authorization:{
-      depth:6,
-      rulesDir:'./src/models'
-      
-  },
+
     // excludeFields: ['Id'],
     excludeQueriesAndMutationsByModel: {
-      'User': ['createOne', 'deleteMany',]
+      'User': ['createOne', 'deleteMany']
     },
     excludeQueriesAndMutations: [
       'upsertOne', 'aggregate', 'deleteMany', 'updateMany', 'findCount'
@@ -23,6 +19,16 @@ const options: SdlGeneratorServiceOptions = {
     excludeModels: [
       {
         name: 'CasbinRule',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'Location',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'Attachment',
         queries: true,
         mutations: true,
       },

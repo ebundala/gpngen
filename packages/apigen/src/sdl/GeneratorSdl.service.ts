@@ -58,9 +58,7 @@ export class SdlGeneratorService extends Generators {
       let fileContent = `type ${model.name} {`;
       const excludeFields = this.excludeFields(model.name);
       model.fields.forEach((field) => {
-        // if (!excludeFields.includes(field.name)) {
 
-        //TODO add enforcer directives to field level
         if (!excludeFields.find((v, i) => new RegExp(v).test(field.name))) {
           this.logger.log(`creating field ${model.name}:${field.name} `);
           fileContent += `
@@ -181,11 +179,9 @@ export class SdlGeneratorService extends Generators {
   private createModule(model) {
     const content = `
     import { Module } from '@nestjs/common';
-    //import { PrismaClientModule } from '@mechsoft/prisma-client';
     import { ${model}Resolver } from './${model}Resolvers';
 
     @Module({
-      //imports:[PrismaClientModule],
       providers:[${model}Resolver]
     })
     export class ${model}Module{}
@@ -209,9 +205,16 @@ export class SdlGeneratorService extends Generators {
   }
   private createResolvers(resolvers: string, model: string) {
     //if (resolvers) {
+      
 
     resolvers = `
-      import { Resolver, Mutation,Query,Info, Args, Context, ResolveField, Parent } from '@nestjs/graphql';
+    /**
+     *
+     * GENERATED FILE DO NOT EDIT CHANGES WITH BE OVERWRITEN EXTEND INSTEAD
+     *
+     */
+      import { UseGuards } from '@nestjs/common';
+      import { Resolver, Mutation,Query,Info, Args, Context, Parent } from '@nestjs/graphql';
       import { 
       ${model},
       ${model}Response,
@@ -231,8 +234,10 @@ export class SdlGeneratorService extends Generators {
     } from '../../models/graphql';
       import {PrismaClient } from '@mechsoft/prisma-client'
       import { TenantContext } from '@mechsoft/common';
+      import {AuthorizerGuard} from '@mechsoft/enforcer';
 
       @Resolver((of)=>${model})
+      @UseGuards(AuthorizerGuard)
       export class ${model}Resolver {
           
          ${resolvers}

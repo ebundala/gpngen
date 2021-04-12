@@ -15,13 +15,13 @@ import {
 import { AuthService } from './auth-service';
 
 @Resolver((of) => User)
+  @UseGuards(AuthorizerGuard)
 export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
    // private readonly logger: AppLogger
   ) { }
   @Mutation((returns) => AuthResult)
-  @UseGuards(AuthorizerGuard)
   async signup(
     @Args('credentials', { type: () => AuthInput }) credentials: AuthInput,
     @Args('organization', { type: () => OrganizationCreateWithoutOwnerInput }) organization: OrganizationCreateWithoutOwnerInput,

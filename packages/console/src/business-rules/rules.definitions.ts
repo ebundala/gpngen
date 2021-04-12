@@ -40,7 +40,6 @@ export const isUserSensitiveInfo = (userId: string) => {
             },
             conditions: {
                 any: [
-
                     {
                         all: [
                             {

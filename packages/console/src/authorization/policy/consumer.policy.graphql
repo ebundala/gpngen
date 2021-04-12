@@ -44,9 +44,12 @@ fragment service on Service {
 fragment order on Order {
   id(action: allow)
   state(action: allow)
+  createdAt(action: allow)
+  updatedAt(action: allow)
   owner {
     ...user
     email(action: allow)
+    phoneNumber(action:allow)
     avator {
       ...attachment
     }
@@ -88,6 +91,7 @@ mutation updatePersonalProfile {
     data {
       ...user
       email(action: allow)
+      phoneNumber(action:allow)
       avator {
         ...attachment
       }
@@ -109,6 +113,8 @@ mutation createOrganization {
     role: CONSUMER
     action: create
     data: {
+      name:allow
+      description: allow
       owner: { connect: { id: allow } }
       offers: { connect: { id: allow } }
       location: { create: { name: allow } }
@@ -330,6 +336,8 @@ query findUniqueUser {
     message(action: allow)
     data {
       ...user
+      email(action:allow)
+      phoneNumber(action:allow)
       avator {
         ...attachment
       }
