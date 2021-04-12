@@ -5,7 +5,7 @@ import {
   Context, Info, Mutation,
   Resolver
 } from '@nestjs/graphql';
-import { AuthorizerGuard } from '../../authorization/guards/authorizer.guard';
+import { AuthorizerGuard } from "@mechsoft/enforcer";
 import {
   AuthInput,
   AuthResult,

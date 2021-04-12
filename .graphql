@@ -1,5 +1,4 @@
 {
-	//graphql globs
 	"schemas": [
 	"packages/**/src/models/*.graphql"
 	], 

@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server-express'
 import { join } from 'path';
-import { createPolicySchema, createRuleAst, getRulesFromFile } from '../src/authorization/policy/rule.ast'
+import { createPolicySchema, createRuleAst, getRulesFromFile } from "@mechsoft/enforcer"
 const dir='packages/console/src/authorization/policy'
 const schemaRelativePath='../../models/schema.graphql';
 //createPolicySchema(dir,schemaRelativePath)

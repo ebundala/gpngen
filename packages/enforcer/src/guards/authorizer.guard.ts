@@ -2,8 +2,8 @@ import { TenantContext } from '@mechsoft/common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
-import { BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
-import { getAcessAst, getRulesFromAccessAst } from 'src/authorization/policy/rule.ast';
+import { BusinessRulesManager } from '@mechsoft/business-rules-manager';
+import { getAcessAst, getRulesFromAccessAst } from './rule.ast';
 @Injectable()
 export class AuthorizerGuard implements CanActivate {
   constructor(private readonly bloc: BusinessRulesManager) { }

@@ -8,55 +8,11 @@ import {
     GraphQLResolveInfo,
     DocumentNode,
     FragmentDefinitionNode,
-    OperationDefinitionNode
+    OperationDefinitionNode,
+
 } from "graphql";
 import { join } from "path";
 import * as setValue from 'set-value';
-
-
-/* const getRulesAstFromInput = (role: string, data, path: string, action: string) => {
-    const r: string[][] = [];
-    if (data instanceof Array) {
-        for (let i = 0; i < data.length; i++) {
-            const v = data[i];
-            if (typeof v === 'object') {
-                r.push(...getRulesAstFromInput(role, v, `${path}`, action))
-            }
-            else if (!r.find(([r, p, a]) => r === role && path === p && action === a)) {
-                r.push([role, `${path}`, action]);
-            }
-        }
-    } else if (typeof data === 'object') {
-
-        const v = Object.entries(data)
-        //handle empty objects/promises
-        if (v.length === 0) {
-            r.push([role, `${path}`, action])
-            return r;
-        }
-        for (let i = 0; i < v.length; i++) {
-            const [k1, v1] = v[i];
-            const t = typeof v1;
-            if (k1 === 'select' && /select/.test(path)) {
-                if (t !== 'object') {
-                    r.push([role, `${path}`, action])
-                }
-                else {
-                    r.push(...getRulesAstFromInput(role, v1, `${path}`, action))
-                }
-            } else if (t !== 'object') {
-                r.push([role, `${path}.${k1}`, action])
-            }
-            else {
-                r.push(...getRulesAstFromInput(role, v1, `${path}.${k1}`, action))
-            }
-        }
-    }
-
-    return r;
-
-} */
-
 
 
 
@@ -199,13 +155,13 @@ export const createPolicySchema = (dir: string, schemaRelativePath: string) => {
     writeFileSync(join(path, 'policy.mutations.resolvers.ts'), mutations)
 
     writeFileSync(join(path, 'policy.subscriptions.resolvers.ts'), subscriptions)
-    
+
     return ast2
 }
 
 
 export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) => {
-   // debugger
+    // debugger
     const ast = visit(op, {
         Variable: {
             leave(node) {
@@ -314,17 +270,17 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) =>
                 let fragDefAst
                 if (fragments) {
                     fragDefAst = createRuleAst(fragments[node.name.value], fieldValue, fragments)
-                    
+
                 }
                 return { ...node, fv: fragDefAst }
-           }
-       },
+            }
+        },
         SelectionSet: {
             leave(node) {
                 let f = {};
-              //  debugger
+                //  debugger
                 node.selections.forEach((v) => {
-                        f = { ...f, ...(v as any).fv };
+                    f = { ...f, ...(v as any).fv };
                 })
                 return f;
             }
@@ -335,7 +291,7 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any) =>
             }
         }
     })
-   // debugger
+    // debugger
 
     return ast;
 }

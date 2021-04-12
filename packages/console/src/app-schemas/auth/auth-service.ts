@@ -29,10 +29,8 @@ import {
 } from '../../models/graphql';
 import { uploadFile } from '../directives/file.utils';
 import { Prisma } from '@prisma/client'
-import { BusinessRequest, BusinessRulesManager } from '../../business-rules/business-rules-manager.service';
-import { BlocValidate } from '../../business-rules/bloc-validation.decorator';
-import { BlocAttach } from 'src/business-rules/bloc-hook.decorator';
-import { Bloc } from 'src/business-rules/busines-rules-container.decorator';
+import { BusinessRequest, BusinessRulesManager, BlocAttach, BlocValidate, Bloc } from '@mechsoft/business-rules-manager'
+
 import { TenantContext } from '@mechsoft/common';
 @Injectable()
   @Bloc()

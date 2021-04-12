@@ -1,6 +1,6 @@
 import { Role } from "@mechsoft/apigen";
 import { join } from "path";
-import { getRulesFromFile } from "../policy/rule.ast";
+import { getRulesFromFile } from '@mechsoft/enforcer';
 import { PROVIDER } from "./provider";
 
 export class MANAGER extends Role {

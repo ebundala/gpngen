@@ -3,7 +3,7 @@ import { findManyOrderRules, findUniqueOrganizationRules } from "../../models/qu
 import { createOneServiceRules, updateOneOrderRules, updateOneServiceRules } from "../../models/mutationRuleslist";
 import { CONSUMER } from "./consumer";
 import { join } from "path";
-import { getRulesFromFile } from "../policy/rule.ast";
+import { getRulesFromFile } from '@mechsoft/enforcer';
 
 export class PROVIDER extends Role {
 

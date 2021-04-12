@@ -10,20 +10,12 @@ import { GraphQLModule } from '@nestjs/graphql';
 import {
   GraphQLRequestContext,
   GraphQLRequestContextWillSendResponse,
-  GraphQLRequestListener,
-  GraphQLRequestContextResponseForOperation,
-  GraphQLResponse,
-  ValueOrPromise
+  GraphQLRequestListener
 } from 'apollo-server-plugin-base';
-import { writeFileSync } from 'fs';
-import { printSchema } from 'graphql';
-import { join } from 'path';
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
-import { AuthMiddleware } from './auth.middleware';
-import { BusinessRulesManagerModule } from './business-rules/business-rules-manager.module';
-//import { authorizationManager, AuthorizerOptions } from './authorization';
-//import { BusinessRulesManagerModule } from './business-rules/business-rules-manager.module';
+import { AuthMiddleware } from '@mechsoft/enforcer';
+import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 
 

@@ -1,13 +1,12 @@
 import { AppLoggerModule } from "@mechsoft/app-logger";
 import { TenantContext } from "@mechsoft/common";
-import { CasbinService, PrismaAdapter } from "@mechsoft/enforcer";
+import { CasbinService, PrismaAdapter, AuthMiddleware } from "@mechsoft/enforcer";
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaClient } from "@mechsoft/prisma-client";
-import { AuthMiddleware } from "./auth.middleware";
 import { ConfigModule } from "@nestjs/config";
 import { FirebaseModule } from "@mechsoft/firebase-admin";
-import { BusinessRulesManagerModule } from "./business-rules/business-rules-manager.module";
+import { BusinessRulesManagerModule } from "@mechsoft/business-rules-manager";
 import { MailModule } from "@mechsoft/mailer";
 import { PolicyModule } from "./authorization/policy/PolicyModule";
 

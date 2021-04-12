@@ -1,4 +1,4 @@
-import { Engine, EngineOptions, EngineResult, Rule, RuleProperties } from "json-rules-engine"
+import { Engine, EngineOptions, EngineResult, RuleProperties } from "json-rules-engine"
 import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class EngineConfig {
@@ -15,5 +15,5 @@ export const businessRulesEvaluate = async ({ rules, facts, options }: EngineCon
         const message = events[0]?.params?.message ?? 'Operation not permited error'
         throw new HttpException(message, HttpStatus.FORBIDDEN)
     }
-    
+
 }

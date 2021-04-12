@@ -22,6 +22,7 @@ export function createQueriesAndMutations(
     findUnique${name}(where: ${name}WhereUniqueInput!): ${name}Response!`;
     operations.queries.resolver += `
     @Query((returns)=>${name}Response)
+
     findUnique${name}(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info):Promise<${name}Response|any>{
       const select = ctx.prisma.getSelection(info).valueOf('data', '${name}', { select: {  } });
       return ctx.prisma.${model}.findUnique({...args,...select})

@@ -1,6 +1,6 @@
 import { TenantContext } from "@mechsoft/common";
 import { Injectable } from "@nestjs/common";
-import { filterAdminArgs, getAcessAst, getRulesFromAccessAst, rulesToAst } from './rule.ast'
+import { filterAdminArgs, getAcessAst, getRulesFromAccessAst, rulesToAst } from '@mechsoft/enforcer'
 
 @Injectable()
 export class PolicyService {
