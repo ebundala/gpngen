@@ -1,9 +1,9 @@
 import { BusinessRulesManager } from './business-rules-manager.service';
 import { BUSINESS_LOGIC_HOOK } from './constants';
 
-export function BlocAttach(hook: string): MethodDecorator {
+export function BlocAttach(hook: string, before: boolean = false): MethodDecorator {
     return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor) => {
-        Reflect.defineMetadata(`${BUSINESS_LOGIC_HOOK}/${propertyKey}`, hook, BusinessRulesManager);
+        Reflect.defineMetadata(`${BUSINESS_LOGIC_HOOK}/${propertyKey}`, `${before ? 'before:' : ''}${hook}`, BusinessRulesManager);
         return propertyDescriptor;
     };
 }

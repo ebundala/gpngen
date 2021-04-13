@@ -8,14 +8,15 @@ import { getAcessAst, getRulesFromAccessAst } from './rule.ast';
 export class AuthorizerGuard implements CanActivate {
   constructor(private readonly bloc: BusinessRulesManager) { }
   canActivate(
-    ctx: ExecutionContext,
+    ctx: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
     debugger
     const gqlHost = GqlExecutionContext.create(ctx);
-    const args = gqlHost.getArgs()
+
+    let args = gqlHost.getArgs()
     const context: TenantContext = gqlHost.getContext()
     const info = gqlHost.getInfo();
-    const role = context?.auth.role ?? 'ANONYMOUS';
+    const role = context?.auth?.role ?? 'ANONYMOUS';
     const { select, input } = getAcessAst(info);
     const rules = getRulesFromAccessAst(role, { input, select }, info?.fieldName, 'allow');
     debugger
@@ -32,9 +33,13 @@ export class AuthorizerGuard implements CanActivate {
           allow
         };
         if (allow) {
-         // debugger
-          const req2 = await this.bloc.handleHookRequest(req);
+          // Before business rules validation hooks (any logic before creating records)
+          const req2 = await this.bloc.handleHookRequest(req, true);
+          //Business validation rules excution
           await this.bloc.handleBusinessRequest(req2);
+          //after Business rules validation hook (handle creation of dependent records)
+          const req3 = await this.bloc.handleHookRequest(req2);
+          (ctx as any).args[1] = req3.args;
         }
         return allow
       });

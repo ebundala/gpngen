@@ -2,7 +2,7 @@ import { AppLogger } from '@mechsoft/app-logger';
 import { FirebaseService } from '@mechsoft/firebase-admin';
 import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpService, HttpStatus, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import {
   canCreateOnlyOneOrganization, isUserSensitiveInfo,
@@ -14,12 +14,14 @@ import {
   onlyServiceOfferedByOrg,
   onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization,
   onlyOneRatingPerConsumerOrganizationPair,
-  onlyOwnerOfRecordAllowed
+  onlyOwnerOfRecordAllowed,
+  uniqueEmailPerAccount
 } from '../../business-rules/rules.definitions';
 import { isEmail, isLength } from 'validator';
 import {
   AuthInput,
   AuthResult,
+  LocationCreateOrConnectWithoutOrganizationsInput,
   OrganizationCreateWithoutOwnerInput,
   Role,
   SignOutResult,
@@ -37,6 +39,7 @@ import {
 } from '@mechsoft/business-rules-manager'
 
 import { TenantContext } from '@mechsoft/common';
+import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 @Injectable()
   @Bloc()
 export class AuthService {
@@ -51,16 +54,84 @@ export class AuthService {
     this.logger.setContext(AuthService.name);
   }
   // @BlocAttach('signup.input.credentials.avator')
-  // async avator(args, next) {
-  //   debugger
+  // async userLocation(args:BusinessRequest, next) {
+
+  //   //todo create location for user avator here
   //   return next(args)
   // }
+  @BlocAttach('signup.input.organization.location.create.lat')
+  async organizationLocation(v: BusinessRequest<TenantContext>, next) {
 
-  // @BlocValidate('signup.input.credentials.avator')
-  // async avatorRule(args) {
-  //   debugger
-  //   return { rules: [], facts: { test: true } }
-  // }
+    debugger
+    const { args, context } = v;
+    const { prisma, logger } = context;
+    const { organization, ...rest } = args;
+    const { location, ...others } = organization
+    const { name, lat, lon } = location.create;
+    const loc = await prisma.location.create({
+      data: { name, lat, lon }
+    });
+    if (loc && loc.id) {
+      //create a geom here
+
+      const affected = await prisma.$executeRaw`UPDATE "Location" 
+      SET 
+      geom=ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)
+      where id=${loc.id};`;
+      logger.debug(`Location create affected rows:${affected}`)
+      if (affected) {
+        //todo update input to link to new location
+        const input = {
+          ...others,
+          location: {
+            connect: { id: loc.id }
+          }
+        }
+        v.args = { ...rest, organization: input }
+      } else {
+        throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
+      }
+    }
+    debugger
+    return next(v)
+  }
+
+  @BlocAttach('signup.input.credentials.avator')
+  async avator(v: BusinessRequest, next) {
+    debugger
+    //todo upload avator here
+    const { args, context } = v;
+    const { credentials, ...rest } = args;
+    const { avator } = credentials
+    const file = await uploadFile(avator)
+    const avator2 = await context.prisma.attachment.create({ data: { ...file } })
+
+    if (avator2 && avator2.id) {
+      v.args.credentials.avator = { connect: { id: avator2.id } };
+    }
+    return next(v)
+  }
+  @BlocAttach('signup.input.organization.logo.create.path')
+  async logo(v: BusinessRequest<TenantContext>, next) {
+    debugger
+    //todo upload avator here
+    const { args, context } = v;
+    const { organization } = args;
+    const file = await uploadFile(organization.logo.create.path)
+    const logo = await context.prisma.attachment.create({ data: { ...file } })
+    if (logo && logo.id) {
+      v.args.organization.logo = { connect: { id: logo.id } }
+    }
+    return next(v)
+  }
+  @BlocValidate('signup.input.credentials.email')
+  async oneEmailPerAccount(v: BusinessRequest<TenantContext>) {
+    const { args, context } = v;
+    const { credentials } = args;
+    const { prisma } = context;
+    const facts = await prisma.user.findUnique({ where: { email: credentials.email }, select: { email: true } })
+    return { rules: [uniqueEmailPerAccount(credentials.email)], facts }
+  }
   @BlocValidate('updateOneRating')
   async updateOneRatingBloc(v: BusinessRequest) {
     const { args, context } = v;
@@ -103,12 +174,11 @@ export class AuthService {
     const { args, context } = v;
     const { data } = args;
     const { prisma, auth } = context;
-    const user = await prisma.runAsRoot(() => prisma.user.findUnique({ where: { id: auth.uid }, include: { organizations: true } }))
-    const serviceCategories = (await prisma
-      .runAsRoot(() => prisma.serviceCategory.findMany({
+    const user = await prisma.user.findUnique({ where: { id: auth.uid }, include: { organizations: true } })
+    const serviceCategories = await prisma.serviceCategory.findMany({
         where: { state: State.APPROVED },
         select: { id: true }
-      }))).map((v) => v.id);
+    }).map((v) => v.id);
     const facts = { ...user, ...data, /*offers: { connect: { id: data?.offers?.connect[0]?.id } }*/ }
     return {
       rules: [
@@ -285,14 +355,12 @@ export class AuthService {
         throw new GraphQLError('Username must be 3 characters or more');
       }
 
-      const users = prisma.user;
-      const exist = await prisma.runAsRoot(() => {
-        return users.findUnique({ where: { email } })
-      })
+     // const users = prisma.user;
+      // const exist = await users.findUnique({ where: { email } })
 
-      if (exist && exist.id) {
-        throw new GraphQLError('The email address is already in use by another account');
-      }
+      // if (exist && exist.id) {
+      //   throw new GraphQLError('The email address is already in use by another account');
+      // }
       try {
 
         user = await this._createUserWithEmail(
@@ -311,25 +379,26 @@ export class AuthService {
         email: user.email,
         emailVerified: user.emailVerified,
         role: Role.CONSUMER,
+
         }
         if (avator) {
-          const avatorData = await uploadFile(avator);
-          data.avator = { create: avatorData }
+          //const avatorData = await uploadFile(avator);
+          data.avator = (avator as any); //{ create: avatorData }
         }
 
         if (organization && organization.name) {
           data.role = Role.MANAGER;
-          const file = organization.logo.create.path;
-          const fileData = await uploadFile(file);
-          organization.logo.create = fileData;
+          const logo = organization.logo
+          // const fileData = await uploadFile(file);
+          organization.logo = (logo as any);
           
           data.organizations = { create: [organization] as any[] }
         }
-        const u2 = await prisma.runAsRoot(() => prisma.user.create({
+        const u2 = await prisma.user.create({
           data
-        }));
+        });
 
-        const u3 = await prisma.runAs(u2, () => prisma.user.findUnique({ where: { id: u2.id }, select })) as User;
+        const u3 = await prisma.user.findUnique({ where: { id: u2.id }, select }) as User;
         return {
           error: false,
           user: u3,

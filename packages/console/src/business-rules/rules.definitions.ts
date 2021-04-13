@@ -1,6 +1,24 @@
 import { Rule } from "json-rules-engine"
 import { Role, State, } from "../models/graphql"
 
+export const uniqueEmailPerAccount = (email: string) => new Rule({
+    name: 'uniqueEmailPerAccount',
+    event: {
+        type: 'uniqueEmailUsed',
+        params: {
+            message: 'Email is being used by another account'
+        }
+    },
+    conditions: {
+        all: [
+            {
+                fact: 'email',
+                operator: 'equal',
+                value: email
+            }
+        ]
+    }
+})
 
 export const onlyOwnerhasAccess = (id: string) => new Rule({
     name: "onlyOwnerhasAccess",

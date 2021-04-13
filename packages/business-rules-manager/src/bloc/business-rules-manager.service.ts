@@ -42,18 +42,19 @@ export class BusinessRulesManager {
 
     }
 
-    async handleHookRequest(req: BusinessRequest<TContext>) {
+    async handleHookRequest(req: BusinessRequest<TContext>, before: boolean = false) {
         const hooksMap = this.handles;
         let i = 0;
         const { rules } = req;
-        const hooks = rules.filter((v) => hooksMap.has(v[1]))
-        const excuteHooks = async (req: BusinessRequest<TContext>,): Promise<BusinessRequest<TContext>> => {
+        const hooks = rules.filter((v) => hooksMap.has(before ? `before:${v[1]}` : v[1]))
+        const excuteHooks = async (req1: BusinessRequest<TContext>,): Promise<BusinessRequest<TContext>> => {
             const a = hooks[i];
             i++;
-            if (i < hooks.length) {
-                return await hooksMap.get(a[1]).apply(this, [req, excuteHooks]);
+            if (i <= hooks.length) {
+                return await hooksMap.get(before ? `before:${a[1]}` : a[1]).apply(this, [req1, excuteHooks]);
             }
-            return req;
+            return req1;
+
         }
         return excuteHooks(req)
 
