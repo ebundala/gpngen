@@ -200,6 +200,7 @@ const createRoles = async () => {
     const casbin = new CasbinService(options)
     const { policies, roleGroups } = await getDefaultPolicies();
     const cl = (casbin.getAdapter() as PrismaAdapter);
+
     await cl.prisma.casbinRule.deleteMany();
     await cl.prisma.casbinRule.createMany({
         skipDuplicates:true,
@@ -215,6 +216,9 @@ const createRoles = async () => {
             }
         }))
     });
+
+
+
 //     await cl.prisma.user.deleteMany()
 //     await cl.prisma.$transaction(
 //         users.map((v) => cl.prisma.user.create({ data: v }))

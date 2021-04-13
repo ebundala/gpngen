@@ -40,7 +40,7 @@ mutation signup {
     organization: {
       name: allow
       description: allow
-      location: { create: { name: allow } }
+      location: { create: { name: allow ,lat:allow,lon:allow} }
       logo: { create: { path: allow } }
     }
   ) {

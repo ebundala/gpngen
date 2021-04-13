@@ -83,7 +83,7 @@ mutation updatePersonalProfile {
         connect: { id: allow }
       }
       staffOf: { disconnect: { id: allow } }
-      location: { create: { name: allow } }
+      location: { create: { name: allow ,lat:allow,lon:allow} }
     }
   ) {
     status(action: allow)

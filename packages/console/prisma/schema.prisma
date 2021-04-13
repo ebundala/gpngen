@@ -172,8 +172,10 @@ model Rating {
 
 model Location {
   id            String                @id @default(cuid())
-  name          String
-  latlon        Unsupported("Point")?
+  name          String                @default("unknown")
+  geom        Unsupported("GEOGRAPHY(POINT,4326)")?
+  lat           Float
+  lon           Float
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   organizations Organization[]        

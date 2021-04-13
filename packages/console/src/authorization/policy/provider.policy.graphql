@@ -19,6 +19,8 @@ fragment organization on Organization{
 fragment location on Location{
   id(action:allow)
   name(action:allow)
+  lat(action:allow)
+  lon(action:allow)
 }
 fragment user on User{
      id(action:allow)

@@ -20,6 +20,8 @@ fragment organization on Organization{
 fragment location on Location{
   id(action:allow)
   name(action:allow)
+  lat(action:allow)
+  lon(action:allow)
 }
 fragment user on User{
      id(action:allow)
@@ -89,7 +91,9 @@ mutation updataOrganization{
       }
      location:{
       create:{
-        name:allow
+        name:allow,
+        lat:allow,
+        lon:allow
       }
     }
       logo:{

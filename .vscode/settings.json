@@ -8,4 +8,16 @@
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 6432,
+            "driver": "PostgreSQL",
+            "name": "itahuduma",
+            "database": "development",
+            "username": "rootDev",
+            "password": "root"
+        }
+    ],
 }

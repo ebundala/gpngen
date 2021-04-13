@@ -1,0 +1,1 @@
+select id, name, ST_asText(geom) FROM "Location" 
