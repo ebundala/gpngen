@@ -12,7 +12,7 @@
         {
             "previewLimit": 50,
             "server": "localhost",
-            "port": 6432,
+            "port": 5432,
             "driver": "PostgreSQL",
             "name": "itahuduma",
             "database": "development",

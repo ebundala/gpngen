@@ -255,10 +255,24 @@ query findManyOrganizations {
     role: CONSUMER
     action: create
     where: {
-      offers: { some: { name: { in: allow }, id: { in: allow } } }
-      location: { name: { mode: allow, contains: allow, equals: allow } }
+      offers: { 
+        every:{id:{equals:allow,notEqual:allow,in:allow,notIn:allow}},
+        some: { name: { in: allow }, id: { in: allow } }
+         }
+      location: { 
+        within: allow,
+        notWithin: allow,
+        nearByName: allow,
+        nearBy: {lat:allow,lon:allow},
+        name: { mode: allow, contains: allow, equals: allow }
+         }
       AND: {
-        location: { name: { contains: allow, equals: allow, mode: allow } }
+        location: { 
+          within: allow,
+          notWithin: allow,
+          nearByName: allow,
+          nearBy: {lat:allow,lon:allow},
+          name: { contains: allow, equals: allow, mode: allow } }
         offers: { some: { name: { in: allow, notIn: allow } } }
       }
     }

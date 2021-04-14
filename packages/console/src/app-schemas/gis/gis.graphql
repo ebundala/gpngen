@@ -1,0 +1,11 @@
+extend input LocationWhereInput{
+    within: Float
+    notWithin: Float
+    nearBy: LatLon
+    nearByName: String
+}
+
+input LatLon{
+    lat: Float!
+    lon: Float!
+}

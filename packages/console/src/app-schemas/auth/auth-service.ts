@@ -53,12 +53,70 @@ export class AuthService {
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
   }
-  // @BlocAttach('signup.input.credentials.avator')
-  // async userLocation(args:BusinessRequest, next) {
+  @BlocAttach('findManyOrganization.input.where.location.notWithin', true)
+  async organizationLocationQuery(v: BusinessRequest<TenantContext>, next) {
+    debugger
+    const { args, context } = v;
+    const { prisma, logger } = context;
+    const { location, ...others } = args.where;
+    const { nearBy, within, notWithin, } = location;
+    const { skip, take } = args;
+    const { every } = args.where.offers ?? {}
+    let categories = [], notCategories = [];
+    if (every?.id?.equals) {
+      categories.push(every.id.equals)
+    }
+    if (every?.id?.in) {
+      categories.push(...every.id.in)
+    }
+    if (every?.id?.notEqual) {
+      notCategories.push(every.id.notEqual)
+    }
+    if (every?.id?.notIn) {
+      notCategories.push(...every.id.notIn)
+    }
 
-  //   //todo create location for user avator here
-  //   return next(args)
-  // }
+    const gisQuery = (prisma,
+      categories: string[],
+      notCategories: string[],
+      nearBy: { lat: number, lon: number },
+      within?: number, notWithin?: number,
+      offset?: number, limit?: number) => {
+
+      //TODO handle cursor pagenation
+      return prisma.$queryRaw`SELECT 
+      id,
+      distance
+      FROM 
+    (SELECT 
+     "Organization".id as id,
+     ST_Distance(
+      ST_SetSRID(ST_MakePoint(${nearBy.lon}, ${nearBy.lat}), 4326),
+        "Location".geom) as distance
+     FROM "Organization" 
+     INNER JOIN "_OrganizationToServiceCategory"
+     ON "Organization"."id"="_OrganizationToServiceCategory"."A" 
+     INNER JOIN "Location"
+     ON "Organization"."locationId"="Location".id 
+     ${categories.length || notCategories.length ? Prisma.sql`WHERE ` : Prisma.empty}
+     ${categories.length ? Prisma.sql`"_OrganizationToServiceCategory"."B" 
+     in (${Prisma.join(categories)})` : Prisma.empty}
+     ${categories.length && notCategories.length ? Prisma.sql`AND` : Prisma.empty}
+     ${notCategories.length ? Prisma.sql`WHERE "_OrganizationToServiceCategory"."B" 
+     not in (${Prisma.join(notCategories)})` : Prisma.empty}
+    ) AS orgs
+    ${within || notWithin ? Prisma.sql`WHERE distance ${within >= 0 ? Prisma.sql` <= ${within}` : notWithin >= 0 ? Prisma.sql` >= ${notWithin}` : Prisma.empty}` : Prisma.empty}
+    ORDER BY distance ASC ${offset >= 0 ? Prisma.sql`OFFSET ${offset}` : Prisma.empty} ${limit >= 0 ? Prisma.sql`LIMIT ${limit}` : Prisma.empty}`
+    }
+
+    const orgs = await gisQuery(prisma, categories, notCategories, nearBy, within, notWithin, skip, take);
+    debugger
+    v.args.where = { id: { in: orgs.map((o) => o.id) }, ...others };
+
+
+    return next(v)
+  }
+
   @BlocAttach('signup.input.organization.location.create.lat')
   async organizationLocation(v: BusinessRequest<TenantContext>, next) {
 
@@ -73,12 +131,10 @@ export class AuthService {
     });
     if (loc && loc.id) {
       //create a geom here
-
       const affected = await prisma.$executeRaw`UPDATE "Location" 
       SET 
       geom=ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)
       where id=${loc.id};`;
-      logger.debug(`Location create affected rows:${affected}`)
       if (affected) {
         //todo update input to link to new location
         const input = {
@@ -137,7 +193,7 @@ export class AuthService {
     const { args, context } = v;
     const { where } = args;
     const { prisma, auth } = context;
-    const rating = await prisma.runAsRoot(() =>
+    const rating = await
       prisma.rating.findUnique({
         where: { id: where.id },
         select: {
@@ -145,7 +201,7 @@ export class AuthService {
             select: { id: true }
           }
         }
-      }));
+      });
 
     const ownerRule = onlyOwnerOfRecordAllowed(auth.uid)
     return { rules: [ownerRule], facts: rating }
@@ -196,7 +252,7 @@ export class AuthService {
     const { data } = args;
     const { prisma, auth } = context;
     debugger
-    const service = await prisma.runAsRoot(() => prisma.service.findFirst({
+    const service = await prisma.service.findFirst({
       where: {
         id: data?.service?.connect?.id,
         AND: {
@@ -204,7 +260,7 @@ export class AuthService {
         }
       },
       select: { id: true, state: true, organization: { select: { id: true,/* state:true */ } } }
-    }));
+    });
 
     return {
       rules: [
@@ -220,7 +276,7 @@ export class AuthService {
     const { where, data } = args;
     const { prisma, auth } = context;
 
-    const order = await prisma.runAsRoot(() => prisma.order.findUnique({
+    const order = await prisma.order.findUnique({
       where: {
         id: where?.id,
       },
@@ -246,7 +302,7 @@ export class AuthService {
           }
         }
       }
-    }));
+    });
     //TODO prevent updating quantity for approved orders
     //TODO add a concept of service provider based on services for organization 
     const facts = { ...auth, state: data?.state?.set };
@@ -269,7 +325,7 @@ export class AuthService {
     const { data } = args;
     const { prisma, auth } = context;
 
-    const { orders, ratings } = (await prisma.runAsRoot(() =>
+    const { orders, ratings } = (await
       prisma.user.findUnique({
         where: {
           id: auth.uid,
@@ -303,7 +359,7 @@ export class AuthService {
             select: { id: true, state: true }
           }
         }
-      }))) ?? {};
+      })) ?? {};
 
     const ordersRule = onlyConsumerWithCompletedOrRejectedOrderCanRateOrganization()
     const connectSelf = onlyConnectOwnerSelf(auth.uid);
@@ -397,7 +453,6 @@ export class AuthService {
         const u2 = await prisma.user.create({
           data
         });
-
         const u3 = await prisma.user.findUnique({ where: { id: u2.id }, select }) as User;
         return {
           error: false,
@@ -428,8 +483,8 @@ export class AuthService {
       .deleteUser(uid)
       .then(() => true)
       .catch(() => false);
-    const remove2 = await prisma.runAsRoot(() => prisma.user
-      .delete({ where: { id: uid } }))
+    const remove2 = await prisma.user
+      .delete({ where: { id: uid } })
       .then(() => true)
       .catch(() => false);
     return remove1 || remove2;
@@ -439,8 +494,8 @@ export class AuthService {
     try {
       const { email, password } = credentials;
 
-      const user = await prisma.runAsRoot(() => prisma.user
-        .findUnique({ where: { email }, select: { id: true, state: true, role: true } }));
+      const user = await prisma.user
+        .findUnique({ where: { email }, select: { id: true, state: true, role: true } });
 
       if (!user) {
         throw new GraphQLError('Signin failed user does not exist');
@@ -514,10 +569,7 @@ export class AuthService {
         const token = await this.firebaseApp.admin.auth()
           .createSessionCookie(idToken, { expiresIn });
         debugger
-        const user = await prisma.runAs({
-          role: decodedIdToken.role,
-          id: decodedIdToken.uid
-        }, () => prisma.user.findUnique({ where: { id: decodedIdToken.uid }, select }));
+        const user = prisma.user.findUnique({ where: { id: decodedIdToken.uid }, select });
 
         return {
           user,
