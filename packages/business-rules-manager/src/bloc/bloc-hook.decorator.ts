@@ -3,7 +3,10 @@ import { BUSINESS_LOGIC_HOOK } from './constants';
 
 export function BlocAttach(hook: string, before: boolean = false): MethodDecorator {
     return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor) => {
-        Reflect.defineMetadata(`${BUSINESS_LOGIC_HOOK}/${propertyKey}`, `${before ? 'before:' : ''}${hook}`, BusinessRulesManager);
+        const key = `${BUSINESS_LOGIC_HOOK}/${propertyKey}`
+        const hooks = Reflect.getMetadata(key, BusinessRulesManager) ?? [];
+        hooks.push(`${before ? 'before:' : ''}${hook}`)
+        Reflect.defineMetadata(key, hooks, BusinessRulesManager);
         return propertyDescriptor;
     };
 }

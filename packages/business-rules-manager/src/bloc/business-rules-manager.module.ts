@@ -38,22 +38,26 @@ export class BusinessRulesManagerModule implements OnModuleInit {
             const methods = this.getMethods(i)
 
             methods.forEach((s) => {
-
                 const method = i[s];
-                const validator: string = Reflect.getMetadata(`${BUSINESS_LOGIC_VALIDATOR}/${s}`, BusinessRulesManager)
-                const hook: string = Reflect.getMetadata(`${BUSINESS_LOGIC_HOOK}/${s}`, BusinessRulesManager)
+                const validators: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_VALIDATOR}/${s}`, BusinessRulesManager)
+                const hooks: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_HOOK}/${s}`, BusinessRulesManager)
+                debugger
 
-
-                if (hook) {
+                if (hooks?.length) {
                     //it is a hook 
-                    this.bloc.at(hook, method);
-                    this.logger.log(`BLOC Hook: ${hook}`)
+                    for (let i = 0; i < hooks.length; i++) {
+                        this.bloc.at(hooks[i], method);
+                        this.logger.log(`BLOC Hook: ${hooks[i]}`)
+                    }
                 }
-                else if (validator) {
+                else if (validators?.length) {
                     //it is a validator
-                    this.bloc.on(validator, method)
-                    this.logger.log(`BLOC Validator: ${validator}`)
-                }
+                    for (let i = 0; i < validators.length; i++) {
+
+                        this.bloc.on(validators[1], method)
+                        this.logger.log(`BLOC Validator: ${validators[i]}`)
+                    }
+                    }
 
             })
         })

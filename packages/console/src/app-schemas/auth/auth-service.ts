@@ -53,9 +53,16 @@ export class AuthService {
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
     this.logger.setContext(AuthService.name);
   }
-  @BlocAttach('findManyOrganization.input.where.location.notWithin', true)
+  @BlocAttach('findManyOrganization.input.where.location.within')
+  @BlocAttach('findManyOrganization.input.where.location.nearBy.lat')
+  @BlocAttach('findManyOrganization.input.where.location.nearBy.lon')
+  @BlocAttach('findManyOrganization.input.where.location.notWithin')
   async organizationLocationQuery(v: BusinessRequest<TenantContext>, next) {
     debugger
+    if (v.context['organizationLocationQuery']) {
+      //if excuted return without re excuting
+      return next(v)
+    }
     const { args, context } = v;
     const { prisma, logger } = context;
     const { location, ...others } = args.where;
@@ -113,7 +120,7 @@ export class AuthService {
     debugger
     v.args.where = { id: { in: orgs.map((o) => o.id) }, ...others };
 
-
+    v.context['organizationLocationQuery'] = true //mark excuted 
     return next(v)
   }
 
