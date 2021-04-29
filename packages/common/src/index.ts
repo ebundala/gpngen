@@ -13,5 +13,5 @@ export interface TenantContext extends BaseContext {
     prisma: PrismaClient;
     rules?: string[][];
     select?: any;
-
+    timestamp?: number;
 }

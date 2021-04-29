@@ -9,8 +9,8 @@ export interface CasbinModuleOptions {
     model: string;
     adapterOptions?: Prisma.PrismaClientOptions;
 }
-@Module({})
 @Global()
+@Module({})
 export class CasbinModule {
     static async forRootAsync({
         model,
@@ -21,10 +21,15 @@ export class CasbinModule {
             module: CasbinModule,
             providers: [
                 {
-                    provide: CASBIN_CONFIG,
-                    useValue: {path:join(process.cwd(), model), adapter},
-                },
-                CasbinService,
+                    provide: CasbinService,
+                    useValue: new CasbinService({ path: join(process.cwd(), model), adapter })
+                }
+                //CasbinService,
+                // {
+                //     provide: CASBIN_CONFIG,
+                //     useValue: {path:join(process.cwd(), model), adapter},
+                // },
+
             ],
             exports: [CasbinService],
         };

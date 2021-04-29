@@ -7,7 +7,7 @@ datasource db {
 }
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
  
 }
 
@@ -27,7 +27,11 @@ enum State {
   COMPLETED
   ARCHIVED
 }
-
+enum Gender {
+ MALE
+ FEMELE
+ UNSPECIFIED
+}
 enum AttachmentType {
   AUDIO
   VIDEO
@@ -57,6 +61,8 @@ model User {
   email          String         @unique
   displayName    String
   phoneNumber    String?
+  dateOfBirth    DateTime?
+  gender         Gender         @default(UNSPECIFIED)
   emailVerified  Boolean        @default(false)
   disabled       Boolean        @default(false)
   avator         Attachment?    @relation(fields: [avatorId], references: [id])

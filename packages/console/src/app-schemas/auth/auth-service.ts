@@ -2,7 +2,7 @@ import { AppLogger } from '@mechsoft/app-logger';
 import { FirebaseService } from '@mechsoft/firebase-admin';
 import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
-import { HttpCode, HttpException, HttpService, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpService, HttpStatus, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import {
   canCreateOnlyOneOrganization, isUserSensitiveInfo,
@@ -19,9 +19,9 @@ import {
 } from '../../business-rules/rules.definitions';
 import { isEmail, isLength } from 'validator';
 import {
+  SignupInput,
   AuthInput,
   AuthResult,
-  LocationCreateOrConnectWithoutOrganizationsInput,
   OrganizationCreateWithoutOwnerInput,
   Role,
   SignOutResult,
@@ -33,13 +33,11 @@ import { uploadFile } from '../directives/file.utils';
 import { Prisma } from '@prisma/client'
 import {
   BusinessRequest,
-  BusinessRulesManager,
   BlocAttach,
   BlocValidate, Bloc
 } from '@mechsoft/business-rules-manager'
 
 import { TenantContext } from '@mechsoft/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
 @Injectable()
   @Bloc()
 export class AuthService {
@@ -375,12 +373,12 @@ export class AuthService {
     return { rules: [connectSelf, ordersRule, onlyOneRating], facts };
   }
 
-  async signup(credentials: AuthInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
+  async signup(credentials: SignupInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select, organization);
-    if (!res?.error) {
+    if (res && !res.error) {
       const link = await this.firebaseApp.admin.auth().generateEmailVerificationLink(credentials.email);
-      await this.mail.sendWelcomeEmail(res.user, link).catch((e) => { this.logger.debug(e) });
+      await this.mail.sendWelcomeEmail(res.data, link).catch((e) => { this.logger.debug(e) });
     }
     return res;
   }
@@ -403,10 +401,10 @@ export class AuthService {
     }
   }
 
-  async signupWithEmail(data: AuthInput,
+  async signupWithEmail(data: SignupInput,
     prisma: PrismaClient, select,
       organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
-    const { email, password, displayName, phoneNumber, avator } = data;
+    const { email, password, displayName, phoneNumber, avator, gender, dateOfBirth } = data;
     let user;
     debugger
     try {
@@ -418,12 +416,7 @@ export class AuthService {
         throw new GraphQLError('Username must be 3 characters or more');
       }
 
-     // const users = prisma.user;
-      // const exist = await users.findUnique({ where: { email } })
 
-      // if (exist && exist.id) {
-      //   throw new GraphQLError('The email address is already in use by another account');
-      // }
       try {
 
         user = await this._createUserWithEmail(
@@ -441,18 +434,18 @@ export class AuthService {
         disabled: user.disabled,
         email: user.email,
         emailVerified: user.emailVerified,
+          gender: gender,
+          dateOfBirth: dateOfBirth,
         role: Role.CONSUMER,
 
         }
         if (avator) {
-          //const avatorData = await uploadFile(avator);
-          data.avator = (avator as any); //{ create: avatorData }
+          data.avator = (avator as any);
         }
 
         if (organization && organization.name) {
           data.role = Role.MANAGER;
           const logo = organization.logo
-          // const fileData = await uploadFile(file);
           organization.logo = (logo as any);
           
           data.organizations = { create: [organization] as any[] }
@@ -463,15 +456,17 @@ export class AuthService {
         const u3 = await prisma.user.findUnique({ where: { id: u2.id }, select }) as User;
         return {
           error: false,
-          user: u3,
+          data: u3,
           message: "Thank you for registering\n you will receive a confimation email when your account is ready",
         }
-      } catch ({ message }) {
+      } catch (e) {
         //debugger;
         if (user && user.uid && !await this.cleanUpOnSignUpFailure(user.uid, prisma)) {
 
-          throw new GraphQLError(`Failed to cleanup user signup errors\n ${message}`)
-        };
+          throw new GraphQLError(`Failed to cleanup user signup errors\n ${e?.message}`)
+        } else {
+          throw new GraphQLError(e.message)
+        }
 
       }
     } catch ({ message }) {
@@ -497,7 +492,7 @@ export class AuthService {
     return remove1 || remove2;
   }
 
-  async signInWithEmail(credentials: Partial<AuthInput>, prisma: PrismaClient, select) {
+  async signInWithEmail(credentials: AuthInput, prisma: PrismaClient, select) {
     try {
       const { email, password } = credentials;
 

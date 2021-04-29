@@ -35,6 +35,8 @@ mutation signup {
       email: allow
       password: allow
       displayName: allow
+      gender: allow
+      dateOfBirth: allow
       avator: allow
     }
     organization: {
@@ -46,7 +48,7 @@ mutation signup {
   ) {
     message(action: allow)
     error(action: allow)
-    user {
+    data {
       id(action: allow)
       disabled(action: allow)
       emailVerified(action: allow)

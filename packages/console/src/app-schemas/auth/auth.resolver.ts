@@ -7,6 +7,7 @@ import {
 } from '@nestjs/graphql';
 import { AuthorizerGuard } from "@mechsoft/enforcer";
 import {
+  SignupInput,
   AuthInput,
   AuthResult,
   OrganizationCreateWithoutOwnerInput,
@@ -23,7 +24,7 @@ export class AuthResolver {
   ) { }
   @Mutation((returns) => AuthResult)
   async signup(
-    @Args('credentials', { type: () => AuthInput }) credentials: AuthInput,
+    @Args('credentials', { type: () => SignupInput }) credentials: SignupInput,
     @Args('organization', { type: () => OrganizationCreateWithoutOwnerInput }) organization: OrganizationCreateWithoutOwnerInput,
     @Info() info,
     @Context() ctx: TenantContext

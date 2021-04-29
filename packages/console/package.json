@@ -23,7 +23,7 @@
     "prisma:format": "prisma format",
     "prisma:migrate": "yarn run migrate:save && yarn run migrate:up",
     "prisma:studio": "yarn prisma studio ",
-    "prisma:db:seed": "yarn prisma db seed",
+    "prisma:db:seed": "yarn prisma db seed --preview-feature",
     "prisma:db:push": "yarn prisma db push",
     "prisma:db:pull": "yarn prisma db pull",
     "migrate:save": "prisma migrate dev --create-only",

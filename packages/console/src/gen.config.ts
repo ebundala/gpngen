@@ -1,6 +1,7 @@
 import { SdlGeneratorServiceOptions, writeSchemaToFile } from '@mechsoft/apigen';
 import { join } from 'path';
 import { Upload, UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
+import { createPolicySchema } from "@mechsoft/enforcer";
 
 const options: SdlGeneratorServiceOptions = {
   schemaPath: './prisma/schema.prisma',
@@ -48,7 +49,10 @@ const options: SdlGeneratorServiceOptions = {
       additionalHeader: "import { FileUpload } from '@apollographql/graphql-upload-8-fork';"
     },
     transformSchema: (schema) => {
-      writeSchemaToFile(schema, join(process.cwd(), 'src/models'));
+      const path = join(process.cwd(), 'src/models')
+      writeSchemaToFile(schema, path);
+      //TODO: generate policy schema
+      //createPolicySchema('', path);
       return schema;
     },
     debug: true,

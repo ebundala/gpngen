@@ -78,6 +78,8 @@ mutation updatePersonalProfile {
     where: { id: allow }
     data: {
       displayName: { set: allow }
+      gender: {set:allow}
+      dateOfBirth:{set:allow}
       avator: {
         create: { path: allow, mimetype: allow }
         connect: { id: allow }

@@ -165,10 +165,14 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, va
     const ast = visit(op, {
         Variable: {
             leave(node) {
-                //debugger
+                debugger
                 if (variableValues) {
-                    return variableValues[node.name.value] ?? fieldValue
+                    if (variableValues[node.name.value]) {
+                        return variableValues[node.name.value] ?? fieldValue;
+                    }
+                    return null;
                 }
+
                 return node.name.value ?? fieldValue
             }
         },

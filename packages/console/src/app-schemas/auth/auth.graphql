@@ -1,12 +1,17 @@
 
 
 input AuthInput {
-	email: String
-	password: String
-	displayName: String
-	phoneNumber: String
+	email: String!
+	password: String!
+}
+input SignupInput {
+	email: String!
+	password: String!
+	displayName: String!
+	phoneNumber: String!
+	gender: Gender!
+	dateOfBirth: DateTime!
 	avator:Upload
-	mode:   AuthMode
 }
 enum AuthMode{
 	EMAIL
@@ -18,16 +23,15 @@ type AuthResult {
 	token: String
 	error: Boolean!
 	message: String!
-	user: User 
+	data: User 
 }
 type SignOutResult {
 	status: Boolean
 	message: String
-
 }
 
 extend type Mutation {
-	signup(credentials: AuthInput!,organization:OrganizationCreateWithoutOwnerInput): AuthResult!
+	signup(credentials: SignupInput!,organization:OrganizationCreateWithoutOwnerInput): AuthResult!
 	signin(credentials: AuthInput!): AuthResult!
 	recoverAccount(email: String!): AuthResult!
 	signout: SignOutResult!	

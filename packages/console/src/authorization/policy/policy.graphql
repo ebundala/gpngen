@@ -67,7 +67,7 @@ type AuthResult {
   token(action: PERMISSION): PERMISSION
   error(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
-  user: User
+  data: User
 }
 
 type SignOutResult {

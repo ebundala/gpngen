@@ -197,7 +197,8 @@ const createRoles = async () => {
         })
 
     }
-    const casbin = new CasbinService(options)
+    const casbin = new CasbinService(options);
+    await casbin.init();
     const { policies, roleGroups } = await getDefaultPolicies();
     const cl = (casbin.getAdapter() as PrismaAdapter);
 

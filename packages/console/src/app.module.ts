@@ -1,9 +1,8 @@
 import { AppLoggerModule } from '@mechsoft/app-logger';
 import { TenantContext } from '@mechsoft/common';
-import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { FirebaseModule } from '@mechsoft/firebase-admin';
 import { MailModule } from '@mechsoft/mailer';
-import { PrismaClient } from '@mechsoft/prisma-client';
+import { PrismaClient, PrismaClientMiddleware, PrismaClientModule } from '@mechsoft/prisma-client';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -14,7 +13,7 @@ import {
 } from 'apollo-server-plugin-base';
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
-import { AuthMiddleware } from '@mechsoft/enforcer';
+import { AuthMiddleware, CasbinModule, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
 import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 
@@ -22,7 +21,8 @@ import modules from './schemas';
 
 
 
-const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
+const RequestLogger: GraphQLRequestListener<TenantContext> = {
+
   /*
    didResolveSource?(
      requestContext: GraphQLRequestContextDidResolveSource<TenantContext>,
@@ -65,11 +65,12 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
     const { context, request, response } = requestContext;
     const { tenantId, prisma, logger, auth } = context;
 
-    await (context.enforcer.getAdapter() as PrismaAdapter).close()
-    await prisma.$disconnect();
+    //await (context.enforcer.getAdapter() as PrismaAdapter).close()
+    //  await prisma.$disconnect();
+    const time = Date.now() - (context.timestamp ?? Date.now());
     logger?.debug(
-      `Disconected from prisma server tenantId:${tenantId}`,
-      'PrismaConnectionManager',
+      `Request took ${time}/ms to complete for tenantId:${tenantId}`,
+      'RequestLogger'
     );
   },
 };
@@ -78,15 +79,20 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     FirebaseModule,
+    AppLoggerModule,
     MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
-
+    CasbinModule.forRootAsync({
+      model: './src/authorization/rbac_model.conf',
+      adapterOptions: {
+        log: ['error', 'info', 'query', 'warn']
+      }
+    }),
+    PrismaClientModule,
     GraphQLModule.forRoot({
       typePaths: [
         './src/schemas/**/*.graphql',
         './src/app-schemas/**/*.graphql',
       ],
-
-
       schemaDirectives: {
         file: UploadDirective,
       },
@@ -96,43 +102,47 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
       plugins: [
         {
           requestDidStart(
-            requestContext: GraphQLRequestContext<TenantContext>,
+            ctx: GraphQLRequestContext<TenantContext>,
           ) {
-            return PrismaConnectionManager;
+
+            return RequestLogger;
           },
         },
       ],
       context: async ({ req }): Promise<TenantContext> => {
 
 
-        const { token, logger, bloc, auth } = req;
+        const { token, logger, enforcer, prisma, auth } = req;
 
-        let client: PrismaClient;
+         //const client: PrismaClient = prisma;
+         //const _enforcer: CasbinService=enforcer;
 
-        if (!client) {
-          client = new PrismaClient({
-            log: ['error', 'warn', 'query', 'info'],
-          });
-        }
-        const enforcerOptions = {
-          path: './src/authorization/rbac_model.conf',
-          adapter: await PrismaAdapter.newAdapter({
-            log: ['error', 'warn', 'query', 'info'],
-          })
-        }
 
-        const enforcer = new CasbinService(enforcerOptions);
-        enforcer.enableLog(true);
-        await enforcer.loadPolicy();
+        // if (!client) {
+        //   client = new PrismaClient({
+        //     log: ['error', 'warn', 'query', 'info'],
+        //   });
+        // }
+        // const enforcerOptions = {
+        //   path: './src/authorization/rbac_model.conf',
+        //   adapter: await PrismaAdapter.newAdapter({
+        //     log: ['error', 'warn', 'query', 'info'],
+        //   })
+        // }
+
+        // const enforcer = new CasbinService(enforcerOptions);
+        // enforcer.enableLog(true);
+        // await enforcer.loadPolicy();
 
 
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
-          auth: req.auth,
+          auth: auth,
           token: token,
           enforcer: enforcer,
-          prisma: client,
+          prisma: prisma,
           logger,
+          timestamp: Date.now()
         };
 
 
@@ -144,23 +154,21 @@ const PrismaConnectionManager: GraphQLRequestListener<TenantContext> = {
       extensions: []
     }),
 
+
     /* ServeStaticModule.forRoot({
        rootPath: join(__dirname, '../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],
  
      }),*/
-    AppLoggerModule,
-    // CasbinModule.forRootAsync({
-    //   model: './src/authorization/rbac_model.conf',
-    // }),
+
     ...modules,
     AuthModule,
     BusinessRulesManagerModule
   ],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('/graphql');
+    consumer.apply(PrismaClientMiddleware, EnforcerMiddleware, AuthMiddleware).forRoutes('/graphql');
+
   }
 }

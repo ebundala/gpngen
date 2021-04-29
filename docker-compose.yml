@@ -85,7 +85,7 @@ services:
     ports:
       - ${APP_PORT}:3000
       - 9228:9229 #debugger port disable in production
-      - 5555:5555 #prisma studio disable in production
+      - 5556:5555 #prisma studio disable in production
     volumes:
       - ./:/home/app
     networks:
