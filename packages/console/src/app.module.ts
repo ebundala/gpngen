@@ -16,6 +16,7 @@ import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/up
 import { AuthMiddleware, CasbinModule, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
 import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
+import { join } from 'path';
 
 
 
@@ -111,30 +112,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       ],
       context: async ({ req }): Promise<TenantContext> => {
 
-
         const { token, logger, enforcer, prisma, auth } = req;
-
-         //const client: PrismaClient = prisma;
-         //const _enforcer: CasbinService=enforcer;
-
-
-        // if (!client) {
-        //   client = new PrismaClient({
-        //     log: ['error', 'warn', 'query', 'info'],
-        //   });
-        // }
-        // const enforcerOptions = {
-        //   path: './src/authorization/rbac_model.conf',
-        //   adapter: await PrismaAdapter.newAdapter({
-        //     log: ['error', 'warn', 'query', 'info'],
-        //   })
-        // }
-
-        // const enforcer = new CasbinService(enforcerOptions);
-        // enforcer.enableLog(true);
-        // await enforcer.loadPolicy();
-
-
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
           auth: auth,
@@ -144,8 +122,6 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           logger,
           timestamp: Date.now()
         };
-
-
         return ctx;
       },
       debug: true,
@@ -159,7 +135,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
        rootPath: join(__dirname, '../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],
  
-     }),*/
+    }), */
 
     ...modules,
     AuthModule,
