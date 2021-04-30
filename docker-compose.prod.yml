@@ -85,6 +85,7 @@ services:
     container_name: webserver
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./webserver/web-root:/var/www/html
       - ./webserver/nginx-conf/nginx-conf:/etc/nginx/conf.d
