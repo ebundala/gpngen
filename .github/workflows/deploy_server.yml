@@ -36,7 +36,7 @@ jobs:
           source: "."
           target: "/home/${{ secrets.USERNAME }}/app"
 
-      - name: build server
+      - name: BUILD SERVER
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -46,5 +46,12 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
            cd /home/${{ secrets.USERNAME }}/app
+           echo ${{ secrets.PRISMA_ENV }} >> packages/console/prisma/.env
+           echo ${{ secrets.SERVER_ENV }} >> .env
+           echo ${{ secrets.FIREBASE_ADM_AC }} >> ${{ secrets.FIREBASE_ADM_FILE }}
+           chmod +x stackdeploy
+           ./stackdeploy
+
+
           # chmod +x build.sh
            #./build.sh

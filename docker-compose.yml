@@ -22,31 +22,31 @@ services:
           memory: 1g
       restart_policy:
         condition: on-failure
-  pgbouncer:
-    image: "bitnami/pgbouncer:latest"
-    environment:
-      POSTGRESQL_USERNAME: ${POSTGRES_USER} #Backend PostgreSQL username. Default: postgres.
-      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD} #Backend PostgreSQL password. No defaults.
-      POSTGRESQL_DATABASE: ${POSTGRES_DB} #Backend PostgreSQL Database name to connect to. Default: postgres.
-      POSTGRESQL_HOST: db #Backend PostgreSQL hostname. Default: postgresql.
-      POSTGRESQL_PORT: ${POSTGRES_PORT} #Backend PostgreSQL port. Default: 5432.
-    #  PGBOUNCER_EXTRA_ARGS: "--verbose"
-    depends_on:
-      - db
-    networks:
-      webnet:
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1g
-      restart_policy:
-        condition: on-failure
-    ports:
-      - 6432:6432
-    volumes:
-      - ./pgbouncer/:/bitnami/pgbouncer/
+  # pgbouncer:
+  #   image: "bitnami/pgbouncer:latest"
+  #   environment:
+  #     POSTGRESQL_USERNAME: ${POSTGRES_USER} #Backend PostgreSQL username. Default: postgres.
+  #     POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD} #Backend PostgreSQL password. No defaults.
+  #     POSTGRESQL_DATABASE: ${POSTGRES_DB} #Backend PostgreSQL Database name to connect to. Default: postgres.
+  #     POSTGRESQL_HOST: db #Backend PostgreSQL hostname. Default: postgresql.
+  #     POSTGRESQL_PORT: ${POSTGRES_PORT} #Backend PostgreSQL port. Default: 5432.
+  #   #  PGBOUNCER_EXTRA_ARGS: "--verbose"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     webnet:
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: 1g
+  #     restart_policy:
+  #       condition: on-failure
+  #   ports:
+  #     - 6432:6432
+  #   volumes:
+  #     - ./pgbouncer/:/bitnami/pgbouncer/
   # adminer:
   #   image: ${ADMINER_TAG}
   #   # environment:
@@ -79,7 +79,7 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-    command: yarn run start:docker:debug
+    command: yarn run start:docker:prod
     depends_on:
       - db
     ports:
@@ -99,40 +99,40 @@ services:
           memory: 1g
       restart_policy:
         condition: on-failure
-  app-policy:
-    image: ${NODE_TAG}
-    working_dir: /home/app/packages/console
-    environment:
-      # google credentials
-        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
-        FIREBASE_API_KEY: ${FIREBASE_API_KEY}
-        STORAGE_BUCKET: ${STORAGE_BUCKET}
-        FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
-      #sendgrid email
-        SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-        SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
-        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
-        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
-        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-    command: yarn run start:policy:prod
-    depends_on:
-      - db
-    ports:
-      - 4000:4000
-     # - 9229:9229 #debugger port disable in production
-     # - 5555:5555 #prisma studio disable in production
-    volumes:
-      - ./:/home/app
-    networks:
-      webnet:
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1g
-      restart_policy:
-        condition: on-failure
+  # app-policy:
+  #   image: ${NODE_TAG}
+  #   working_dir: /home/app/packages/console
+  #   environment:
+  #     # google credentials
+  #       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+  #       FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+  #       STORAGE_BUCKET: ${STORAGE_BUCKET}
+  #       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+  #     #sendgrid email
+  #       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+  #       SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
+  #       SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
+  #       SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
+  #       SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+  #   command: yarn run start:policy:prod
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - 4000:4000
+  #    # - 9229:9229 #debugger port disable in production
+  #    # - 5555:5555 #prisma studio disable in production
+  #   volumes:
+  #     - ./:/home/app
+  #   networks:
+  #     webnet:
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: 1g
+  #     restart_policy:
+  #       condition: on-failure
 networks:
   webnet:
 volumes:

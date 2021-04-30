@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
@@ -17,7 +18,7 @@
     "api:gen": "rimraf src/schemas && ts-node --script-mode src/api.gen.ts",
     "dependencies": "yarn install",
     "start:docker:debug": " yarn run prisma:studio & yarn run prisma:generate && nest start --debug 0.0.0.0:9229 --watch",
-    "start:docker:prod": "yarn run dependencies && yarn run prisma:generate && yarn run build && yarn run  start:prod",
+    "start:docker:prod": "yarn run prisma:generate && yarn run build && yarn run  start",
     "prisma:generate": "prisma generate",
     "prisma:introspect": "prisma introspect",
     "prisma:format": "prisma format",
