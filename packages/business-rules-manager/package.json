@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/business-rules-manager",
-  "version": "0.0.1",
+  "version": null,
   "description": "",
   "author": "",
   "private": true,
@@ -45,9 +45,9 @@
     "apollo-server-plugin-base": "^0.10.4",
     "json-rules-engine": "^6.0.1",
     "reflect-metadata": "^0.1.13",
-    "uuid": "^8.3.2",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.3"
+    "rxjs": "^6.6.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.5.1",

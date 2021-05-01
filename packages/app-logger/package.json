@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/app-logger",
-  "version": "0.0.1",
+  "version": null,
   "description": "",
   "author": "",
   "private": true,
@@ -31,7 +31,6 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3"
   },
-  "devDependencies": {},
   "jest": {
     "moduleFileExtensions": [
       "js",

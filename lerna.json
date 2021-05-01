@@ -2,7 +2,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "independet",
+  "version": null,
   "npmClient": "yarn",
   "useWorkspaces": true
 }

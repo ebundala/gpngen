@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/common",
-  "version": "0.0.1",
+  "version": null,
   "description": "",
   "author": "",
   "private": true,
@@ -25,11 +25,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^7.5.1",
-    "casbin": "^5.4.1",
     "@mechsoft/app-logger": "0.0.1",
     "@mechsoft/prisma-client": "0.0.1",
+    "@nestjs/common": "^7.5.1",
     "apollo-server-plugin-base": "^0.10.4",
+    "casbin": "^5.4.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.3"
