@@ -51,9 +51,8 @@ jobs:
           script: |
            cd /home/${{ secrets.USERNAME }}/app
            echo "$PRISMA_ENV" >> packages/console/prisma/.env          
-           echo "$FIREBASE_ADM_AC" >> ${{ secrets.FIREBASE_ADM_FILE }}
-           touch .env
-           echo "$SERVER_ENV" >> .env
+           echo "$FIREBASE_ADM_AC" >> ${{ secrets.FIREBASE_ADM_FILE }}          
+           echo "$FIREBASE_ADM_AC" >> ./.env
            chmod +x stackdeploy
            chmod +x stackdown
            ./stackdeploy
