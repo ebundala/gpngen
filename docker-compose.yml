@@ -2,7 +2,6 @@ version: "3.1"
 
 services:
   db:
-    
     image: ${POSTGRES_TAG}
     ports:
       - ${POSTGRES_PORT}:5432
@@ -23,7 +22,92 @@ services:
           memory: 1g
       restart_policy:
         condition: on-failure
-  # pgbouncer:
+  
+  app:
+    image: ${NODE_TAG}
+    working_dir: /home/app/packages/console
+    environment:
+     # google credentials
+       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
+       FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+       STORAGE_BUCKET: ${STORAGE_BUCKET}
+       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      #sendgrid email
+       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+       SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
+       SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
+       SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
+       SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+    command: yarn run start:docker:debug
+    depends_on:
+      - db
+    ports:
+      - ${APP_PORT}:3000
+      - 9228:9229 #debugger port disable in production
+      - 5556:5555 #prisma studio disable in production
+    volumes:
+      - ./:/home/app
+    networks:
+      webnet:
+
+    deploy:
+      replicas: 1
+      # resources:
+      #   limits:
+      #     cpus: "1"
+      #     memory: 1g
+      restart_policy:
+        condition: on-failure
+  
+  webserver:
+    image: nginx:mainline-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./webserver/web-root:/var/www/html
+      - ./webserver/nginx-conf:/etc/nginx/conf.d
+      - ./webserver/certbot/certbot-etc:/etc/letsencrypt
+      - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - app
+    networks:
+      webnet:
+    deploy:
+      replicas: 1
+      # resources:
+      #  limits:
+      #    cpus: "1"
+      #    memory: 1g
+      restart_policy:
+        condition: on-failure
+        
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./webserver/certbot/certbot-etc:/etc/letsencrypt
+      - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
+      - ./webserver/web-root:/var/www/html
+    depends_on:
+      - webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email ${DOMAINS_EMAIL} --agree-tos --no-eff-email ${CERTBOT_ENV} ${DOMAINS}
+  npm:
+    image: verdaccio/verdaccio:latest
+    depends_on:
+      - webserver
+    networks:
+      webnet:
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  webnet:
+volumes:
+  PGDATA:
+
+
+# pgbouncer:
   #   image: "bitnami/pgbouncer:latest"
   #   environment:
   #     POSTGRESQL_USERNAME: ${POSTGRES_USER} #Backend PostgreSQL username. Default: postgres.
@@ -65,76 +149,3 @@ services:
   #         memory: 1g
   #     restart_policy:
   #       condition: on-failure
-  app:
-    image: ${NODE_TAG}
-    working_dir: /home/app/packages/console
-    environment:
-     # google credentials
-       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
-       FIREBASE_API_KEY: ${FIREBASE_API_KEY}
-       STORAGE_BUCKET: ${STORAGE_BUCKET}
-       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
-      #sendgrid email
-       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-       SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
-       SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
-       SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
-       SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-    command: yarn run start:docker:prod
-    depends_on:
-      - db
-    ports:
-      - ${APP_PORT}:3000
-      - 9228:9229 #debugger port disable in production
-      - 5556:5555 #prisma studio disable in production
-    volumes:
-      - ./:/home/app
-    networks:
-      webnet:
-
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1g
-      restart_policy:
-        condition: on-failure
-  # app-policy:
-  #   image: ${NODE_TAG}
-  #   working_dir: /home/app/packages/console
-  #   environment:
-  #     # google credentials
-  #       GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
-  #       FIREBASE_API_KEY: ${FIREBASE_API_KEY}
-  #       STORAGE_BUCKET: ${STORAGE_BUCKET}
-  #       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
-  #     #sendgrid email
-  #       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-  #       SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
-  #       SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
-  #       SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
-  #       SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-  #   command: yarn run start:policy:prod
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - 4000:4000
-  #    # - 9229:9229 #debugger port disable in production
-  #    # - 5555:5555 #prisma studio disable in production
-  #   volumes:
-  #     - ./:/home/app
-  #   networks:
-  #     webnet:
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         cpus: "1"
-  #         memory: 1g
-  #     restart_policy:
-  #       condition: on-failure
-networks:
-  webnet:
-volumes:
-  PGDATA:

@@ -11,7 +11,7 @@ export class PROVIDER extends Role {
         super()
      //   debugger;
         this.addParent(CONSUMER.name)
-        const dir = join(process.cwd(), 'packages/console/src/authorization/policy')
+        const dir = join(process.cwd(), 'src/authorization/policy')
         this.rules = getRulesFromFile(join(dir, 'provider.policy.graphql'), PROVIDER.name)
         
         // this.addWriteRule([

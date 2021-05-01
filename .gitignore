@@ -54,3 +54,5 @@ packages/console/src/app-schemas/auth.zip
 packages/console/itahuduma-firebase-adminsdk.json
 packages/apigen/test/prisma/app-schemas/
 packages/apigen/test/prisma/generated/
+webserver/certbot/**/*
+!webserver/certbot/**/.gitignore

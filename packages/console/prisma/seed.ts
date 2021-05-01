@@ -186,14 +186,9 @@ const getDefaultPolicies = async () => {
 
 const createRoles = async () => {
     const options = {
-        path: join(process.cwd(), 'packages/console/src/authorization/rbac_model.conf'),
+        path: join(process.cwd(), 'src/authorization/rbac_model.conf'),
         adapter: await PrismaAdapter.newAdapter({
             log: ['error', 'info', 'query', 'warn'],
-            datasources: {
-                db: {
-                    url: "postgresql://rootDev:root@localhost:5432/development?schema=public&pgbouncer=true&connection_limit=1"
-                }
-            }
         })
 
     }

@@ -10,7 +10,7 @@ export class MANAGER extends Role {
         //debugger
         //inherit provider
         this.addParent(PROVIDER.name)
-        const dir = join(process.cwd(), 'packages/console/src/authorization/policy')
+        const dir = join(process.cwd(), 'src/authorization/policy')
         this.rules = getRulesFromFile(join(dir, 'manager.policy.graphql'), MANAGER.name)
         
         // this.addWriteRule([

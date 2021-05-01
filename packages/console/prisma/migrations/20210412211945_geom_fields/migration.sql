@@ -1,5 +1,3 @@
--- Create postgis plugin
-CREATE EXTENSION postgis;
 
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ANONYMOUS', 'CONSUMER', 'PROVIDER', 'MANAGER', 'SUPERUSER');
