@@ -50,10 +50,12 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
            cd /home/${{ secrets.USERNAME }}/app
-           echo "$PRISMA_ENV" >> packages/console/prisma/.env          
-           echo "$FIREBASE_ADM_AC" >> ${{ secrets.FIREBASE_ADM_FILE }}          
-           echo "$FIREBASE_ADM_AC" >> env.temp
-           chmod +x stackdeploy
-           chmod +x stackdown
+           chmod +x scripts/stackdeploy
+           chmod +x scripts/stackdown
+           chmod +x scripts/create_file
+           ./scripts/create_file  packages/console/prisma/.env "$PRISMA_ENV"         
+           ./scripts/create_file   ${{ secrets.FIREBASE_ADM_FILE }} "$FIREBASE_ADM_AC"       
+           ./scripts/create_file .env "$SERVER_ENV"
+           ./scripts/create_file  webserver/nginx-conf/default.conf "$SERVER_CONF"
            ./stackdeploy
 
