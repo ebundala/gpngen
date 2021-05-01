@@ -56,3 +56,6 @@ packages/apigen/test/prisma/app-schemas/
 packages/apigen/test/prisma/generated/
 webserver/certbot/**/*
 !webserver/certbot/**/.gitignore
+*.base64
+**/*.base64
+base64Config

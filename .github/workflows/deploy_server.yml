@@ -41,7 +41,10 @@ jobs:
         env:
           PRISMA_ENV: ${{ secrets.PRISMA_ENV }}
           SERVER_ENV:  ${{ secrets.SERVER_ENV }}
-          FIREBASE_ADM_AC: ${{ secrets.FIREBASE_ADM_AC }}
+          FIREBASE_ADM_AC: ${{secrets.FIREBASE_ADM_AC}}
+          SERVER_CONF: ${{ secrets.SERVER_CONF }}
+          PGBOUNCER_CONF: ${{ secrets.PGBOUNCER_CONF }}
+          PGBOUNCER_USERLIST: ${{ secrets.PGBOUNCER_USERLIST }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -53,9 +56,14 @@ jobs:
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
-           ./scripts/create_file  packages/console/prisma/.env "$PRISMA_ENV"         
-           ./scripts/create_file   ${{ secrets.FIREBASE_ADM_FILE }} "$FIREBASE_ADM_AC"       
-           ./scripts/create_file .env "$SERVER_ENV"
-           ./scripts/create_file  webserver/nginx-conf/default.conf "$SERVER_CONF"
-           ./stackdeploy
+            
+           ./scripts/create_file  packages/console/prisma/.env "$PRISMA_ENV" 
+              
+           ./scripts/create_file   packages/console/${{ secrets.FIREBASE_ADM_FILE }} "${{env.FIREBASE_ADM_AC}}"
+           ./scripts/create_file .env "${{ env.SERVER_ENV}}"
+           ./scripts/create_file  webserver/nginx-conf/default.conf "${{env.SERVER_CONF}}"
+           ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
+           ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
+
+           ./scripts/stackdeploy
 

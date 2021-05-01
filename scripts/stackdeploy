@@ -1,4 +1,5 @@
 #! /bin/bash
+
 docker container prune -f
 docker-compose -f "docker-compose.yml"  config > stack.yml
 docker stack deploy --compose-file stack.yml app
