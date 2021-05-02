@@ -4,7 +4,7 @@
   "description": "",
   "author": "",
   "private": false,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -80,5 +80,5 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "gitHead": "bf72dd849d7d16a3cafffd96804260dc4fe539d9"
+  "gitHead": "fae4e3929b75cbeb01843b6b4e93dc524c314426"
 }
