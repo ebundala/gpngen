@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/app-logger",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "author": "",
   "private": false,
@@ -48,5 +48,5 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "gitHead": "fae4e3929b75cbeb01843b6b4e93dc524c314426"
+  "gitHead": "3bed030d6ab6725cc001fe4cdfe99269927c422f"
 }
