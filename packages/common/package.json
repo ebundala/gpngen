@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/common",
-  "version": "0.0.8-alpha.0",
+  "version": "0.0.9-alpha.0",
   "description": "",
   "author": "",
   "private": false,
@@ -25,8 +25,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mechsoft/app-logger": "^0.0.8-alpha.0",
-    "@mechsoft/prisma-client": "^0.0.8-alpha.0",
+    "@mechsoft/app-logger": "^0.0.9-alpha.0",
+    "@mechsoft/prisma-client": "^0.0.9-alpha.0",
     "@nestjs/common": "^7.5.1",
     "apollo-server-plugin-base": "^0.10.4",
     "casbin": "^5.4.1",
@@ -76,5 +76,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "4b386b93b7f47205ea231b88c95ffb5eebdcb0dc"
+  "gitHead": "063a596d7f2ca182df5234447cbf4d467942637b"
 }
