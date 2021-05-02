@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/metering",
-  "version": "0.0.7",
+  "version": "0.0.8-alpha.0",
   "description": "",
   "author": "",
   "private": false,
@@ -22,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mechsoft/app-logger": "^0.0.7",
+    "@mechsoft/app-logger": "^0.0.8-alpha.0",
     "@nestjs/common": "^7.5.1",
     "@nestjs/core": "^7.5.1",
     "@nestjs/platform-express": "^7.5.1",
@@ -69,5 +69,8 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-  "gitHead": "e016f78504631d5f8396996d3d38a811d0d430d4"
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "4b386b93b7f47205ea231b88c95ffb5eebdcb0dc"
 }
