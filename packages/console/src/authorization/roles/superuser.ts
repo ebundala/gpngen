@@ -4,10 +4,9 @@ import { ANONYMOUS, MANAGER } from "./roles";
 export class SUPERUSER extends Role {
 
     constructor() {
-        super();
-      //  debugger;
+      super();
         this.addParent(MANAGER.name)
-      this.addParent(ANONYMOUS.name)
+        this.addParent(ANONYMOUS.name)
 
      }
 
