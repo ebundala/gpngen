@@ -38,7 +38,7 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-    command: yarn run start:docker:debug
+    command: yarn run start:docker:prod
     depends_on:
       - db
     ports:

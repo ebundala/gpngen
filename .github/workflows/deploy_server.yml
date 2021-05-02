@@ -57,7 +57,7 @@ jobs:
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
             
-           ./scripts/create_file  packages/console/prisma/.env "$PRISMA_ENV" 
+           ./scripts/create_file  packages/console/prisma/.env "${{env.PRISMA_ENV}}" 
               
            ./scripts/create_file   packages/console/${{ secrets.FIREBASE_ADM_FILE }} "${{env.FIREBASE_ADM_AC}}"
            ./scripts/create_file .env "${{ env.SERVER_ENV}}"
