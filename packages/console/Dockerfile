@@ -19,11 +19,11 @@ COPY . .
 RUN yarn run prisma:generate
 RUN yarn run api:gen
 RUN yarn run build
-#RUN rm -rf node_modules && yarn install --frozen-lockfile
+RUN rm -rf node_modules && yarn install --frozen-lockfile
 #attach static files volume here
 VOLUME [ "/usr/src/app/uploads" ] 
-VOLUME [ "/usr/src/app/itahuuduma-firebase-adminsdk.json" ]
-
+VOLUME [ "/usr/src/app/itahuduma-firebase-adminsdk.json" ]
+VOLUME [ "/usr/src/app/prisma/.env" ] 
 EXPOSE 3000
 
 CMD [ "yarn", "start" ]

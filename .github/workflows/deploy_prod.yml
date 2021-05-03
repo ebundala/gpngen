@@ -24,7 +24,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
+      - name: create oci dir
+        run: mkdir oci
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Build Docker image        
         uses: docker/build-push-action@v2.4.0
         with:
@@ -49,10 +52,9 @@ jobs:
             # # Set the networking mode for the RUN instructions during build
             # network: # optional
             # # Do not use cache when building the image
-            # no-cache: # optional, default is false
+             no-cache: true # optional, default is false
             # # List of output destinations (format: type=local,dest=path)
-             outputs: 
-              type=local,dest=./packages/images/app.tar # optional
+             outputs: "type=docker,dest=./oci/app.tar" # optional
             # # List of target platforms for build
             # platforms: # optional
             # # Always attempt to pull a newer version of the image
@@ -66,7 +68,7 @@ jobs:
             # # List of SSH agent socket or keys to expose to the build
             # ssh: # optional
             # # List of tags
-            # tags: # optional
+             tags: "itahuduma:latest" # optional
             # # Sets the target stage to build
             # target: # optional
             # # GitHub Token used to authenticate against a repository for Git context
@@ -79,8 +81,8 @@ jobs:
           port: ${{ secrets.PORT }}
           passphrase: ${{secrets.PASSPHRASE }}
           key: ${{ secrets.SSHKEY }}
-          source: "./packages/console/images/app.tar"
-          target: "/home/${{ secrets.USERNAME }}/app/app.tar"
+          source: "./oci"
+          target: "/home/${{ secrets.USERNAME }}/app/"
 
       - name: Copy webserver files to remote
         uses: appleboy/scp-action@master
@@ -90,8 +92,8 @@ jobs:
           port: ${{ secrets.PORT }}
           passphrase: ${{secrets.PASSPHRASE }}
           key: ${{ secrets.SSHKEY }}
-          source: "./packages/webserver"
-          target: "/home/${{ secrets.USERNAME }}/app/webserver"
+          source: "./webserver"
+          target: "/home/${{ secrets.USERNAME }}/app/"
 
       - name: Copy pgbouncer files to remote
         uses: appleboy/scp-action@master
@@ -102,7 +104,7 @@ jobs:
           passphrase: ${{secrets.PASSPHRASE }}
           key: ${{ secrets.SSHKEY }}
           source: "./pgbouncer"
-          target: "/home/${{ secrets.USERNAME }}/app/pgbouncer"
+          target: "/home/${{ secrets.USERNAME }}/app/"
           
       - name: Copy docker files to remote
         uses: appleboy/scp-action@master
@@ -113,7 +115,7 @@ jobs:
           passphrase: ${{secrets.PASSPHRASE }}
           key: ${{ secrets.SSHKEY }}
           source: "./docker-compose.prod.yml"
-          target: "/home/${{ secrets.USERNAME }}/app/docker-compose.prod.yml"
+          target: "/home/${{ secrets.USERNAME }}/app/"
 
       - name: Copy scripts files to remote
         uses: appleboy/scp-action@master
@@ -124,15 +126,8 @@ jobs:
           passphrase: ${{secrets.PASSPHRASE }}
           key: ${{ secrets.SSHKEY }}
           source: "./scripts"
-          target: "/home/${{ secrets.USERNAME }}/app/scripts"
-      - name: "Check image is created"
-        run: | 
-         echo "check if image is created"
-         cd ./packages/console
-         ls
-         cd ./images
-         ls
-        
+          target: "/home/${{ secrets.USERNAME }}/app/"
+  
       - name: BUILD SERVER        
         uses: appleboy/ssh-action@master
         env:
@@ -150,6 +145,8 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           script: |
            cd /home/${{ secrets.USERNAME }}/app
+           docker load -i oci/app.tar
+           mkdir console/prisma
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
@@ -162,5 +159,5 @@ jobs:
            ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
            ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
 
-           ./scripts/stackdeploy prod
+           ./scripts/stackdeploy prod itahuduma
 

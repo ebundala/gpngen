@@ -23,7 +23,7 @@ services:
         condition: on-failure
   
   app:
-    image: app:latest      
+    image: itahuduma:latest      
     environment:
      # google credentials
        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
@@ -40,6 +40,8 @@ services:
       - db
     volumes:
       - ./console/itahuduma-firebase-adminsdk.json:/usr/src/app/itahuduma-firebase-adminsdk.json
+      - ./console/prisma/.env:/usr/src/app/prisma/.env
+      - ./webserver/webroot:/usr/src/app/uploads
     networks:
       webnet:
 
