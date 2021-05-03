@@ -64,11 +64,11 @@ jobs:
            chmod +x scripts/create_file
             
               
-           ./scripts/create_file .env "${{ env.SERVER_ENV}}"
-           ./scripts/create_file  webserver/certbot/nginx-conf/nginx.conf "${{env.CERT_SERVER_CONF}}"
+           ./scripts/create_file .env "${{ secrets.SERVER_ENV}}"
+           ./scripts/create_file  webserver/certbot/nginx-conf/nginx.conf "${{secrets.CERT_SERVER_CONF}}"
           
            ./scripts/stackdeploy certbot certbot
-            sleep 30s
-           ./scripts/stackdown certbot
+            
+           
 
 

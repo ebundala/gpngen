@@ -146,7 +146,7 @@ jobs:
           script: |
            cd /home/${{ secrets.USERNAME }}/app
            docker load -i oci/app.tar
-           mkdir console/prisma
+           mkdir -p console/prisma
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
@@ -158,6 +158,6 @@ jobs:
            ./scripts/create_file  webserver/nginx-conf/nginx.conf "${{env.SERVER_CONF}}"
            ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
            ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
-
+            ./scripts/stackdown certbot
            ./scripts/stackdeploy prod itahuduma
 

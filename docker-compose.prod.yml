@@ -36,12 +36,13 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+      
     depends_on:
       - db
     volumes:
-      - ./console/itahuduma-firebase-adminsdk.json:/usr/src/app/itahuduma-firebase-adminsdk.json
-      - ./console/prisma/.env:/usr/src/app/prisma/.env
-      - ./webserver/webroot:/usr/src/app/uploads
+      - ${PWD}/console/itahuduma-firebase-adminsdk.json:/usr/src/app/dist/itahuduma-firebase-adminsdk.json
+      - ${PWD}/console/prisma/.env:/usr/src/app/dist/prisma/.env
+      - ./webserver/web-root:/usr/src/app/uploads
     networks:
       webnet:
 
