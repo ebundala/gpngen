@@ -23,7 +23,8 @@ services:
         condition: on-failure
   
   app:
-    image: app:latest      
+    image: ${NODE_TAG}
+    working_dir: /home/app/console
     environment:
      # google credentials
        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
@@ -36,10 +37,13 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+    command: yarn run start:docker:prod
     depends_on:
       - db
+    
+      
     volumes:
-      - ./console/itahuduma-firebase-adminsdk.json:/usr/src/app/itahuduma-firebase-adminsdk.json
+      - ./:/home/app
     networks:
       webnet:
 

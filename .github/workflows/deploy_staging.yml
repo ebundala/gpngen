@@ -1,0 +1,108 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI staging
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ staging ]
+  pull_request:
+    branches: [ staging ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Copy app files to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          source: "./packages/console"
+          target: "/home/${{ secrets.USERNAME }}/app/console"
+      - name: Copy webserver files to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          source: "./packages/webserver"
+          target: "/home/${{ secrets.USERNAME }}/app/webserver"
+      - name: Copy pgbouncer files to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          source: "./pgbouncer"
+          target: "/home/${{ secrets.USERNAME }}/app/pgbouncer"
+      - name: Copy docker files to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          source: "./docker-compose.staging.yml"
+          target: "/home/${{ secrets.USERNAME }}/app/docker-compose.staging.yml"
+      - name: Copy scripts files to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          source: "./scripts"
+          target: "/home/${{ secrets.USERNAME }}/app/scripts"
+      - name: BUILD SERVER        
+        uses: appleboy/ssh-action@master
+        env:
+          PRISMA_ENV: ${{ secrets.PRISMA_ENV }}
+          SERVER_ENV:  ${{ secrets.SERVER_ENV }}
+          FIREBASE_ADM_AC: ${{secrets.FIREBASE_ADM_AC}}
+          SERVER_CONF: ${{ secrets.SERVER_CONF }}
+          PGBOUNCER_CONF: ${{ secrets.PGBOUNCER_CONF }}
+          PGBOUNCER_USERLIST: ${{ secrets.PGBOUNCER_USERLIST }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          key: ${{ secrets.SSHKEY }}
+          script: |
+           cd /home/${{ secrets.USERNAME }}/app
+           chmod +x scripts/stackdeploy
+           chmod +x scripts/stackdown
+           chmod +x scripts/create_file
+            
+           ./scripts/create_file  console/prisma/.env "${{env.PRISMA_ENV}}" 
+              
+           ./scripts/create_file   console/${{ secrets.FIREBASE_ADM_FILE }} "${{env.FIREBASE_ADM_AC}}"
+           ./scripts/create_file .env "${{ env.SERVER_ENV}}"
+           ./scripts/create_file  webserver/nginx-conf/nginx.conf "${{env.SERVER_CONF}}"
+           ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
+           ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
+
+           ./scripts/stackdeploy staging
+

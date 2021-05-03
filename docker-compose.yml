@@ -69,8 +69,7 @@ services:
       - ./webserver/nginx-conf:/etc/nginx/conf.d
       - ./webserver/certbot/certbot-etc:/etc/letsencrypt
       - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
-    depends_on:
-      - app
+    
     networks:
       webnet:
     deploy:
@@ -82,70 +81,18 @@ services:
       restart_policy:
         condition: on-failure
         
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./webserver/certbot/certbot-etc:/etc/letsencrypt
-      - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
-      - ./webserver/web-root:/var/www/html
-    depends_on:
-      - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email ${DOMAINS_EMAIL} --agree-tos --no-eff-email ${CERTBOT_ENV} ${DOMAINS}
-  npm:
-    image: verdaccio/verdaccio:latest
-    depends_on:
-      - webserver
-    networks:
-      webnet:
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
+  # certbot:
+  #   image: certbot/certbot
+  #   volumes:
+  #     - ./webserver/certbot/certbot-etc:/etc/letsencrypt
+  #     - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
+  #     - ./webserver/web-root:/var/www/html
+  #   depends_on:
+  #     - webserver
+  #   command: certonly --webroot --webroot-path=/var/www/html --email ${DOMAINS_EMAIL} --agree-tos --no-eff-email ${CERTBOT_ENV} ${DOMAINS}
+
 networks:
   webnet:
 volumes:
   PGDATA:
 
-
-# pgbouncer:
-  #   image: "bitnami/pgbouncer:latest"
-  #   environment:
-  #     POSTGRESQL_USERNAME: ${POSTGRES_USER} #Backend PostgreSQL username. Default: postgres.
-  #     POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD} #Backend PostgreSQL password. No defaults.
-  #     POSTGRESQL_DATABASE: ${POSTGRES_DB} #Backend PostgreSQL Database name to connect to. Default: postgres.
-  #     POSTGRESQL_HOST: db #Backend PostgreSQL hostname. Default: postgresql.
-  #     POSTGRESQL_PORT: ${POSTGRES_PORT} #Backend PostgreSQL port. Default: 5432.
-  #   #  PGBOUNCER_EXTRA_ARGS: "--verbose"
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     webnet:
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         cpus: "1"
-  #         memory: 1g
-  #     restart_policy:
-  #       condition: on-failure
-  #   ports:
-  #     - 6432:6432
-  #   volumes:
-  #     - ./pgbouncer/:/bitnami/pgbouncer/
-  # adminer:
-  #   image: ${ADMINER_TAG}
-  #   # environment:
-  #   #  ADMINER_PLUGINS: "tables-filter tinymce"
-  #   # ADMINER_DEFAULT_SERVER: "pgbouncer:6432"
-  #   ports:
-  #     - ${ADMINER_PORT}:8080
-  #   networks:
-  #     webnet:
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         cpus: "1"
-  #         memory: 1g
-  #     restart_policy:
-  #       condition: on-failure
