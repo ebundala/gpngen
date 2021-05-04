@@ -36,6 +36,7 @@ mutation signup {
       password: allow
       displayName: allow
       gender: allow
+      phoneNumber: allow
       dateOfBirth: allow
       avator: allow
     }
