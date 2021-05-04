@@ -13,7 +13,7 @@ RUN yarn install
 
 # If you are building your code for production
 # RUN npm ci --only=production
-
+ARG GOOGLE_APPLICATION_CREDENTIALS=firebase-adminsdk.json
 # Bundle app source
 COPY . .
 RUN yarn run prisma:generate
@@ -22,8 +22,8 @@ RUN yarn run build
 # RUN rm -rf node_modules && yarn install --frozen-lockfile
 #attach static files volume here
 VOLUME [ "/usr/src/app/uploads" ] 
-VOLUME [ "/usr/src/app/dist/itahuduma-firebase-adminsdk.json" ]
-VOLUME [ "/usr/src/app/dist/prisma/.env" ] 
+VOLUME [ "/usr/src/app/$GOOGLE_APPLICATION_CREDENTIALS" ]
+
 EXPOSE 3000
 
 CMD [ "yarn","start" ]

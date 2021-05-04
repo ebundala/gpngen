@@ -34,7 +34,7 @@ jobs:
             # List of extra privileged entitlement (eg. network.host,security.insecure)
             # allow: # optional
             # # List of build-time variables
-            # build-args: # optional
+             build-args: GOOGLE_APPLICATION_CREDENTIALS=${{secrets.FIREBASE_ADM_FILE}} # optional
             # # Builder instance
             # builder: # optional
             # # List of external cache sources for buildx (eg. user/app:cache, type=local,src=path/to/dir)

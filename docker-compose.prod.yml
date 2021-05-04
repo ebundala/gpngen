@@ -36,12 +36,12 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
+       DATABASE_URL: ${DATABASE_URL}
       
     depends_on:
       - db
     volumes:
-      - ${PWD}/console/itahuduma-firebase-adminsdk.json:/usr/src/app/dist/itahuduma-firebase-adminsdk.json
-      - ${PWD}/console/prisma/.env:/usr/src/app/dist/prisma/.env
+      - ${PWD}/console/${GOOGLE_APPLICATION_CREDENTIALS}:/usr/src/app/${GOOGLE_APPLICATION_CREDENTIALS}
       - ./webserver/web-root:/usr/src/app/uploads
     networks:
       webnet:
