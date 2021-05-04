@@ -159,5 +159,6 @@ jobs:
            ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
            ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
             ./scripts/stackdown certbot
+            ./scripts/stackdown itahuduma
            ./scripts/stackdeploy prod itahuduma
 
