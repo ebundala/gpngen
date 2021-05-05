@@ -3,7 +3,7 @@
   "version": "0.0.10-alpha.3",
   "description": "",
   "author": "",
-  "private": false,
+  "private": true,
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
