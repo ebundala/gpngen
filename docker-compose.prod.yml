@@ -23,7 +23,7 @@ services:
         condition: on-failure
   
   app:
-    image: itahuduma:latest      
+    image: itahuduma:${IMAGE_TAG}    
     environment:
      # google credentials
        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
