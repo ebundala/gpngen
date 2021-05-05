@@ -20,22 +20,23 @@ export class AuthMiddleware implements NestMiddleware {
       req.token = token;
 
       //TODO remove below line after debugging
-      req.auth = { uid: realm, role: token }
+      // req.auth = { uid: realm, role: token }
+      //   next();
+      if (token)
+        await this.app.admin.auth().verifySessionCookie(token, true)//TODO set true to verify revoked tokens
+          .then((claims) => {
+            req.auth = claims;
 
-        next();
-      //  await this.app.admin.auth().verifySessionCookie(token,false)//TODO set true to verify revoked tokens
-      //   .then((claims)=>{
-      //     req.auth = claims;
-
-      //     req.token = token
-      //     this.logger.log(claims.uid,'AUTH')
-      //   })
-      //   .catch((e)=>{
-      //     req.auth=null;
-      //   }).finally(()=>{
-      //     next();
-      //   })
-     // next();
+          req.token = token
+          this.logger.log(claims.uid, 'AUTH')
+        })
+         .catch((e) => {
+           req.auth = null;
+         }).finally(() => {
+          next();
+        })
+        
+      next();
     } else {
       next();
     }
