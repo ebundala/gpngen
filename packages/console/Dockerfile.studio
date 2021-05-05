@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 COPY ./prisma/schema.prisma ./prisma/schema.prisma
 COPY ./studio.json ./package.json
 RUN yarn add prisma
+RUN yarn add @prisma/client
 
 #attach schema files volume here
 #VOLUME [ "/usr/src/app/schema.prisma"] 
