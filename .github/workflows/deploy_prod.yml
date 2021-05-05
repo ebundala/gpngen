@@ -28,9 +28,16 @@ jobs:
         run: mkdir oci
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Build Docker image        
+      - name: Build studio image        
         uses: docker/build-push-action@v2.4.0
-       
+        with:
+          context: "./packages/console"
+          file: "./packages/console/Dockerfile.studio"
+          labels: "studio"
+          outputs: "type=docker,dest=./oci/studio.tar"
+          tags: "studio:latest, studio:${{github.sha}}"
+      - name: Build Server image        
+        uses: docker/build-push-action@v2.4.0
         with:
             # List of extra privileged entitlement (eg. network.host,security.insecure)
             # allow: # optional
@@ -53,7 +60,7 @@ jobs:
             # # Set the networking mode for the RUN instructions during build
             # network: # optional
             # # Do not use cache when building the image
-             no-cache: true # optional, default is false
+            # no-cache: true # optional, default is false
             # # List of output destinations (format: type=local,dest=path)
              outputs: "type=docker,dest=./oci/app.tar" # optional
             # # List of target platforms for build
@@ -147,6 +154,7 @@ jobs:
           script: |
            cd /home/${{ secrets.USERNAME }}/app
            docker load -i oci/app.tar
+            docker load -i oci/studio.tar
            mkdir -p console/prisma
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown

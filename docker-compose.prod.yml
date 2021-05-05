@@ -21,7 +21,19 @@ services:
           memory: 1g
       restart_policy:
         condition: on-failure
-  
+  studio:
+    image: studio:${IMAGE_TAG}
+    networks:
+      webnet:
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    deploy:
+      replicas: 1
+      resources:
+        limits:         
+          memory: 250m
+      restart_policy:
+        condition: on-failure
   app:
     image: itahuduma:${IMAGE_TAG}    
     environment:
