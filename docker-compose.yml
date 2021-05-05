@@ -38,7 +38,7 @@ services:
        SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE}
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
-    command: yarn run start:docker:prod
+    command: yarn run start:docker:debug
     depends_on:
       - db
     ports:
@@ -59,27 +59,27 @@ services:
       restart_policy:
         condition: on-failure
   
-  webserver:
-    image: nginx:mainline-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./webserver/web-root:/var/www/html
-      - ./webserver/nginx-conf:/etc/nginx/conf.d
-      - ./webserver/certbot/certbot-etc:/etc/letsencrypt
-      - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
+  # webserver:
+  #   image: nginx:mainline-alpine
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./webserver/web-root:/var/www/html
+  #     - ./webserver/nginx-conf:/etc/nginx/conf.d
+  #     - ./webserver/certbot/certbot-etc:/etc/letsencrypt
+  #     - ./webserver/certbot/certbot-var:/var/lib/letsencrypt
     
-    networks:
-      webnet:
-    deploy:
-      replicas: 1
-      # resources:
-      #  limits:
-      #    cpus: "1"
-      #    memory: 1g
-      restart_policy:
-        condition: on-failure
+  #   networks:
+  #     webnet:
+  #   deploy:
+  #     replicas: 1
+  #     # resources:
+  #     #  limits:
+  #     #    cpus: "1"
+  #     #    memory: 1g
+  #     restart_policy:
+  #       condition: on-failure
         
   # certbot:
   #   image: certbot/certbot

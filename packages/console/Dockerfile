@@ -21,7 +21,7 @@ RUN yarn run api:gen
 RUN yarn run build
 # RUN rm -rf node_modules && yarn install --frozen-lockfile
 #attach static files volume here
-VOLUME [ "/usr/src/app/uploads" ] 
+VOLUME [ "/usr/src/app/dist/public" ] 
 VOLUME [ "/usr/src/app/$GOOGLE_APPLICATION_CREDENTIALS" ]
 
 EXPOSE 3000

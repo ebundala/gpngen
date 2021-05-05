@@ -42,7 +42,7 @@ services:
       - db
     volumes:
       - ${PWD}/console/${GOOGLE_APPLICATION_CREDENTIALS}:/usr/src/app/${GOOGLE_APPLICATION_CREDENTIALS}
-      - ./webserver/web-root:/usr/src/app/uploads
+      - ./webserver/web-root:/usr/src/app/dist/public
     networks:
       webnet:
 
