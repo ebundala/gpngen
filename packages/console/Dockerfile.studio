@@ -15,4 +15,4 @@ RUN yarn add prisma
 
 EXPOSE 5555
 
-CMD [ "prisma","studio" ]
+CMD [ "yarn","studio"]
