@@ -4,3 +4,4 @@ docker container prune -f
 docker-compose -f "docker-compose.$1.yml"  config > stack.yml
 docker stack deploy --compose-file stack.yml "$2"
 rm -f stack.yml
+docker image prune -a -f

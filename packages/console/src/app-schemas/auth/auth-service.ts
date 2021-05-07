@@ -574,7 +574,7 @@ export class AuthService {
         const user = prisma.user.findUnique({ where: { id: decodedIdToken.uid }, select });
 
         return {
-          user,
+          data: user,
           token,
           error: false,
           message: 'Session created successfully',

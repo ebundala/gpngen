@@ -78,3 +78,31 @@ mutation signup {
 }
 
 
+mutation signin{
+  signin(
+    role: ANONYMOUS
+    action: create
+    credentials: {
+    password: allow
+    email: allow
+  }){
+    message(action: allow)
+    error(action: allow)
+    data{
+      id(action: allow)
+      disabled(action: allow)
+      emailVerified(action: allow)
+      displayName(action: allow)
+      phoneNumber(action: allow)
+      email(action: allow)
+      role(action: allow)
+      createdAt(action: allow)
+      updatedAt(action: allow)
+      avator{
+        id(action: allow)
+        path(action: allow)
+      }
+    }
+    token(action: allow)
+  }
+}

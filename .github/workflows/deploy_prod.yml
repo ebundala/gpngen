@@ -76,7 +76,7 @@ jobs:
             # # List of SSH agent socket or keys to expose to the build
             # ssh: # optional
             # # List of tags
-             tags: "itahuduma:latest" #, itahuduma:${{github.sha}}# optional
+             tags: "itahuduma:latest itahuduma:${{github.sha}}" # optional
             # # Sets the target stage to build
             # target: # optional
             # # GitHub Token used to authenticate against a repository for Git context
@@ -168,5 +168,5 @@ jobs:
            ./scripts/create_file  pgbouncer/conf/pgbouncer.ini "${{env.PGBOUNCER_CONF}}"
            ./scripts/create_file  pgbouncer/conf/userlist.txt "${{env.PGBOUNCER_USERLIST}}"
 
-           ./scripts/stackdeploy prod itahuduma latest
+           ./scripts/stackdeploy prod itahuduma ${{github.sha}}
 

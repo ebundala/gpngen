@@ -1,9 +1,10 @@
 import { getRoleGrouping, getRolePolicies } from '@mechsoft/apigen';
 import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { join } from 'path';
-import { Role, State, User, UserCreateInput, } from '../src/models/graphql';
+import { Role, ServiceCategoryCreateInput, State, User, UserCreateInput, } from '../src/models/graphql';
 import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from '../src/authorization/roles/roles';
 import { createPolicySchema } from "@mechsoft/enforcer";
+import { Prisma } from '@prisma/client';
 
 // const users: UserCreateInput[] = [
 //     //consumers
@@ -157,7 +158,15 @@ import { createPolicySchema } from "@mechsoft/enforcer";
 //         }
 //     }
 // ]
-
+const categories: Prisma.ServiceCategoryCreateInput[] = [
+    {
+        name: 'Massage & SPA'
+    },
+    { name: 'Groceries' },
+    { name: 'Food' },
+    { name: 'Cleaner' },
+    { name: 'Gas filler' }
+]
 const getDefaultPolicies = async () => {
    const su = new SUPERUSER();
    const mn= new MANAGER();
@@ -214,15 +223,18 @@ const createRoles = async () => {
     });
 
 
-
-//     await cl.prisma.user.deleteMany()
-//     await cl.prisma.$transaction(
-//         users.map((v) => cl.prisma.user.create({ data: v }))
-//     )
-//   
-
-   // await casbin.addGroupingPolicies(roleGroups)
-   // await casbin.addPolicies(policies);
+    const exists = (await cl.prisma.serviceCategory.findMany({
+        where: {
+            name: {
+                mode: 'insensitive',
+                in: categories.map((v) => v.name)
+            }
+        }, select: { name: true }
+    }))?.map((v) => v.name) ?? [];
+    const tr = categories.filter((v) => !exists.includes(v.name)
+    ).map((v) => cl.prisma.serviceCategory.create({ data: v }));
+    if (tr.length)
+        await cl.prisma.$transaction(tr);
 
 
     return cl.close();
