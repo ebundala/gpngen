@@ -35,7 +35,7 @@ jobs:
           file: "./packages/console/Dockerfile.studio"
           labels: "studio"
           outputs: "type=docker,dest=./oci/studio.tar"
-          tags: "studio:latest" #, studio:${{github.sha}}
+          tags: "studio:${{github.sha}}"
       - name: Build Server image        
         uses: docker/build-push-action@v2.4.0
         with:
@@ -76,7 +76,7 @@ jobs:
             # # List of SSH agent socket or keys to expose to the build
             # ssh: # optional
             # # List of tags
-             tags: "itahuduma:latest,itahuduma:${{github.sha}}" # optional
+             tags: "itahuduma:${{github.sha}}" # optional
             # # Sets the target stage to build
             # target: # optional
             # # GitHub Token used to authenticate against a repository for Git context
