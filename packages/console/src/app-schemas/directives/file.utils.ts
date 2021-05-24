@@ -134,7 +134,7 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
                     duration = 0;
                 }
             }
-            const url = `${path}/${fname}`.replace(/'\.\.\//g, '').replace(/'\.\/'/g, '');
+            const url = `${path}/${fname}`.replace(/(\.\.\/)|public\//g, '');
             return {
                 path: url,
                 filename: fname,

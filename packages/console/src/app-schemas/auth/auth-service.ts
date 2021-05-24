@@ -185,6 +185,7 @@ export class AuthService {
     }
     return next(v)
   }
+
   @BlocValidate('signup.input.credentials.email')
   async oneEmailPerAccount(v: BusinessRequest<TenantContext>) {
     const { args, context } = v;
@@ -498,7 +499,7 @@ export class AuthService {
 
       const user = await prisma.user
         .findUnique({ where: { email }, select: { id: true, state: true, role: true } });
-
+        //TODO move these checks to bussiness rules
       if (!user) {
         throw new GraphQLError('Signin failed user does not exist');
       }
