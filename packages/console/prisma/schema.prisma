@@ -4,6 +4,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+ // shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
 
 generator client {
@@ -29,7 +30,7 @@ enum State {
 }
 enum Gender {
  MALE
- FEMELE
+ FEMALE
  UNSPECIFIED
 }
 enum AttachmentType {
@@ -76,7 +77,7 @@ model User {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   avatorId       String?        
-  //organizationId String?        
+  organizationId String?        
   locationId     String?        
 
 }
@@ -94,8 +95,9 @@ model Attachment {
   placement      String         @default("default")
   users          User[]         
   services       Service[]      
-  organizations  Organization[] 
-  orders         Order[]        
+  organizations  Organization[]  
+  orders         Order[]         
+  serviceCategory ServiceCategory?    
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -113,7 +115,7 @@ model Organization {
   offers      ServiceCategory[]
   ratings     Rating[]
   owner       User              @relation("ownedBy", fields: [ownerId], references: [id])
-  //state       State           @default(PENDING)
+  state       State           @default(PENDING)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   logoId      String            
@@ -152,16 +154,19 @@ model Order {
   organizationId String       
   ownerId        String       
   receiptId      String?      
+  
 }
 
 model ServiceCategory {
   id            String         @id @default(cuid())
   name          String
+  image         Attachment     @relation(fields: [imageId],references:[id])
   state         State          @default(PENDING)
   organizations Organization[]
   services      Service[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  imageId       String         
 }
 
 model Rating {
@@ -184,6 +189,6 @@ model Location {
   lon           Float
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
-  organizations Organization[]        
+  organizations Organization[]     
   users         User[]                
 }

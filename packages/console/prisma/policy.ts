@@ -113,3 +113,4 @@ query {
   `
 getRulesFromFile(join(dir, 'consumer.policy.graphql'), 'ANONYMOUS')
 //createRuleAst(op)
+

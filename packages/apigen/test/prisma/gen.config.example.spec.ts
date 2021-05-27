@@ -1,22 +1,23 @@
 import { join } from "path";
 import { writeSchemaToFile } from "../../src/sdl/Generators";
 import { SdlGeneratorServiceOptions } from "../../src/sdl/config.options";
-import { UploadDirective, UploadTypeResolver } from "./app-schemas/directives/uploader.directive";
+//import { UploadDirective, UploadTypeResolver } from "./app-schemas/directives/uploader.directive";
+import { UploadDirective, UploadTypeResolver } from "../../../console/src/app-schemas/directives/uploader.directive";
 
-const dir = join('packages/apigen/test/prisma')
+const dir = join('test/prisma')
 export const options: SdlGeneratorServiceOptions = {
     schemaPath: join(dir, './schema.prisma'),
     customOptions: {
         onDelete: true,
         genTypes: true,
-        authorization: {
-            depth: 2,
-            rulesDir: join(dir, './generated/models')
+        // authorization: {
+        //     depth: 2,
+        //     rulesDir: join(dir, './generated/models')
 
-        },
-        excludeFields: [
-            "Id"
-        ],
+        // },
+        // excludeFields: [
+        //     "Id"
+        // ],
         excludeQueriesAndMutationsByModel: {
             "User": ['createOne', "deleteMany", "deleteOne", 'updateMany', 'upsertOne',],
 

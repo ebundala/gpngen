@@ -1,15 +1,22 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-import { DMMF } from './schema';
+import { DMMF } from '@prisma/client/runtime';
+import { GraphQLSchema } from 'graphql';
+import { writeFileSync } from 'fs';
 
 interface OptionsType {
   dmmf?: DMMF.Document;
+  excludeFields?: string[];
+  filterInputs?: (input: DMMF.InputType) => DMMF.SchemaArg[];
   doNotUseFieldUpdateOperationsInput?: boolean;
 }
 
 const testedTypes: string[] = [];
 
 export const hasEmptyTypeFields = (type: string, options?: OptionsType) => {
-  const schema = options?.dmmf?.schema //|| defaultSchema;
+  let schema = options?.dmmf?.schema;
+  if (!schema) {
+    const { Prisma } = require('@prisma/client');
+    schema = Prisma.dmmf?.schema;
+  }
   testedTypes.push(type);
   const inputObjectTypes = schema ? [...schema?.inputObjectTypes.prisma] : [];
   if (schema?.inputObjectTypes.model)
@@ -25,7 +32,7 @@ export const hasEmptyTypeFields = (type: string, options?: OptionsType) => {
         fieldType.location === 'inputObjectTypes' &&
         !testedTypes.includes(fieldType.type as string)
       ) {
-        const state = hasEmptyTypeFields(fieldType.type as string);
+        const state = hasEmptyTypeFields(fieldType.type as string, options);
         if (state) return true;
       }
     }
@@ -37,7 +44,7 @@ export const getInputType = (
   field: DMMF.SchemaArg,
   options?: { doNotUseFieldUpdateOperationsInput?: boolean },
 ) => {
-  let index = 0;
+  let index: number = 0;
   if (
     options?.doNotUseFieldUpdateOperationsInput &&
     field.inputTypes.length > 1 &&
@@ -56,9 +63,14 @@ export const getInputType = (
 };
 
 function createInput(options?: OptionsType) {
-  const schema = options?.dmmf?.schema //|| defaultSchema;
+  let schema = options?.dmmf?.schema;
+  if (!schema) {
+    const { Prisma } = require('@prisma/client');
+    schema = Prisma.dmmf?.schema;
+  }
   let fileContent = `
   scalar DateTime
+  scalar Upload
   
   type BatchPayload {
   count: Int!
@@ -77,26 +89,34 @@ function createInput(options?: OptionsType) {
   
   `;
     });
+  debugger
     const inputObjectTypes = [...schema.inputObjectTypes.prisma];
     if (schema.inputObjectTypes.model)
       inputObjectTypes.push(...schema.inputObjectTypes.model);
 
-    inputObjectTypes.forEach((model) => {
-      if (model.fields.length > 0) {
-        fileContent += `input ${model.name} {
+    inputObjectTypes.forEach((input) => {
+      if (input.fields.length > 0) {
+        
+        fileContent += `input ${input.name} {
       `;
-        model.fields.forEach((field) => {
-          const inputType = getInputType(field, options);
-          const hasEmptyType =
-            inputType.location === 'inputObjectTypes' &&
-            hasEmptyTypeFields(inputType.type as string);
-          if (!hasEmptyType) {
-            fileContent += `${field.name}: ${
-              inputType.isList ? `[${inputType.type}!]` : inputType.type
-            }${field.isRequired ? '!' : ''}
+        const inputFields =
+          typeof options?.filterInputs === 'function'
+            ? options.filterInputs(input)
+            : input.fields;
+        inputFields
+          .filter((field) => !options?.excludeFields?.includes(field.name))
+          .forEach((field) => {
+            const inputType = getInputType(field, options);
+            const hasEmptyType =
+              inputType.location === 'inputObjectTypes' &&
+              hasEmptyTypeFields(inputType.type as string, options);
+            if (!hasEmptyType) {
+              fileContent += `${field.name}: ${
+                inputType.isList ? `[${inputType.type}!]` : inputType.type
+              }${field.isRequired ? '!' : ''}
         `;
-          }
-        });
+            }
+          });
         fileContent += `}
     
   `;
@@ -104,18 +124,24 @@ function createInput(options?: OptionsType) {
     });
 
     schema?.outputObjectTypes.prisma
-      .filter((type) => type.name.includes('Aggregate'))
+      .filter(
+        (type) =>
+          type.name.includes('Aggregate') ||
+          type.name.endsWith('CountOutputType'),
+      )
       .forEach((type) => {
         fileContent += `type ${type.name} {
       `;
-        type.fields.forEach((field) => {
-          fileContent += `${field.name}: ${
-            field.outputType.isList
-              ? `[${field.outputType.type}!]`
-              : field.outputType.type
-          }${!field.isNullable ? '!' : ''}
+        type.fields
+          .filter((field) => !options?.excludeFields?.includes(field.name))
+          .forEach((field) => {
+            fileContent += `${field.name}: ${
+              field.outputType.isList
+                ? `[${field.outputType.type}!]`
+                : field.outputType.type
+            }${!field.isNullable ? '!' : ''}
         `;
-        });
+          });
         fileContent += `}
     
   `;
@@ -124,18 +150,17 @@ function createInput(options?: OptionsType) {
   return fileContent;
 }
 
-// export const sdlInputs = (options?: OptionsType) => {
-//   const gql = require('graphql-tag');
-//   return gql`
-//     ${createInput(options)}
-//   `;
-// };
+export const sdlInputs = (options?: OptionsType) => {
+  const gql = require('graphql-tag');
+  return gql`
+    ${createInput(options)}
+  `;
+};
 
-// export const generateGraphQlSDLFile = (
-//   schema: GraphQLSchema,
-//   path = 'schema.graphql',
-// ) => {
-//   // eslint-disable-next-line @typescript-eslint/no-var-requires
-//   const { printSchema } = require('graphql');
-//   writeFileSync(path, printSchema(schema));
-// };
+export const generateGraphQlSDLFile = (
+  schema: GraphQLSchema,
+  path: string = 'schema.graphql',
+) => {
+  const { printSchema } = require('graphql');
+  writeFileSync(path, printSchema(schema));
+};

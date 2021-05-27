@@ -377,7 +377,7 @@ export class AuthService {
   async signup(credentials: SignupInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
 
     const res = await this.signupWithEmail(credentials, prisma, select, organization);
-    if (res && !res.error) {
+    if (res && !res.status) {
       const link = await this.firebaseApp.admin.auth().generateEmailVerificationLink(credentials.email);
       await this.mail.sendWelcomeEmail(res.data, link).catch((e) => { this.logger.debug(e) });
     }
@@ -391,14 +391,14 @@ export class AuthService {
   async recoverAccount(email: string, prisma: PrismaClient): Promise<AuthResult> {
     const user = await prisma.user.findUnique({ where: { email: email } })
     if (!user) return {
-      error: true,
+      status: true,
       message: "User account not found"
     };
     const link = await this.firebaseApp.admin.auth().generatePasswordResetLink(email);
     await this.mail.sendPasswordResetLink(user, link).catch((e) => { this.logger.debug(e) });
     return {
       message: 'Password resset instructions sent',
-      error: false,
+      status: false,
     }
   }
 
@@ -456,7 +456,7 @@ export class AuthService {
         });
         const u3 = await prisma.user.findUnique({ where: { id: u2.id }, select }) as User;
         return {
-          error: false,
+          status: true,
           data: u3,
           message: "Thank you for registering\n you will receive a confimation email when your account is ready",
         }
@@ -577,13 +577,13 @@ export class AuthService {
         return {
           data: user,
           token,
-          error: false,
+          status: true,
           message: 'Session created successfully',
         };
 
       }
       return {
-        error: true,
+        status: false,
         message: 'A user that was not recently signed in is trying to set a session',
       };
     }

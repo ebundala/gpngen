@@ -77,7 +77,10 @@ export class Generators {
     const { datamodel }: { datamodel: DMMF.Datamodel } = await this.dmmf();
     return datamodel;
   }
-
+  protected async schema(){
+    const { schema }: { schema: DMMF.Schema } = await this.dmmf();
+    return schema;
+  }
   protected async models() {
     const { schema }: { schema: DMMF.Schema } = await this.dmmf();
     return schema.outputObjectTypes.model.filter(

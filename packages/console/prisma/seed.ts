@@ -3,8 +3,7 @@ import { CasbinService, PrismaAdapter } from '@mechsoft/enforcer';
 import { join } from 'path';
 import { Role, ServiceCategoryCreateInput, State, User, UserCreateInput, } from '../src/models/graphql';
 import { ANONYMOUS, CONSUMER, MANAGER, PROVIDER, SUPERUSER } from '../src/authorization/roles/roles';
-import { createPolicySchema } from "@mechsoft/enforcer";
-import { Prisma } from '@prisma/client';
+import {Prisma} from '@prisma/client';
 
 // const users: UserCreateInput[] = [
 //     //consumers
@@ -160,12 +159,47 @@ import { Prisma } from '@prisma/client';
 // ]
 const categories: Prisma.ServiceCategoryCreateInput[] = [
     {
-        name: 'Massage & SPA'
+        name: 'Massage & SPA',
+        image:{
+            create:{
+                path:"icons/massage.svg",
+                mimetype: "image/svg",
+                filename: "massage.svg"   
+            }
+        }
+        
     },
-    { name: 'Groceries' },
-    { name: 'Food' },
-    { name: 'Cleaner' },
-    { name: 'Gas filler' }
+    { name: 'Groceries' ,image:{
+        create:{
+            path:"/icons/groceries.svg",
+            mimetype: "image/svg",
+            filename: "groceries.svg"
+        }
+    }},
+    { name: 'Food', image:{
+        create:{
+            path:"icons/food.svg",
+            mimetype: "image/svg",
+            filename: "food.svg"
+
+        }
+    }},
+    { name: 'Cleaner', image:{
+        create:{
+            path:"cleaner.svg",
+            mimetype: "image/svg",
+            filename: "cleaner.svg"
+
+        }
+    } },
+    { name: 'Gas filler', image:{
+        create:{
+            path:"gasfiller.svg",
+            mimetype: "image/svg",
+            filename: "gasfiller.svg"
+
+        }
+    }}
 ]
 const getDefaultPolicies = async () => {
    const su = new SUPERUSER();
@@ -205,7 +239,7 @@ const createRoles = async () => {
     await casbin.init();
     const { policies, roleGroups } = await getDefaultPolicies();
     const cl = (casbin.getAdapter() as PrismaAdapter);
-
+         
     await cl.prisma.casbinRule.deleteMany();
     await cl.prisma.casbinRule.createMany({
         skipDuplicates:true,
@@ -240,5 +274,8 @@ const createRoles = async () => {
     return cl.close();
 }
 
-createRoles().then(() => console.log('completed')).catch(console.error)
+export default async function(){
+    await createRoles().then(() => console.log('completed')).catch(console.error)
+
+}
 

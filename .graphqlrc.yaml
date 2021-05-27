@@ -1,6 +1,6 @@
-schema: "packages/**/src/models/*.graphql"
+schema: "packages/console/src/models/schema.graphql"
 #- "http://localhost:3000/graphql"
-#documents: './operations/**/*.graphql'
+documents: 'packages/console/src/**/*.graphql'
 extensions:
   endpoints:
     default:

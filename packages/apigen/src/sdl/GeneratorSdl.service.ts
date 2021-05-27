@@ -1,7 +1,7 @@
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { AppLogger } from '@mechsoft/app-logger';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { sdlInputs } from '@paljs/plugins';
+import {sdlInputs} from "./sdlInputs"
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { print } from 'graphql/language/printer';
 import { CONFIG_OPTIONS, SdlGeneratorServiceOptions } from './config.options';
@@ -131,10 +131,10 @@ export class SdlGeneratorService extends Generators {
     });
   }
 
-  private createInputsTypes() {
+  private async createInputsTypes() {
+    const schema = await this.dmmf();
     const typeDefs = `
-     directive @auth on FIELD_DEFINITION | INPUT_FIELD_DEFINITION 
-    ${print(mergeTypeDefs([sdlInputs()]))}
+    ${print(mergeTypeDefs([sdlInputs({dmmf:schema})]))}
      type Query{
        version:String
      }
