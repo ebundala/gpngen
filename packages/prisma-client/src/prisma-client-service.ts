@@ -1,14 +1,24 @@
 //import { TenantContext } from '@mechsoft/common';
 import { onDeleteArgs, PrismaDelete, PrismaSelect } from '@paljs/plugins';
 import { Prisma, PrismaClient as _PrismaClient } from '@prisma/client';
+import { PrismaClientInjector } from './injector-decorator';
 
 export class PrismaClient extends _PrismaClient {
   private _role:string;
   private _byPassChecks=false;
   private _uid: string;
+  private request: any;
   constructor(options: Prisma.PrismaClientOptions) {
     super(options);
-    
+  }
+  setRequest<T>(request){
+    this.request=request as T;
+  }
+  getRequest<T>(){
+    return this.request as T;
+  }
+  resetRequest(){
+    this.request=null;
   }
   async onDelete(args: onDeleteArgs) {
     const prismaDelete = new PrismaDelete(this);
@@ -59,7 +69,6 @@ export class PrismaClient extends _PrismaClient {
     }
   }
 }
-
 export const PrismaClientService = {
   provide: PrismaClient,
   // useValue: new PrismaClient({ log: ['query'] }),

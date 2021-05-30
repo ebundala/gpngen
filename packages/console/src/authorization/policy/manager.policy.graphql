@@ -80,7 +80,12 @@ mutation updataOrganization{
       id:allow
     }
     data:{
-      
+      name:{
+        set: allow
+      }
+      description: {
+        set: allow
+      }
       offers:{
         disconnect:{
           id:allow

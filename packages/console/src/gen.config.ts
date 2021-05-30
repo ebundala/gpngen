@@ -1,7 +1,6 @@
-import { SdlGeneratorServiceOptions, writeSchemaToFile } from '@mechsoft/apigen';
+import { SdlGeneratorServiceOptions, writeSchemaToFile,createPolicySchema} from '@mechsoft/apigen';
 import { join } from 'path';
 import { Upload, UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
-import { createPolicySchema } from "@mechsoft/enforcer";
 
 const options: SdlGeneratorServiceOptions = {
   schemaPath: './prisma/schema.prisma',
@@ -50,9 +49,9 @@ const options: SdlGeneratorServiceOptions = {
     },
     transformSchema: (schema) => {
       const path = join(process.cwd(), 'src/models')
-      writeSchemaToFile(schema, path);
+     const filePath= writeSchemaToFile(schema, path);
       //TODO: generate policy schema
-      //createPolicySchema('', path);
+      createPolicySchema('src/authorization/policy', filePath);
       return schema;
     },
     debug: true,

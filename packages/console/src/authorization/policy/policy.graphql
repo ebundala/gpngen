@@ -18,43 +18,19 @@ input PolicyOperation {
 
 directive @file(path: PERMISSION) on INPUT_FIELD_DEFINITION
 
-directive @auth on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
-
-type Query {
-  findUniqueAttachment(role: Role!, parent: [Role!], action: OPERATION!, where: AttachmentWhereUniqueInput!): AttachmentResponse
-  findFirstAttachment(role: Role!, parent: [Role!], action: OPERATION!, where: AttachmentWhereInput, orderBy: [AttachmentOrderByInput!], cursor: AttachmentWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): AttachmentResponse
-  findManyAttachment(role: Role!, parent: [Role!], action: OPERATION!, where: AttachmentWhereInput, orderBy: [AttachmentOrderByInput!], cursor: AttachmentWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): AttachmentListResponse
-  findUniqueLocation(role: Role!, parent: [Role!], action: OPERATION!, where: LocationWhereUniqueInput!): LocationResponse
-  findFirstLocation(role: Role!, parent: [Role!], action: OPERATION!, where: LocationWhereInput, orderBy: [LocationOrderByInput!], cursor: LocationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): LocationResponse
-  findManyLocation(role: Role!, parent: [Role!], action: OPERATION!, where: LocationWhereInput, orderBy: [LocationOrderByInput!], cursor: LocationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): LocationListResponse
-  findUniqueOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereUniqueInput!): OrderResponse
-  findFirstOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrderResponse
-  findManyOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrderListResponse
-  findUniqueOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereUniqueInput!): OrganizationResponse
-  findFirstOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrganizationResponse
-  findManyOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrganizationListResponse
-  findUniqueRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereUniqueInput!): RatingResponse
-  findFirstRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): RatingResponse
-  findManyRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): RatingListResponse
-  findUniqueService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereUniqueInput!): ServiceResponse
-  findFirstService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceResponse
-  findManyService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceListResponse
-  findUniqueServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereUniqueInput!): ServiceCategoryResponse
-  findFirstServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceCategoryResponse
-  findManyServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceCategoryListResponse
-  findUniqueUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereUniqueInput!): UserResponse
-  findFirstUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): UserResponse
-  findManyUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): UserListResponse
-  version(role: Role!, parent: [Role!], action: OPERATION!): PERMISSION
+input AuthInput {
+  email: PERMISSION
+  password: PERMISSION
 }
 
-input AuthInput {
+input SignupInput {
   email: PERMISSION
   password: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  gender: PERMISSION
+  dateOfBirth: PERMISSION
   avator: PERMISSION
-  mode: PERMISSION
 }
 
 enum AuthMode {
@@ -65,7 +41,7 @@ enum AuthMode {
 
 type AuthResult {
   token(action: PERMISSION): PERMISSION
-  error(action: PERMISSION): PERMISSION
+  status(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
   data: User
 }
@@ -75,17 +51,36 @@ type SignOutResult {
   message(action: PERMISSION): PERMISSION
 }
 
+type User {
+  online(action: PERMISSION): PERMISSION
+  id(action: PERMISSION): PERMISSION
+  email(action: PERMISSION): PERMISSION
+  displayName(action: PERMISSION): PERMISSION
+  phoneNumber(action: PERMISSION): PERMISSION
+  dateOfBirth(action: PERMISSION): PERMISSION
+  gender(action: PERMISSION): PERMISSION
+  emailVerified(action: PERMISSION): PERMISSION
+  disabled(action: PERMISSION): PERMISSION
+  avator: Attachment
+  role(action: PERMISSION): PERMISSION
+  state(action: PERMISSION): PERMISSION
+  orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
+  ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
+  location: Location
+  organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
+  staffOf(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
+  createdAt(action: PERMISSION): PERMISSION
+  updatedAt(action: PERMISSION): PERMISSION
+  avatorId(action: PERMISSION): PERMISSION
+  organizationId(action: PERMISSION): PERMISSION
+  locationId(action: PERMISSION): PERMISSION
+}
+
 type Mutation {
-  signup(role: Role!, parent: [Role!], action: OPERATION!, credentials: AuthInput!, organization: OrganizationCreateWithoutOwnerInput): AuthResult
+  signup(role: Role!, parent: [Role!], action: OPERATION!, credentials: SignupInput!, organization: OrganizationCreateWithoutOwnerInput): AuthResult
   signin(role: Role!, parent: [Role!], action: OPERATION!, credentials: AuthInput!): AuthResult
   recoverAccount(role: Role!, parent: [Role!], action: OPERATION!, email: PERMISSION): AuthResult
   signout(role: Role!, parent: [Role!], action: OPERATION!): SignOutResult
-  createOneAttachment(role: Role!, parent: [Role!], action: OPERATION!, data: AttachmentCreateInput!): AttachmentResponse
-  updateOneAttachment(role: Role!, parent: [Role!], action: OPERATION!, where: AttachmentWhereUniqueInput!, data: AttachmentUpdateInput!): AttachmentResponse
-  deleteOneAttachment(role: Role!, parent: [Role!], action: OPERATION!, where: AttachmentWhereUniqueInput!): AttachmentResponse
-  createOneLocation(role: Role!, parent: [Role!], action: OPERATION!, data: LocationCreateInput!): LocationResponse
-  updateOneLocation(role: Role!, parent: [Role!], action: OPERATION!, where: LocationWhereUniqueInput!, data: LocationUpdateInput!): LocationResponse
-  deleteOneLocation(role: Role!, parent: [Role!], action: OPERATION!, where: LocationWhereUniqueInput!): LocationResponse
   createOneOrder(role: Role!, parent: [Role!], action: OPERATION!, data: OrderCreateInput!): OrderResponse
   updateOneOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereUniqueInput!, data: OrderUpdateInput!): OrderResponse
   deleteOneOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereUniqueInput!): OrderResponse
@@ -125,6 +120,7 @@ input AttachmentCreateInput {
   services: ServiceCreateNestedManyWithoutImageInput
   organizations: OrganizationCreateNestedManyWithoutLogoInput
   orders: OrderCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryCreateNestedOneWithoutImageInput
 }
 
 input AttachmentUncheckedCreateInput {
@@ -144,6 +140,7 @@ input AttachmentUncheckedCreateInput {
   services: ServiceUncheckedCreateNestedManyWithoutImageInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutLogoInput
   orders: OrderUncheckedCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedCreateNestedOneWithoutImageInput
 }
 
 input AttachmentCreateManyInput {
@@ -177,6 +174,7 @@ input AttachmentCreateWithoutUsersInput {
   services: ServiceCreateNestedManyWithoutImageInput
   organizations: OrganizationCreateNestedManyWithoutLogoInput
   orders: OrderCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryCreateNestedOneWithoutImageInput
 }
 
 input AttachmentUncheckedCreateWithoutUsersInput {
@@ -195,6 +193,7 @@ input AttachmentUncheckedCreateWithoutUsersInput {
   services: ServiceUncheckedCreateNestedManyWithoutImageInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutLogoInput
   orders: OrderUncheckedCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedCreateNestedOneWithoutImageInput
 }
 
 input AttachmentCreateWithoutOrganizationsInput {
@@ -213,6 +212,7 @@ input AttachmentCreateWithoutOrganizationsInput {
   users: UserCreateNestedManyWithoutAvatorInput
   services: ServiceCreateNestedManyWithoutImageInput
   orders: OrderCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryCreateNestedOneWithoutImageInput
 }
 
 input AttachmentUncheckedCreateWithoutOrganizationsInput {
@@ -231,6 +231,7 @@ input AttachmentUncheckedCreateWithoutOrganizationsInput {
   users: UserUncheckedCreateNestedManyWithoutAvatorInput
   services: ServiceUncheckedCreateNestedManyWithoutImageInput
   orders: OrderUncheckedCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedCreateNestedOneWithoutImageInput
 }
 
 input AttachmentCreateWithoutServicesInput {
@@ -249,6 +250,7 @@ input AttachmentCreateWithoutServicesInput {
   users: UserCreateNestedManyWithoutAvatorInput
   organizations: OrganizationCreateNestedManyWithoutLogoInput
   orders: OrderCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryCreateNestedOneWithoutImageInput
 }
 
 input AttachmentUncheckedCreateWithoutServicesInput {
@@ -267,6 +269,7 @@ input AttachmentUncheckedCreateWithoutServicesInput {
   users: UserUncheckedCreateNestedManyWithoutAvatorInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutLogoInput
   orders: OrderUncheckedCreateNestedManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedCreateNestedOneWithoutImageInput
 }
 
 input AttachmentCreateWithoutOrdersInput {
@@ -285,6 +288,7 @@ input AttachmentCreateWithoutOrdersInput {
   users: UserCreateNestedManyWithoutAvatorInput
   services: ServiceCreateNestedManyWithoutImageInput
   organizations: OrganizationCreateNestedManyWithoutLogoInput
+  serviceCategory: ServiceCategoryCreateNestedOneWithoutImageInput
 }
 
 input AttachmentUncheckedCreateWithoutOrdersInput {
@@ -303,6 +307,30 @@ input AttachmentUncheckedCreateWithoutOrdersInput {
   users: UserUncheckedCreateNestedManyWithoutAvatorInput
   services: ServiceUncheckedCreateNestedManyWithoutImageInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutLogoInput
+  serviceCategory: ServiceCategoryUncheckedCreateNestedOneWithoutImageInput
+}
+
+input LocationWhereInput {
+  within: PERMISSION
+  notWithin: PERMISSION
+  nearBy: LatLon
+  nearByName: PERMISSION
+  AND: [LocationWhereInput!]
+  OR: [LocationWhereInput!]
+  NOT: [LocationWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  lat: FloatFilter
+  lon: FloatFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  organizations: OrganizationListRelationFilter
+  users: UserListRelationFilter
+}
+
+input LatLon {
+  lat: PERMISSION
+  lon: PERMISSION
 }
 
 type Attachment {
@@ -320,6 +348,7 @@ type Attachment {
   services(where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Service
   organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
   orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
+  serviceCategory: ServiceCategory
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
 }
@@ -400,6 +429,8 @@ type CasbinRuleCountResponse {
 type Location {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
@@ -482,6 +513,28 @@ type OrderCountResponse {
   message(action: PERMISSION): PERMISSION
 }
 
+type Query {
+  findUniqueOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereUniqueInput!): OrderResponse
+  findFirstOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrderResponse
+  findManyOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrderListResponse
+  findUniqueOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereUniqueInput!): OrganizationResponse
+  findFirstOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrganizationResponse
+  findManyOrganization(role: Role!, parent: [Role!], action: OPERATION!, where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): OrganizationListResponse
+  findUniqueRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereUniqueInput!): RatingResponse
+  findFirstRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): RatingResponse
+  findManyRating(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): RatingListResponse
+  findUniqueService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereUniqueInput!): ServiceResponse
+  findFirstService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceResponse
+  findManyService(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceListResponse
+  findUniqueServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereUniqueInput!): ServiceCategoryResponse
+  findFirstServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceCategoryResponse
+  findManyServiceCategory(role: Role!, parent: [Role!], action: OPERATION!, where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): ServiceCategoryListResponse
+  findUniqueUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereUniqueInput!): UserResponse
+  findFirstUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): UserResponse
+  findManyUser(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): UserListResponse
+  version(role: Role!, parent: [Role!], action: OPERATION!): PERMISSION
+}
+
 type Organization {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
@@ -494,6 +547,7 @@ type Organization {
   offers(where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): ServiceCategory
   ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
   owner: User
+  state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   logoId(action: PERMISSION): PERMISSION
@@ -623,11 +677,13 @@ type ServiceCountResponse {
 type ServiceCategory {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
+  image: Attachment
   state(action: PERMISSION): PERMISSION
   organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
   services(where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Service
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
+  imageId(action: PERMISSION): PERMISSION
 }
 
 type ServiceCategoryListResponse {
@@ -658,27 +714,6 @@ type ServiceCategoryCountResponse {
   status(action: PERMISSION): PERMISSION
   data(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
-}
-
-type User {
-  id(action: PERMISSION): PERMISSION
-  email(action: PERMISSION): PERMISSION
-  displayName(action: PERMISSION): PERMISSION
-  phoneNumber(action: PERMISSION): PERMISSION
-  emailVerified(action: PERMISSION): PERMISSION
-  disabled(action: PERMISSION): PERMISSION
-  avator: Attachment
-  role(action: PERMISSION): PERMISSION
-  state(action: PERMISSION): PERMISSION
-  orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
-  ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
-  location: Location
-  organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
-  staffOf(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
-  createdAt(action: PERMISSION): PERMISSION
-  updatedAt(action: PERMISSION): PERMISSION
-  avatorId(action: PERMISSION): PERMISSION
-  locationId(action: PERMISSION): PERMISSION
 }
 
 type UserListResponse {
@@ -735,6 +770,8 @@ enum UserScalarFieldEnum {
   email
   displayName
   phoneNumber
+  dateOfBirth
+  gender
   emailVerified
   disabled
   role
@@ -742,6 +779,7 @@ enum UserScalarFieldEnum {
   createdAt
   updatedAt
   avatorId
+  organizationId
   locationId
 }
 
@@ -764,6 +802,7 @@ enum OrganizationScalarFieldEnum {
   id
   name
   description
+  state
   createdAt
   updatedAt
   logoId
@@ -802,6 +841,7 @@ enum ServiceCategoryScalarFieldEnum {
   state
   createdAt
   updatedAt
+  imageId
 }
 
 enum RatingScalarFieldEnum {
@@ -817,6 +857,8 @@ enum RatingScalarFieldEnum {
 enum LocationScalarFieldEnum {
   id
   name
+  lat
+  lon
   createdAt
   updatedAt
 }
@@ -829,6 +871,12 @@ enum SortOrder {
 enum QueryMode {
   default
   insensitive
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
 }
 
 enum Role {
@@ -888,6 +936,22 @@ input CasbinRuleWhereUniqueInput {
   id: PERMISSION
 }
 
+input CasbinRuleScalarWhereWithAggregatesInput {
+  AND: [CasbinRuleScalarWhereWithAggregatesInput!]
+  OR: [CasbinRuleScalarWhereWithAggregatesInput!]
+  NOT: [CasbinRuleScalarWhereWithAggregatesInput!]
+  id: IntWithAggregatesFilter
+  ptype: StringWithAggregatesFilter
+  v0: StringNullableWithAggregatesFilter
+  v1: StringNullableWithAggregatesFilter
+  v2: StringNullableWithAggregatesFilter
+  v3: StringNullableWithAggregatesFilter
+  v4: StringNullableWithAggregatesFilter
+  v5: StringNullableWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+}
+
 input UserWhereInput {
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
@@ -896,6 +960,8 @@ input UserWhereInput {
   email: StringFilter
   displayName: StringFilter
   phoneNumber: StringNullableFilter
+  dateOfBirth: DateTimeNullableFilter
+  gender: EnumGenderFilter
   emailVerified: BoolFilter
   disabled: BoolFilter
   avator: AttachmentWhereInput
@@ -909,6 +975,7 @@ input UserWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   avatorId: StringNullableFilter
+  organizationId: StringNullableFilter
   locationId: StringNullableFilter
 }
 
@@ -917,21 +984,43 @@ input UserOrderByInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
-  avator: AttachmentOrderByInput
   role: PERMISSION
   state: PERMISSION
-  location: LocationOrderByInput
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
 }
 
 input UserWhereUniqueInput {
   id: PERMISSION
   email: PERMISSION
+}
+
+input UserScalarWhereWithAggregatesInput {
+  AND: [UserScalarWhereWithAggregatesInput!]
+  OR: [UserScalarWhereWithAggregatesInput!]
+  NOT: [UserScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  email: StringWithAggregatesFilter
+  displayName: StringWithAggregatesFilter
+  phoneNumber: StringNullableWithAggregatesFilter
+  dateOfBirth: DateTimeNullableWithAggregatesFilter
+  gender: EnumGenderWithAggregatesFilter
+  emailVerified: BoolWithAggregatesFilter
+  disabled: BoolWithAggregatesFilter
+  role: EnumRoleWithAggregatesFilter
+  state: EnumStateWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  avatorId: StringNullableWithAggregatesFilter
+  organizationId: StringNullableWithAggregatesFilter
+  locationId: StringNullableWithAggregatesFilter
 }
 
 input AttachmentWhereInput {
@@ -952,6 +1041,7 @@ input AttachmentWhereInput {
   services: ServiceListRelationFilter
   organizations: OrganizationListRelationFilter
   orders: OrderListRelationFilter
+  serviceCategory: ServiceCategoryWhereInput
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
 }
@@ -975,6 +1065,24 @@ input AttachmentWhereUniqueInput {
   id: PERMISSION
 }
 
+input AttachmentScalarWhereWithAggregatesInput {
+  AND: [AttachmentScalarWhereWithAggregatesInput!]
+  OR: [AttachmentScalarWhereWithAggregatesInput!]
+  NOT: [AttachmentScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  path: StringWithAggregatesFilter
+  filename: StringNullableWithAggregatesFilter
+  mimetype: StringNullableWithAggregatesFilter
+  encoding: StringNullableWithAggregatesFilter
+  duration: IntWithAggregatesFilter
+  size: IntWithAggregatesFilter
+  attachmentType: EnumAttachmentTypeWithAggregatesFilter
+  downloadable: BoolWithAggregatesFilter
+  placement: StringWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+}
+
 input OrganizationWhereInput {
   AND: [OrganizationWhereInput!]
   OR: [OrganizationWhereInput!]
@@ -990,6 +1098,7 @@ input OrganizationWhereInput {
   offers: ServiceCategoryListRelationFilter
   ratings: RatingListRelationFilter
   owner: UserWhereInput
+  state: EnumStateFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   logoId: StringFilter
@@ -1001,9 +1110,7 @@ input OrganizationOrderByInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
-  logo: AttachmentOrderByInput
-  location: LocationOrderByInput
-  owner: UserOrderByInput
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -1013,6 +1120,21 @@ input OrganizationOrderByInput {
 
 input OrganizationWhereUniqueInput {
   id: PERMISSION
+}
+
+input OrganizationScalarWhereWithAggregatesInput {
+  AND: [OrganizationScalarWhereWithAggregatesInput!]
+  OR: [OrganizationScalarWhereWithAggregatesInput!]
+  NOT: [OrganizationScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
+  description: StringNullableWithAggregatesFilter
+  state: EnumStateWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  logoId: StringWithAggregatesFilter
+  locationId: StringWithAggregatesFilter
+  ownerId: StringWithAggregatesFilter
 }
 
 input ServiceWhereInput {
@@ -1041,9 +1163,6 @@ input ServiceOrderByInput {
   description: PERMISSION
   price: PERMISSION
   state: PERMISSION
-  organization: OrganizationOrderByInput
-  image: AttachmentOrderByInput
-  category: ServiceCategoryOrderByInput
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizationId: PERMISSION
@@ -1053,6 +1172,22 @@ input ServiceOrderByInput {
 
 input ServiceWhereUniqueInput {
   id: PERMISSION
+}
+
+input ServiceScalarWhereWithAggregatesInput {
+  AND: [ServiceScalarWhereWithAggregatesInput!]
+  OR: [ServiceScalarWhereWithAggregatesInput!]
+  NOT: [ServiceScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
+  description: StringNullableWithAggregatesFilter
+  price: FloatWithAggregatesFilter
+  state: EnumStateWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  organizationId: StringWithAggregatesFilter
+  imageId: StringWithAggregatesFilter
+  serviceCategoryId: StringWithAggregatesFilter
 }
 
 input OrderWhereInput {
@@ -1077,11 +1212,7 @@ input OrderWhereInput {
 input OrderOrderByInput {
   id: PERMISSION
   quantity: PERMISSION
-  service: ServiceOrderByInput
-  organization: OrganizationOrderByInput
-  owner: UserOrderByInput
   state: PERMISSION
-  receipt: AttachmentOrderByInput
   createdAt: PERMISSION
   updatedAt: PERMISSION
   serviceId: PERMISSION
@@ -1094,17 +1225,34 @@ input OrderWhereUniqueInput {
   id: PERMISSION
 }
 
+input OrderScalarWhereWithAggregatesInput {
+  AND: [OrderScalarWhereWithAggregatesInput!]
+  OR: [OrderScalarWhereWithAggregatesInput!]
+  NOT: [OrderScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  quantity: IntWithAggregatesFilter
+  state: EnumStateWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  serviceId: StringWithAggregatesFilter
+  organizationId: StringWithAggregatesFilter
+  ownerId: StringWithAggregatesFilter
+  receiptId: StringNullableWithAggregatesFilter
+}
+
 input ServiceCategoryWhereInput {
   AND: [ServiceCategoryWhereInput!]
   OR: [ServiceCategoryWhereInput!]
   NOT: [ServiceCategoryWhereInput!]
   id: StringFilter
   name: StringFilter
+  image: AttachmentWhereInput
   state: EnumStateFilter
   organizations: OrganizationListRelationFilter
   services: ServiceListRelationFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
+  imageId: StringFilter
 }
 
 input ServiceCategoryOrderByInput {
@@ -1113,10 +1261,23 @@ input ServiceCategoryOrderByInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  imageId: PERMISSION
 }
 
 input ServiceCategoryWhereUniqueInput {
   id: PERMISSION
+}
+
+input ServiceCategoryScalarWhereWithAggregatesInput {
+  AND: [ServiceCategoryScalarWhereWithAggregatesInput!]
+  OR: [ServiceCategoryScalarWhereWithAggregatesInput!]
+  NOT: [ServiceCategoryScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
+  state: EnumStateWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  imageId: StringWithAggregatesFilter
 }
 
 input RatingWhereInput {
@@ -1138,8 +1299,6 @@ input RatingOrderByInput {
   id: PERMISSION
   value: PERMISSION
   comment: PERMISSION
-  organization: OrganizationOrderByInput
-  owner: UserOrderByInput
   createdAt: PERMISSION
   updatedAt: PERMISSION
   ownerId: PERMISSION
@@ -1150,27 +1309,42 @@ input RatingWhereUniqueInput {
   id: PERMISSION
 }
 
-input LocationWhereInput {
-  AND: [LocationWhereInput!]
-  OR: [LocationWhereInput!]
-  NOT: [LocationWhereInput!]
-  id: StringFilter
-  name: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  organizations: OrganizationListRelationFilter
-  users: UserListRelationFilter
+input RatingScalarWhereWithAggregatesInput {
+  AND: [RatingScalarWhereWithAggregatesInput!]
+  OR: [RatingScalarWhereWithAggregatesInput!]
+  NOT: [RatingScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  value: IntWithAggregatesFilter
+  comment: StringNullableWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
+  ownerId: StringWithAggregatesFilter
+  organizationId: StringWithAggregatesFilter
 }
 
 input LocationOrderByInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
 }
 
 input LocationWhereUniqueInput {
   id: PERMISSION
+}
+
+input LocationScalarWhereWithAggregatesInput {
+  AND: [LocationScalarWhereWithAggregatesInput!]
+  OR: [LocationScalarWhereWithAggregatesInput!]
+  NOT: [LocationScalarWhereWithAggregatesInput!]
+  id: StringWithAggregatesFilter
+  name: StringWithAggregatesFilter
+  lat: FloatWithAggregatesFilter
+  lon: FloatWithAggregatesFilter
+  createdAt: DateTimeWithAggregatesFilter
+  updatedAt: DateTimeWithAggregatesFilter
 }
 
 input CasbinRuleCreateInput {
@@ -1266,12 +1440,15 @@ input UserCreateInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
@@ -1285,6 +1462,8 @@ input UserUncheckedCreateInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -1292,6 +1471,7 @@ input UserUncheckedCreateInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -1303,12 +1483,15 @@ input UserUpdateInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   ratings: RatingUpdateManyWithoutOwnerInput
@@ -1322,6 +1505,8 @@ input UserUncheckedUpdateInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -1329,6 +1514,7 @@ input UserUncheckedUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -1340,6 +1526,8 @@ input UserCreateManyInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -1347,6 +1535,7 @@ input UserCreateManyInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
 }
 
@@ -1355,12 +1544,15 @@ input UserUpdateManyMutationInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input UserUncheckedUpdateManyInput {
@@ -1368,6 +1560,8 @@ input UserUncheckedUpdateManyInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -1375,6 +1569,7 @@ input UserUncheckedUpdateManyInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
 }
 
@@ -1395,6 +1590,7 @@ input AttachmentUpdateInput {
   services: ServiceUpdateManyWithoutImageInput
   organizations: OrganizationUpdateManyWithoutLogoInput
   orders: OrderUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUpdateOneWithoutImageInput
 }
 
 input AttachmentUncheckedUpdateInput {
@@ -1414,6 +1610,7 @@ input AttachmentUncheckedUpdateInput {
   services: ServiceUncheckedUpdateManyWithoutImageInput
   organizations: OrganizationUncheckedUpdateManyWithoutLogoInput
   orders: OrderUncheckedUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
 }
 
 input AttachmentUpdateManyMutationInput {
@@ -1450,6 +1647,7 @@ input OrganizationCreateInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -1466,6 +1664,7 @@ input OrganizationUncheckedCreateInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -1480,6 +1679,7 @@ input OrganizationUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -1496,6 +1696,7 @@ input OrganizationUncheckedUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -1510,6 +1711,7 @@ input OrganizationCreateManyInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -1521,6 +1723,7 @@ input OrganizationUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
@@ -1529,6 +1732,7 @@ input OrganizationUncheckedUpdateManyInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -1714,6 +1918,7 @@ input ServiceCategoryCreateInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  image: AttachmentCreateNestedOneWithoutServiceCategoryInput!
   organizations: OrganizationCreateNestedManyWithoutOffersInput
   services: ServiceCreateNestedManyWithoutCategoryInput
 }
@@ -1724,6 +1929,7 @@ input ServiceCategoryUncheckedCreateInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  imageId: PERMISSION
   services: ServiceUncheckedCreateNestedManyWithoutCategoryInput
 }
 
@@ -1733,6 +1939,7 @@ input ServiceCategoryUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  image: AttachmentUpdateOneRequiredWithoutServiceCategoryInput
   organizations: OrganizationUpdateManyWithoutOffersInput
   services: ServiceUpdateManyWithoutCategoryInput
 }
@@ -1743,6 +1950,7 @@ input ServiceCategoryUncheckedUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  imageId: StringFieldUpdateOperationsInput
   services: ServiceUncheckedUpdateManyWithoutCategoryInput
 }
 
@@ -1752,6 +1960,7 @@ input ServiceCategoryCreateManyInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  imageId: PERMISSION
 }
 
 input ServiceCategoryUpdateManyMutationInput {
@@ -1768,6 +1977,7 @@ input ServiceCategoryUncheckedUpdateManyInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  imageId: StringFieldUpdateOperationsInput
 }
 
 input RatingCreateInput {
@@ -1841,6 +2051,8 @@ input RatingUncheckedUpdateManyInput {
 input LocationCreateInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizations: OrganizationCreateNestedManyWithoutLocationInput
@@ -1850,6 +2062,8 @@ input LocationCreateInput {
 input LocationUncheckedCreateInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizations: OrganizationUncheckedCreateNestedManyWithoutLocationInput
@@ -1859,6 +2073,8 @@ input LocationUncheckedCreateInput {
 input LocationUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   organizations: OrganizationUpdateManyWithoutLocationInput
@@ -1868,6 +2084,8 @@ input LocationUpdateInput {
 input LocationUncheckedUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   organizations: OrganizationUncheckedUpdateManyWithoutLocationInput
@@ -1877,6 +2095,8 @@ input LocationUncheckedUpdateInput {
 input LocationCreateManyInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
 }
@@ -1884,6 +2104,8 @@ input LocationCreateManyInput {
 input LocationUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
@@ -1891,6 +2113,8 @@ input LocationUpdateManyMutationInput {
 input LocationUncheckedUpdateManyInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
@@ -1947,6 +2171,104 @@ input DateTimeFilter {
   not: NestedDateTimeFilter
 }
 
+input IntWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedIntWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _avg: NestedFloatFilter
+  avg: NestedFloatFilter
+  _sum: NestedIntFilter
+  sum: NestedIntFilter
+  _min: NestedIntFilter
+  min: NestedIntFilter
+  _max: NestedIntFilter
+  max: NestedIntFilter
+}
+
+input StringWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  contains: PERMISSION
+  startsWith: PERMISSION
+  endsWith: PERMISSION
+  mode: PERMISSION
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedStringFilter
+  min: NestedStringFilter
+  _max: NestedStringFilter
+  max: NestedStringFilter
+}
+
+input StringNullableWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  contains: PERMISSION
+  startsWith: PERMISSION
+  endsWith: PERMISSION
+  mode: PERMISSION
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  max: NestedStringNullableFilter
+}
+
+input DateTimeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedDateTimeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedDateTimeFilter
+  min: NestedDateTimeFilter
+  _max: NestedDateTimeFilter
+  max: NestedDateTimeFilter
+}
+
+input DateTimeNullableFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedDateTimeNullableFilter
+}
+
+input EnumGenderFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumGenderFilter
+}
+
 input BoolFilter {
   equals: PERMISSION
   not: NestedBoolFilter
@@ -1994,6 +2316,73 @@ input OrganizationListRelationFilter {
   none: OrganizationWhereInput
 }
 
+input DateTimeNullableWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedDateTimeNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  count: NestedIntNullableFilter
+  _min: NestedDateTimeNullableFilter
+  min: NestedDateTimeNullableFilter
+  _max: NestedDateTimeNullableFilter
+  max: NestedDateTimeNullableFilter
+}
+
+input EnumGenderWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumGenderWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumGenderFilter
+  min: NestedEnumGenderFilter
+  _max: NestedEnumGenderFilter
+  max: NestedEnumGenderFilter
+}
+
+input BoolWithAggregatesFilter {
+  equals: PERMISSION
+  not: NestedBoolWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedBoolFilter
+  min: NestedBoolFilter
+  _max: NestedBoolFilter
+  max: NestedBoolFilter
+}
+
+input EnumRoleWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumRoleWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumRoleFilter
+  min: NestedEnumRoleFilter
+  _max: NestedEnumRoleFilter
+  max: NestedEnumRoleFilter
+}
+
+input EnumStateWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumStateWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumStateFilter
+  min: NestedEnumStateFilter
+  _max: NestedEnumStateFilter
+  max: NestedEnumStateFilter
+}
+
 input EnumAttachmentTypeFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -2011,6 +2400,24 @@ input ServiceListRelationFilter {
   every: ServiceWhereInput
   some: ServiceWhereInput
   none: ServiceWhereInput
+}
+
+input ServiceCategoryRelationFilter {
+  is: ServiceCategoryWhereInput
+  isNot: ServiceCategoryWhereInput
+}
+
+input EnumAttachmentTypeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumAttachmentTypeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumAttachmentTypeFilter
+  min: NestedEnumAttachmentTypeFilter
+  _max: NestedEnumAttachmentTypeFilter
+  max: NestedEnumAttachmentTypeFilter
 }
 
 input ServiceCategoryListRelationFilter {
@@ -2040,9 +2447,25 @@ input OrganizationRelationFilter {
   isNot: OrganizationWhereInput
 }
 
-input ServiceCategoryRelationFilter {
-  is: ServiceCategoryWhereInput
-  isNot: ServiceCategoryWhereInput
+input FloatWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedFloatWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _avg: NestedFloatFilter
+  avg: NestedFloatFilter
+  _sum: NestedFloatFilter
+  sum: NestedFloatFilter
+  _min: NestedFloatFilter
+  min: NestedFloatFilter
+  _max: NestedFloatFilter
+  max: NestedFloatFilter
 }
 
 input ServiceRelationFilter {
@@ -2128,6 +2551,14 @@ input OrganizationUncheckedCreateNestedManyWithoutOwnerInput {
   connectOrCreate: [OrganizationCreateOrConnectWithoutOwnerInput!]
   createMany: OrganizationCreateManyOwnerInputEnvelope
   connect: [OrganizationWhereUniqueInput!]
+}
+
+input NullableDateTimeFieldUpdateOperationsInput {
+  set: PERMISSION
+}
+
+input EnumGenderFieldUpdateOperationsInput {
+  set: PERMISSION
 }
 
 input BoolFieldUpdateOperationsInput {
@@ -2287,6 +2718,12 @@ input OrderCreateNestedManyWithoutReceiptInput {
   connect: [OrderWhereUniqueInput!]
 }
 
+input ServiceCategoryCreateNestedOneWithoutImageInput {
+  create: ServiceCategoryUncheckedCreateWithoutImageInput
+  connectOrCreate: ServiceCategoryCreateOrConnectWithoutImageInput
+  connect: ServiceCategoryWhereUniqueInput
+}
+
 input UserUncheckedCreateNestedManyWithoutAvatorInput {
   create: [UserCreateWithoutAvatorInput!]
   connectOrCreate: [UserCreateOrConnectWithoutAvatorInput!]
@@ -2313,6 +2750,12 @@ input OrderUncheckedCreateNestedManyWithoutReceiptInput {
   connectOrCreate: [OrderCreateOrConnectWithoutReceiptInput!]
   createMany: OrderCreateManyReceiptInputEnvelope
   connect: [OrderWhereUniqueInput!]
+}
+
+input ServiceCategoryUncheckedCreateNestedOneWithoutImageInput {
+  create: ServiceCategoryUncheckedCreateWithoutImageInput
+  connectOrCreate: ServiceCategoryCreateOrConnectWithoutImageInput
+  connect: ServiceCategoryWhereUniqueInput
 }
 
 input EnumAttachmentTypeFieldUpdateOperationsInput {
@@ -2375,6 +2818,16 @@ input OrderUpdateManyWithoutReceiptInput {
   deleteMany: [OrderScalarWhereInput!]
 }
 
+input ServiceCategoryUpdateOneWithoutImageInput {
+  create: ServiceCategoryUncheckedCreateWithoutImageInput
+  connectOrCreate: ServiceCategoryCreateOrConnectWithoutImageInput
+  upsert: ServiceCategoryUpsertWithoutImageInput
+  connect: ServiceCategoryWhereUniqueInput
+  disconnect: PERMISSION
+  delete: PERMISSION
+  update: ServiceCategoryUncheckedUpdateWithoutImageInput
+}
+
 input UserUncheckedUpdateManyWithoutAvatorInput {
   create: [UserCreateWithoutAvatorInput!]
   connectOrCreate: [UserCreateOrConnectWithoutAvatorInput!]
@@ -2429,6 +2882,16 @@ input OrderUncheckedUpdateManyWithoutReceiptInput {
   update: [OrderUpdateWithWhereUniqueWithoutReceiptInput!]
   updateMany: [OrderUpdateManyWithWhereWithoutReceiptInput!]
   deleteMany: [OrderScalarWhereInput!]
+}
+
+input ServiceCategoryUncheckedUpdateOneWithoutImageInput {
+  create: ServiceCategoryUncheckedCreateWithoutImageInput
+  connectOrCreate: ServiceCategoryCreateOrConnectWithoutImageInput
+  upsert: ServiceCategoryUpsertWithoutImageInput
+  connect: ServiceCategoryWhereUniqueInput
+  disconnect: PERMISSION
+  delete: PERMISSION
+  update: ServiceCategoryUncheckedUpdateWithoutImageInput
 }
 
 input AttachmentCreateNestedOneWithoutOrganizationsInput {
@@ -2787,6 +3250,12 @@ input AttachmentUpdateOneWithoutOrdersInput {
   update: AttachmentUncheckedUpdateWithoutOrdersInput
 }
 
+input AttachmentCreateNestedOneWithoutServiceCategoryInput {
+  create: AttachmentUncheckedCreateWithoutServiceCategoryInput
+  connectOrCreate: AttachmentCreateOrConnectWithoutServiceCategoryInput
+  connect: AttachmentWhereUniqueInput
+}
+
 input OrganizationCreateNestedManyWithoutOffersInput {
   create: [OrganizationCreateWithoutOffersInput!]
   connectOrCreate: [OrganizationCreateOrConnectWithoutOffersInput!]
@@ -2805,6 +3274,14 @@ input ServiceUncheckedCreateNestedManyWithoutCategoryInput {
   connectOrCreate: [ServiceCreateOrConnectWithoutCategoryInput!]
   createMany: ServiceCreateManyCategoryInputEnvelope
   connect: [ServiceWhereUniqueInput!]
+}
+
+input AttachmentUpdateOneRequiredWithoutServiceCategoryInput {
+  create: AttachmentUncheckedCreateWithoutServiceCategoryInput
+  connectOrCreate: AttachmentCreateOrConnectWithoutServiceCategoryInput
+  upsert: AttachmentUpsertWithoutServiceCategoryInput
+  connect: AttachmentWhereUniqueInput
+  update: AttachmentUncheckedUpdateWithoutServiceCategoryInput
 }
 
 input OrganizationUpdateManyWithoutOffersInput {
@@ -3010,6 +3487,124 @@ input NestedDateTimeFilter {
   not: NestedDateTimeFilter
 }
 
+input NestedIntWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedIntWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _avg: NestedFloatFilter
+  avg: NestedFloatFilter
+  _sum: NestedIntFilter
+  sum: NestedIntFilter
+  _min: NestedIntFilter
+  min: NestedIntFilter
+  _max: NestedIntFilter
+  max: NestedIntFilter
+}
+
+input NestedFloatFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedFloatFilter
+}
+
+input NestedStringWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  contains: PERMISSION
+  startsWith: PERMISSION
+  endsWith: PERMISSION
+  not: NestedStringWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedStringFilter
+  min: NestedStringFilter
+  _max: NestedStringFilter
+  max: NestedStringFilter
+}
+
+input NestedStringNullableWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  contains: PERMISSION
+  startsWith: PERMISSION
+  endsWith: PERMISSION
+  not: NestedStringNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  count: NestedIntNullableFilter
+  _min: NestedStringNullableFilter
+  min: NestedStringNullableFilter
+  _max: NestedStringNullableFilter
+  max: NestedStringNullableFilter
+}
+
+input NestedIntNullableFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedIntNullableFilter
+}
+
+input NestedDateTimeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedDateTimeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedDateTimeFilter
+  min: NestedDateTimeFilter
+  _max: NestedDateTimeFilter
+  max: NestedDateTimeFilter
+}
+
+input NestedDateTimeNullableFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedDateTimeNullableFilter
+}
+
+input NestedEnumGenderFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumGenderFilter
+}
+
 input NestedBoolFilter {
   equals: PERMISSION
   not: NestedBoolFilter
@@ -3029,14 +3624,7 @@ input NestedEnumStateFilter {
   not: NestedEnumStateFilter
 }
 
-input NestedEnumAttachmentTypeFilter {
-  equals: PERMISSION
-  in: PERMISSION
-  notIn: PERMISSION
-  not: NestedEnumAttachmentTypeFilter
-}
-
-input NestedFloatFilter {
+input NestedDateTimeNullableWithAggregatesFilter {
   equals: PERMISSION
   in: PERMISSION
   notIn: PERMISSION
@@ -3044,7 +3632,104 @@ input NestedFloatFilter {
   lte: PERMISSION
   gt: PERMISSION
   gte: PERMISSION
-  not: NestedFloatFilter
+  not: NestedDateTimeNullableWithAggregatesFilter
+  _count: NestedIntNullableFilter
+  count: NestedIntNullableFilter
+  _min: NestedDateTimeNullableFilter
+  min: NestedDateTimeNullableFilter
+  _max: NestedDateTimeNullableFilter
+  max: NestedDateTimeNullableFilter
+}
+
+input NestedEnumGenderWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumGenderWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumGenderFilter
+  min: NestedEnumGenderFilter
+  _max: NestedEnumGenderFilter
+  max: NestedEnumGenderFilter
+}
+
+input NestedBoolWithAggregatesFilter {
+  equals: PERMISSION
+  not: NestedBoolWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedBoolFilter
+  min: NestedBoolFilter
+  _max: NestedBoolFilter
+  max: NestedBoolFilter
+}
+
+input NestedEnumRoleWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumRoleWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumRoleFilter
+  min: NestedEnumRoleFilter
+  _max: NestedEnumRoleFilter
+  max: NestedEnumRoleFilter
+}
+
+input NestedEnumStateWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumStateWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumStateFilter
+  min: NestedEnumStateFilter
+  _max: NestedEnumStateFilter
+  max: NestedEnumStateFilter
+}
+
+input NestedEnumAttachmentTypeFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumAttachmentTypeFilter
+}
+
+input NestedEnumAttachmentTypeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumAttachmentTypeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumAttachmentTypeFilter
+  min: NestedEnumAttachmentTypeFilter
+  _max: NestedEnumAttachmentTypeFilter
+  max: NestedEnumAttachmentTypeFilter
+}
+
+input NestedFloatWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  lt: PERMISSION
+  lte: PERMISSION
+  gt: PERMISSION
+  gte: PERMISSION
+  not: NestedFloatWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _avg: NestedFloatFilter
+  avg: NestedFloatFilter
+  _sum: NestedFloatFilter
+  sum: NestedFloatFilter
+  _min: NestedFloatFilter
+  min: NestedFloatFilter
+  _max: NestedFloatFilter
+  max: NestedFloatFilter
 }
 
 input AttachmentCreateOrConnectWithoutUsersInput {
@@ -3115,6 +3800,8 @@ input RatingCreateManyOwnerInputEnvelope {
 input LocationCreateWithoutUsersInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizations: OrganizationCreateNestedManyWithoutLocationInput
@@ -3123,6 +3810,8 @@ input LocationCreateWithoutUsersInput {
 input LocationUncheckedCreateWithoutUsersInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizations: OrganizationUncheckedCreateNestedManyWithoutLocationInput
@@ -3137,6 +3826,7 @@ input OrganizationCreateWithoutOwnerInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -3152,6 +3842,7 @@ input OrganizationUncheckedCreateWithoutOwnerInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -3175,6 +3866,7 @@ input OrganizationCreateWithoutStaffsInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -3190,6 +3882,7 @@ input OrganizationUncheckedCreateWithoutStaffsInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -3226,6 +3919,7 @@ input AttachmentUpdateWithoutUsersInput {
   services: ServiceUpdateManyWithoutImageInput
   organizations: OrganizationUpdateManyWithoutLogoInput
   orders: OrderUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUpdateOneWithoutImageInput
 }
 
 input AttachmentUncheckedUpdateWithoutUsersInput {
@@ -3244,6 +3938,7 @@ input AttachmentUncheckedUpdateWithoutUsersInput {
   services: ServiceUncheckedUpdateManyWithoutImageInput
   organizations: OrganizationUncheckedUpdateManyWithoutLogoInput
   orders: OrderUncheckedUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
 }
 
 input OrderUpsertWithWhereUniqueWithoutOwnerInput {
@@ -3314,6 +4009,8 @@ input LocationUpsertWithoutUsersInput {
 input LocationUpdateWithoutUsersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   organizations: OrganizationUpdateManyWithoutLocationInput
@@ -3322,6 +4019,8 @@ input LocationUpdateWithoutUsersInput {
 input LocationUncheckedUpdateWithoutUsersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   organizations: OrganizationUncheckedUpdateManyWithoutLocationInput
@@ -3350,6 +4049,7 @@ input OrganizationScalarWhereInput {
   id: StringFilter
   name: StringFilter
   description: StringNullableFilter
+  state: EnumStateFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   logoId: StringFilter
@@ -3378,12 +4078,15 @@ input UserCreateWithoutAvatorInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   orders: OrderCreateNestedManyWithoutOwnerInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
   location: LocationCreateNestedOneWithoutUsersInput
@@ -3396,12 +4099,15 @@ input UserUncheckedCreateWithoutAvatorInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -3458,6 +4164,7 @@ input OrganizationCreateWithoutLogoInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   services: ServiceCreateNestedManyWithoutOrganizationInput
@@ -3473,6 +4180,7 @@ input OrganizationUncheckedCreateWithoutLogoInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   locationId: PERMISSION
@@ -3524,6 +4232,30 @@ input OrderCreateManyReceiptInputEnvelope {
   skipDuplicates: PERMISSION
 }
 
+input ServiceCategoryCreateWithoutImageInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizations: OrganizationCreateNestedManyWithoutOffersInput
+  services: ServiceCreateNestedManyWithoutCategoryInput
+}
+
+input ServiceCategoryUncheckedCreateWithoutImageInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  services: ServiceUncheckedCreateNestedManyWithoutCategoryInput
+}
+
+input ServiceCategoryCreateOrConnectWithoutImageInput {
+  where: ServiceCategoryWhereUniqueInput!
+  create: ServiceCategoryUncheckedCreateWithoutImageInput!
+}
+
 input UserUpsertWithWhereUniqueWithoutAvatorInput {
   where: UserWhereUniqueInput!
   update: UserUncheckedUpdateWithoutAvatorInput!
@@ -3548,6 +4280,8 @@ input UserScalarWhereInput {
   email: StringFilter
   displayName: StringFilter
   phoneNumber: StringNullableFilter
+  dateOfBirth: DateTimeNullableFilter
+  gender: EnumGenderFilter
   emailVerified: BoolFilter
   disabled: BoolFilter
   role: EnumRoleFilter
@@ -3555,6 +4289,7 @@ input UserScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   avatorId: StringNullableFilter
+  organizationId: StringNullableFilter
   locationId: StringNullableFilter
 }
 
@@ -3620,6 +4355,30 @@ input OrderUpdateWithWhereUniqueWithoutReceiptInput {
 input OrderUpdateManyWithWhereWithoutReceiptInput {
   where: OrderScalarWhereInput!
   data: OrderUncheckedUpdateManyWithoutOrdersInput!
+}
+
+input ServiceCategoryUpsertWithoutImageInput {
+  update: ServiceCategoryUncheckedUpdateWithoutImageInput!
+  create: ServiceCategoryUncheckedCreateWithoutImageInput!
+}
+
+input ServiceCategoryUpdateWithoutImageInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  organizations: OrganizationUpdateManyWithoutOffersInput
+  services: ServiceUpdateManyWithoutCategoryInput
+}
+
+input ServiceCategoryUncheckedUpdateWithoutImageInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  services: ServiceUncheckedUpdateManyWithoutCategoryInput
 }
 
 input AttachmentCreateOrConnectWithoutOrganizationsInput {
@@ -3700,12 +4459,15 @@ input UserCreateWithoutStaffOfInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
@@ -3718,6 +4480,8 @@ input UserUncheckedCreateWithoutStaffOfInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -3725,6 +4489,7 @@ input UserUncheckedCreateWithoutStaffOfInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -3739,6 +4504,8 @@ input UserCreateOrConnectWithoutStaffOfInput {
 input LocationCreateWithoutOrganizationsInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   users: UserCreateNestedManyWithoutLocationInput
@@ -3747,6 +4514,8 @@ input LocationCreateWithoutOrganizationsInput {
 input LocationUncheckedCreateWithoutOrganizationsInput {
   id: PERMISSION
   name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   users: UserUncheckedCreateNestedManyWithoutLocationInput
@@ -3763,6 +4532,7 @@ input ServiceCategoryCreateWithoutOrganizationsInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  image: AttachmentCreateNestedOneWithoutServiceCategoryInput!
   services: ServiceCreateNestedManyWithoutCategoryInput
 }
 
@@ -3772,6 +4542,7 @@ input ServiceCategoryUncheckedCreateWithoutOrganizationsInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  imageId: PERMISSION
   services: ServiceUncheckedCreateNestedManyWithoutCategoryInput
 }
 
@@ -3813,12 +4584,15 @@ input UserCreateWithoutOrganizationsInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
@@ -3831,6 +4605,8 @@ input UserUncheckedCreateWithoutOrganizationsInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -3838,6 +4614,7 @@ input UserUncheckedCreateWithoutOrganizationsInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -3869,6 +4646,7 @@ input AttachmentUpdateWithoutOrganizationsInput {
   users: UserUpdateManyWithoutAvatorInput
   services: ServiceUpdateManyWithoutImageInput
   orders: OrderUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUpdateOneWithoutImageInput
 }
 
 input AttachmentUncheckedUpdateWithoutOrganizationsInput {
@@ -3887,6 +4665,7 @@ input AttachmentUncheckedUpdateWithoutOrganizationsInput {
   users: UserUncheckedUpdateManyWithoutAvatorInput
   services: ServiceUncheckedUpdateManyWithoutImageInput
   orders: OrderUncheckedUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
 }
 
 input ServiceUpsertWithWhereUniqueWithoutOrganizationInput {
@@ -3945,6 +4724,8 @@ input LocationUpsertWithoutOrganizationsInput {
 input LocationUpdateWithoutOrganizationsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   users: UserUpdateManyWithoutLocationInput
@@ -3953,6 +4734,8 @@ input LocationUpdateWithoutOrganizationsInput {
 input LocationUncheckedUpdateWithoutOrganizationsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
+  lat: FloatFieldUpdateOperationsInput
+  lon: FloatFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   users: UserUncheckedUpdateManyWithoutLocationInput
@@ -3983,6 +4766,7 @@ input ServiceCategoryScalarWhereInput {
   state: EnumStateFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
+  imageId: StringFilter
 }
 
 input RatingUpsertWithWhereUniqueWithoutOrganizationInput {
@@ -4011,12 +4795,15 @@ input UserUpdateWithoutOrganizationsInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   ratings: RatingUpdateManyWithoutOwnerInput
@@ -4029,6 +4816,8 @@ input UserUncheckedUpdateWithoutOrganizationsInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -4036,6 +4825,7 @@ input UserUncheckedUpdateWithoutOrganizationsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -4045,6 +4835,7 @@ input OrganizationCreateWithoutServicesInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -4060,6 +4851,7 @@ input OrganizationUncheckedCreateWithoutServicesInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4085,6 +4877,7 @@ input ServiceCategoryCreateWithoutServicesInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  image: AttachmentCreateNestedOneWithoutServiceCategoryInput!
   organizations: OrganizationCreateNestedManyWithoutOffersInput
 }
 
@@ -4094,6 +4887,7 @@ input ServiceCategoryUncheckedCreateWithoutServicesInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  imageId: PERMISSION
 }
 
 input ServiceCategoryCreateOrConnectWithoutServicesInput {
@@ -4142,6 +4936,7 @@ input OrganizationUpdateWithoutServicesInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -4157,6 +4952,7 @@ input OrganizationUncheckedUpdateWithoutServicesInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -4187,6 +4983,7 @@ input AttachmentUpdateWithoutServicesInput {
   users: UserUpdateManyWithoutAvatorInput
   organizations: OrganizationUpdateManyWithoutLogoInput
   orders: OrderUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUpdateOneWithoutImageInput
 }
 
 input AttachmentUncheckedUpdateWithoutServicesInput {
@@ -4205,6 +5002,7 @@ input AttachmentUncheckedUpdateWithoutServicesInput {
   users: UserUncheckedUpdateManyWithoutAvatorInput
   organizations: OrganizationUncheckedUpdateManyWithoutLogoInput
   orders: OrderUncheckedUpdateManyWithoutReceiptInput
+  serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
 }
 
 input ServiceCategoryUpsertWithoutServicesInput {
@@ -4218,6 +5016,7 @@ input ServiceCategoryUpdateWithoutServicesInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  image: AttachmentUpdateOneRequiredWithoutServiceCategoryInput
   organizations: OrganizationUpdateManyWithoutOffersInput
 }
 
@@ -4227,6 +5026,7 @@ input ServiceCategoryUncheckedUpdateWithoutServicesInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  imageId: StringFieldUpdateOperationsInput
 }
 
 input OrderUpsertWithWhereUniqueWithoutServiceInput {
@@ -4280,6 +5080,7 @@ input OrganizationCreateWithoutOrdersInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -4295,6 +5096,7 @@ input OrganizationUncheckedCreateWithoutOrdersInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4314,12 +5116,15 @@ input UserCreateWithoutOrdersInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
   location: LocationCreateNestedOneWithoutUsersInput
@@ -4332,6 +5137,8 @@ input UserUncheckedCreateWithoutOrdersInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -4339,6 +5146,7 @@ input UserUncheckedCreateWithoutOrdersInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4394,6 +5202,7 @@ input OrganizationUpdateWithoutOrdersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -4409,6 +5218,7 @@ input OrganizationUncheckedUpdateWithoutOrdersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -4428,12 +5238,15 @@ input UserUpdateWithoutOrdersInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   ratings: RatingUpdateManyWithoutOwnerInput
   location: LocationUpdateOneWithoutUsersInput
@@ -4446,6 +5259,8 @@ input UserUncheckedUpdateWithoutOrdersInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -4453,6 +5268,7 @@ input UserUncheckedUpdateWithoutOrdersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
@@ -4479,6 +5295,7 @@ input AttachmentUpdateWithoutOrdersInput {
   users: UserUpdateManyWithoutAvatorInput
   services: ServiceUpdateManyWithoutImageInput
   organizations: OrganizationUpdateManyWithoutLogoInput
+  serviceCategory: ServiceCategoryUpdateOneWithoutImageInput
 }
 
 input AttachmentUncheckedUpdateWithoutOrdersInput {
@@ -4497,12 +5314,57 @@ input AttachmentUncheckedUpdateWithoutOrdersInput {
   users: UserUncheckedUpdateManyWithoutAvatorInput
   services: ServiceUncheckedUpdateManyWithoutImageInput
   organizations: OrganizationUncheckedUpdateManyWithoutLogoInput
+  serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
+}
+
+input AttachmentCreateWithoutServiceCategoryInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  users: UserCreateNestedManyWithoutAvatorInput
+  services: ServiceCreateNestedManyWithoutImageInput
+  organizations: OrganizationCreateNestedManyWithoutLogoInput
+  orders: OrderCreateNestedManyWithoutReceiptInput
+}
+
+input AttachmentUncheckedCreateWithoutServiceCategoryInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  users: UserUncheckedCreateNestedManyWithoutAvatorInput
+  services: ServiceUncheckedCreateNestedManyWithoutImageInput
+  organizations: OrganizationUncheckedCreateNestedManyWithoutLogoInput
+  orders: OrderUncheckedCreateNestedManyWithoutReceiptInput
+}
+
+input AttachmentCreateOrConnectWithoutServiceCategoryInput {
+  where: AttachmentWhereUniqueInput!
+  create: AttachmentUncheckedCreateWithoutServiceCategoryInput!
 }
 
 input OrganizationCreateWithoutOffersInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -4518,6 +5380,7 @@ input OrganizationUncheckedCreateWithoutOffersInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4569,6 +5432,49 @@ input ServiceCreateManyCategoryInputEnvelope {
   skipDuplicates: PERMISSION
 }
 
+input AttachmentUpsertWithoutServiceCategoryInput {
+  update: AttachmentUncheckedUpdateWithoutServiceCategoryInput!
+  create: AttachmentUncheckedCreateWithoutServiceCategoryInput!
+}
+
+input AttachmentUpdateWithoutServiceCategoryInput {
+  id: StringFieldUpdateOperationsInput
+  path: StringFieldUpdateOperationsInput
+  filename: NullableStringFieldUpdateOperationsInput
+  mimetype: NullableStringFieldUpdateOperationsInput
+  encoding: NullableStringFieldUpdateOperationsInput
+  duration: IntFieldUpdateOperationsInput
+  size: IntFieldUpdateOperationsInput
+  attachmentType: EnumAttachmentTypeFieldUpdateOperationsInput
+  downloadable: BoolFieldUpdateOperationsInput
+  placement: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  users: UserUpdateManyWithoutAvatorInput
+  services: ServiceUpdateManyWithoutImageInput
+  organizations: OrganizationUpdateManyWithoutLogoInput
+  orders: OrderUpdateManyWithoutReceiptInput
+}
+
+input AttachmentUncheckedUpdateWithoutServiceCategoryInput {
+  id: StringFieldUpdateOperationsInput
+  path: StringFieldUpdateOperationsInput
+  filename: NullableStringFieldUpdateOperationsInput
+  mimetype: NullableStringFieldUpdateOperationsInput
+  encoding: NullableStringFieldUpdateOperationsInput
+  duration: IntFieldUpdateOperationsInput
+  size: IntFieldUpdateOperationsInput
+  attachmentType: EnumAttachmentTypeFieldUpdateOperationsInput
+  downloadable: BoolFieldUpdateOperationsInput
+  placement: StringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  users: UserUncheckedUpdateManyWithoutAvatorInput
+  services: ServiceUncheckedUpdateManyWithoutImageInput
+  organizations: OrganizationUncheckedUpdateManyWithoutLogoInput
+  orders: OrderUncheckedUpdateManyWithoutReceiptInput
+}
+
 input OrganizationUpsertWithWhereUniqueWithoutOffersInput {
   where: OrganizationWhereUniqueInput!
   update: OrganizationUncheckedUpdateWithoutOffersInput!
@@ -4605,6 +5511,7 @@ input OrganizationCreateWithoutRatingsInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -4620,6 +5527,7 @@ input OrganizationUncheckedCreateWithoutRatingsInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4639,12 +5547,15 @@ input UserCreateWithoutRatingsInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   location: LocationCreateNestedOneWithoutUsersInput
@@ -4657,6 +5568,8 @@ input UserUncheckedCreateWithoutRatingsInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -4664,6 +5577,7 @@ input UserUncheckedCreateWithoutRatingsInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4683,6 +5597,7 @@ input OrganizationUpdateWithoutRatingsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -4698,6 +5613,7 @@ input OrganizationUncheckedUpdateWithoutRatingsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -4717,12 +5633,15 @@ input UserUpdateWithoutRatingsInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   location: LocationUpdateOneWithoutUsersInput
@@ -4735,6 +5654,8 @@ input UserUncheckedUpdateWithoutRatingsInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -4742,6 +5663,7 @@ input UserUncheckedUpdateWithoutRatingsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
@@ -4751,6 +5673,7 @@ input OrganizationCreateWithoutLocationInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logo: AttachmentCreateNestedOneWithoutOrganizationsInput!
@@ -4766,6 +5689,7 @@ input OrganizationUncheckedCreateWithoutLocationInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4790,12 +5714,15 @@ input UserCreateWithoutLocationInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   ratings: RatingCreateNestedManyWithoutOwnerInput
@@ -4808,6 +5735,8 @@ input UserUncheckedCreateWithoutLocationInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -4815,6 +5744,7 @@ input UserUncheckedCreateWithoutLocationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
@@ -4886,6 +5816,7 @@ input OrganizationCreateManyOwnerInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -4956,6 +5887,7 @@ input OrganizationUpdateWithoutOwnerInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -4971,6 +5903,7 @@ input OrganizationUncheckedUpdateWithoutOwnerInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -4984,6 +5917,7 @@ input OrganizationUncheckedUpdateManyWithoutOrganizationsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -4994,6 +5928,7 @@ input OrganizationUpdateWithoutStaffsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -5009,6 +5944,7 @@ input OrganizationUncheckedUpdateWithoutStaffsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -5023,6 +5959,7 @@ input OrganizationUncheckedUpdateManyWithoutStaffOfInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -5035,12 +5972,15 @@ input UserCreateManyAvatorInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+  organizationId: PERMISSION
   locationId: PERMISSION
 }
 
@@ -5060,6 +6000,7 @@ input OrganizationCreateManyLogoInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   locationId: PERMISSION
@@ -5082,12 +6023,15 @@ input UserUpdateWithoutAvatorInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUpdateManyWithoutOwnerInput
   ratings: RatingUpdateManyWithoutOwnerInput
   location: LocationUpdateOneWithoutUsersInput
@@ -5100,12 +6044,15 @@ input UserUncheckedUpdateWithoutAvatorInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -5117,12 +6064,15 @@ input UserUncheckedUpdateManyWithoutUsersInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
 }
 
@@ -5168,6 +6118,7 @@ input OrganizationUpdateWithoutLogoInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   services: ServiceUpdateManyWithoutOrganizationInput
@@ -5183,6 +6134,7 @@ input OrganizationUncheckedUpdateWithoutLogoInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   locationId: StringFieldUpdateOperationsInput
@@ -5299,12 +6251,15 @@ input UserUpdateWithoutStaffOfInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   ratings: RatingUpdateManyWithoutOwnerInput
@@ -5317,6 +6272,8 @@ input UserUncheckedUpdateWithoutStaffOfInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -5324,6 +6281,7 @@ input UserUncheckedUpdateWithoutStaffOfInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -5335,6 +6293,8 @@ input UserUncheckedUpdateManyWithoutStaffsInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -5342,6 +6302,7 @@ input UserUncheckedUpdateManyWithoutStaffsInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
 }
 
@@ -5351,6 +6312,7 @@ input ServiceCategoryUpdateWithoutOrganizationsInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  image: AttachmentUpdateOneRequiredWithoutServiceCategoryInput
   services: ServiceUpdateManyWithoutCategoryInput
 }
 
@@ -5360,6 +6322,7 @@ input ServiceCategoryUncheckedUpdateWithoutOrganizationsInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  imageId: StringFieldUpdateOperationsInput
   services: ServiceUncheckedUpdateManyWithoutCategoryInput
 }
 
@@ -5369,6 +6332,7 @@ input ServiceCategoryUncheckedUpdateManyWithoutOffersInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  imageId: StringFieldUpdateOperationsInput
 }
 
 input RatingUpdateWithoutOrganizationInput {
@@ -5438,6 +6402,7 @@ input OrganizationUpdateWithoutOffersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -5453,6 +6418,7 @@ input OrganizationUncheckedUpdateWithoutOffersInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -5493,6 +6459,7 @@ input OrganizationCreateManyLocationInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
   logoId: PERMISSION
@@ -5504,6 +6471,8 @@ input UserCreateManyLocationInput {
   email: PERMISSION
   displayName: PERMISSION
   phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
   emailVerified: PERMISSION
   disabled: PERMISSION
   role: PERMISSION
@@ -5511,12 +6480,14 @@ input UserCreateManyLocationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
+  organizationId: PERMISSION
 }
 
 input OrganizationUpdateWithoutLocationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutOrganizationsInput
@@ -5532,6 +6503,7 @@ input OrganizationUncheckedUpdateWithoutLocationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logoId: StringFieldUpdateOperationsInput
@@ -5546,12 +6518,15 @@ input UserUpdateWithoutLocationInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   ratings: RatingUpdateManyWithoutOwnerInput
@@ -5564,6 +6539,8 @@ input UserUncheckedUpdateWithoutLocationInput {
   email: StringFieldUpdateOperationsInput
   displayName: StringFieldUpdateOperationsInput
   phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
   emailVerified: BoolFieldUpdateOperationsInput
   disabled: BoolFieldUpdateOperationsInput
   role: EnumRoleFieldUpdateOperationsInput
@@ -5571,72 +6548,114 @@ input UserUncheckedUpdateWithoutLocationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
 }
 
 type AggregateCasbinRule {
+  _count: CasbinRuleCountAggregateOutputType
   count: CasbinRuleCountAggregateOutputType
+  _avg: CasbinRuleAvgAggregateOutputType
   avg: CasbinRuleAvgAggregateOutputType
+  _sum: CasbinRuleSumAggregateOutputType
   sum: CasbinRuleSumAggregateOutputType
+  _min: CasbinRuleMinAggregateOutputType
   min: CasbinRuleMinAggregateOutputType
+  _max: CasbinRuleMaxAggregateOutputType
   max: CasbinRuleMaxAggregateOutputType
 }
 
 type AggregateUser {
+  _count: UserCountAggregateOutputType
   count: UserCountAggregateOutputType
+  _min: UserMinAggregateOutputType
   min: UserMinAggregateOutputType
+  _max: UserMaxAggregateOutputType
   max: UserMaxAggregateOutputType
 }
 
 type AggregateAttachment {
+  _count: AttachmentCountAggregateOutputType
   count: AttachmentCountAggregateOutputType
+  _avg: AttachmentAvgAggregateOutputType
   avg: AttachmentAvgAggregateOutputType
+  _sum: AttachmentSumAggregateOutputType
   sum: AttachmentSumAggregateOutputType
+  _min: AttachmentMinAggregateOutputType
   min: AttachmentMinAggregateOutputType
+  _max: AttachmentMaxAggregateOutputType
   max: AttachmentMaxAggregateOutputType
 }
 
 type AggregateOrganization {
+  _count: OrganizationCountAggregateOutputType
   count: OrganizationCountAggregateOutputType
+  _min: OrganizationMinAggregateOutputType
   min: OrganizationMinAggregateOutputType
+  _max: OrganizationMaxAggregateOutputType
   max: OrganizationMaxAggregateOutputType
 }
 
 type AggregateService {
+  _count: ServiceCountAggregateOutputType
   count: ServiceCountAggregateOutputType
+  _avg: ServiceAvgAggregateOutputType
   avg: ServiceAvgAggregateOutputType
+  _sum: ServiceSumAggregateOutputType
   sum: ServiceSumAggregateOutputType
+  _min: ServiceMinAggregateOutputType
   min: ServiceMinAggregateOutputType
+  _max: ServiceMaxAggregateOutputType
   max: ServiceMaxAggregateOutputType
 }
 
 type AggregateOrder {
+  _count: OrderCountAggregateOutputType
   count: OrderCountAggregateOutputType
+  _avg: OrderAvgAggregateOutputType
   avg: OrderAvgAggregateOutputType
+  _sum: OrderSumAggregateOutputType
   sum: OrderSumAggregateOutputType
+  _min: OrderMinAggregateOutputType
   min: OrderMinAggregateOutputType
+  _max: OrderMaxAggregateOutputType
   max: OrderMaxAggregateOutputType
 }
 
 type AggregateServiceCategory {
+  _count: ServiceCategoryCountAggregateOutputType
   count: ServiceCategoryCountAggregateOutputType
+  _min: ServiceCategoryMinAggregateOutputType
   min: ServiceCategoryMinAggregateOutputType
+  _max: ServiceCategoryMaxAggregateOutputType
   max: ServiceCategoryMaxAggregateOutputType
 }
 
 type AggregateRating {
+  _count: RatingCountAggregateOutputType
   count: RatingCountAggregateOutputType
+  _avg: RatingAvgAggregateOutputType
   avg: RatingAvgAggregateOutputType
+  _sum: RatingSumAggregateOutputType
   sum: RatingSumAggregateOutputType
+  _min: RatingMinAggregateOutputType
   min: RatingMinAggregateOutputType
+  _max: RatingMaxAggregateOutputType
   max: RatingMaxAggregateOutputType
 }
 
 type AggregateLocation {
+  _count: LocationCountAggregateOutputType
   count: LocationCountAggregateOutputType
+  _avg: LocationAvgAggregateOutputType
+  avg: LocationAvgAggregateOutputType
+  _sum: LocationSumAggregateOutputType
+  sum: LocationSumAggregateOutputType
+  _min: LocationMinAggregateOutputType
   min: LocationMinAggregateOutputType
+  _max: LocationMaxAggregateOutputType
   max: LocationMaxAggregateOutputType
 }
 
@@ -5693,6 +6712,8 @@ type UserCountAggregateOutputType {
   email(action: PERMISSION): PERMISSION
   displayName(action: PERMISSION): PERMISSION
   phoneNumber(action: PERMISSION): PERMISSION
+  dateOfBirth(action: PERMISSION): PERMISSION
+  gender(action: PERMISSION): PERMISSION
   emailVerified(action: PERMISSION): PERMISSION
   disabled(action: PERMISSION): PERMISSION
   role(action: PERMISSION): PERMISSION
@@ -5700,6 +6721,7 @@ type UserCountAggregateOutputType {
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
+  organizationId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
@@ -5709,6 +6731,8 @@ type UserMinAggregateOutputType {
   email(action: PERMISSION): PERMISSION
   displayName(action: PERMISSION): PERMISSION
   phoneNumber(action: PERMISSION): PERMISSION
+  dateOfBirth(action: PERMISSION): PERMISSION
+  gender(action: PERMISSION): PERMISSION
   emailVerified(action: PERMISSION): PERMISSION
   disabled(action: PERMISSION): PERMISSION
   role(action: PERMISSION): PERMISSION
@@ -5716,6 +6740,7 @@ type UserMinAggregateOutputType {
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
+  organizationId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
 }
 
@@ -5724,6 +6749,8 @@ type UserMaxAggregateOutputType {
   email(action: PERMISSION): PERMISSION
   displayName(action: PERMISSION): PERMISSION
   phoneNumber(action: PERMISSION): PERMISSION
+  dateOfBirth(action: PERMISSION): PERMISSION
+  gender(action: PERMISSION): PERMISSION
   emailVerified(action: PERMISSION): PERMISSION
   disabled(action: PERMISSION): PERMISSION
   role(action: PERMISSION): PERMISSION
@@ -5731,6 +6758,7 @@ type UserMaxAggregateOutputType {
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
+  organizationId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
 }
 
@@ -5794,6 +6822,7 @@ type OrganizationCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
+  state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   logoId(action: PERMISSION): PERMISSION
@@ -5806,6 +6835,7 @@ type OrganizationMinAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
+  state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   logoId(action: PERMISSION): PERMISSION
@@ -5817,6 +6847,7 @@ type OrganizationMaxAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
+  state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   logoId(action: PERMISSION): PERMISSION
@@ -5923,6 +6954,7 @@ type ServiceCategoryCountAggregateOutputType {
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
+  imageId(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
 
@@ -5932,6 +6964,7 @@ type ServiceCategoryMinAggregateOutputType {
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
+  imageId(action: PERMISSION): PERMISSION
 }
 
 type ServiceCategoryMaxAggregateOutputType {
@@ -5940,6 +6973,7 @@ type ServiceCategoryMaxAggregateOutputType {
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
+  imageId(action: PERMISSION): PERMISSION
 }
 
 type RatingCountAggregateOutputType {
@@ -5984,14 +7018,28 @@ type RatingMaxAggregateOutputType {
 type LocationCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
 
+type LocationAvgAggregateOutputType {
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
+}
+
+type LocationSumAggregateOutputType {
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
+}
+
 type LocationMinAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
 }
@@ -5999,6 +7047,8 @@ type LocationMinAggregateOutputType {
 type LocationMaxAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
+  lat(action: PERMISSION): PERMISSION
+  lon(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
 }

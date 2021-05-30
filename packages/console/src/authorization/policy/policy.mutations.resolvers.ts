@@ -1,8 +1,8 @@
 
-import { Resolver, Mutation, Info, Args, Context, Parent } from '@nestjs/graphql';
+import { Resolver, Query,Mutation,Subscription, Info, Args, Context, Parent } from '@nestjs/graphql';
 import { TenantContext } from '@mechsoft/common';
 import { PolicyService } from './policy.service';
-import { AuthorizerGuard } from "@mechsoft/enforcer";
+import { AuthorizerGuard } from '@mechsoft/enforcer';
 import { UseGuards } from '@nestjs/common';
 
 @Resolver()
@@ -36,54 +36,6 @@ recoverAccount(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @I
 @Mutation()
 @UseGuards(AuthorizerGuard)
 signout(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-createOneAttachment(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-updateOneAttachment(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-deleteOneAttachment(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-createOneLocation(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-updateOneLocation(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-deleteOneLocation(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 

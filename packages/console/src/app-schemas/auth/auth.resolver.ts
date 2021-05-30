@@ -30,7 +30,7 @@ export class AuthResolver {
     @Context() ctx: TenantContext
   ): Promise<AuthResult> {
     debugger
-    const {select} = ctx.prisma.getSelection(info).valueOf('user', 'User', { select: {  } });
+    const {select} = ctx.prisma.getSelection(info).valueOf('data', 'User', { select: {  } });
     const result = await this.authService.signup(credentials, ctx.prisma, select, organization);
     //this.setAuth(result.user, ctx);
     return result;
@@ -42,9 +42,8 @@ export class AuthResolver {
     @Info() info,
     @Context() ctx: TenantContext
   ): Promise<AuthResult> {
-    const {select} = ctx.prisma.getSelection(info).valueOf('user', 'User', { select: {  } });
+    const {select} = ctx.prisma.getSelection(info).valueOf('data', 'User', { select: {  } });
     const result = await this.authService.signInWithEmail(credentials,ctx.prisma,select);
-   // this.setAuth(result.user, ctx);
     return result;
   }
   private setAuth(user, ctx) {

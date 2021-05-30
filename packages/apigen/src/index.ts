@@ -13,8 +13,7 @@ export * from './sdl/Generators';
 export * from './sdl/schema';
 export * from './sdl/GeneratorSdl.service';
 import { SdlGeneratorService } from './sdl/GeneratorSdl.service';
-import { GenerateResourcesRules } from './sdl/GenerateResourcesRules.service';
-
+export * from './sdl/policy.schema';
 export async function generate(
     options: SdlGeneratorServiceOptions
 ): Promise<void> {
@@ -22,9 +21,7 @@ export async function generate(
         SdlGeneratorModule.forRoot(options)
     );
     const sdl = app.get(SdlGeneratorService);
-    const resources = app.get(GenerateResourcesRules)
     await sdl.run();
-    await resources.run();
     await app.init();
     await app.close();
 }

@@ -1,3 +1,51 @@
+fragment attachment on Attachment {
+  id(action: allow)
+  path(action: allow)
+  mimetype(action: allow)
+  placement(action: allow)
+  size(action: allow)
+  encoding(action: allow)
+  createdAt(action: allow)
+  updatedAt(action: allow)
+}
+fragment organization on Organization {
+  id(action: allow)
+  name(action: allow)
+  description(action: allow)
+  logo {
+    ...attachment
+  }
+  location{
+    ...location
+  }
+}
+fragment location on Location {
+  id(action: allow)
+  name(action: allow)
+  lat(action: allow)
+  lon(action:allow)
+}
+fragment user on User {
+  id(action: allow)
+  displayName(action: allow)
+  phoneNumber(action:allow)
+  email(action:allow)
+  emailVerified(action: allow)
+  disabled(action: allow)
+  state(action: allow)
+  role(action: allow)
+  online(action:allow)
+  avator{
+    ...attachment
+  } 
+  organizations(where: { name: { equals: allow } }) {
+    ...organization
+  }
+  createdAt(action: allow)
+  updatedAt(action: allow)
+   
+}
+
 query findcategory {
   findManyServiceCategory(
     role: ANONYMOUS
@@ -22,6 +70,9 @@ query findcategory {
     data{
       id(action:allow)
       name(action:allow)
+      image{
+        ...attachment
+      }
       updatedAt(action:allow)
       createdAt(action:allow)
     }
@@ -48,31 +99,10 @@ mutation signup {
     }
   ) {
     message(action: allow)
-    error(action: allow)
+    status(action: allow)
     data {
-      id(action: allow)
-      disabled(action: allow)
-      emailVerified(action: allow)
-      displayName(action: allow)
-      phoneNumber(action: allow)
-      email(action: allow)
-      role(action: allow)
-      createdAt(action: allow)
-      updatedAt(action: allow)
-      avator {
-        id(action: allow)
-        path(action: allow)
-        mimetype(action: allow)
-      }
-      organizations(where: { name: { equals: allow } }) {
-        id(action: allow)
-        name(action: allow)
-        logo {
-          id(action: allow)
-          path(action: allow)
-          mimetype(action: allow)
-        }
-      }
+      ...user
+      
     }
   }
 }
@@ -87,21 +117,9 @@ mutation signin{
     email: allow
   }){
     message(action: allow)
-    error(action: allow)
+    status(action: allow)
     data{
-      id(action: allow)
-      disabled(action: allow)
-      emailVerified(action: allow)
-      displayName(action: allow)
-      phoneNumber(action: allow)
-      email(action: allow)
-      role(action: allow)
-      createdAt(action: allow)
-      updatedAt(action: allow)
-      avator{
-        id(action: allow)
-        path(action: allow)
-      }
+      ...user      
     }
     token(action: allow)
   }

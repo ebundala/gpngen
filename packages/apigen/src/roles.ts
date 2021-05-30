@@ -1,4 +1,5 @@
 
+
 export interface BaseRole{
   parents?: string[];
   rules?: string[][]
@@ -34,14 +35,6 @@ export class Role implements BaseRole{
 
 export const getRolePolicies= (role:Role)=>{
   const { rules, parents } = role;
-  // const policies: string[][]=[];
-  // if (rules && rules.length) {
-  //   const rules1 = rules.map((v) => {
-  //     return [ ...v];
-  //     });
-  //   policies.push(...rules1)
-  // }
- 
   return rules;
 }
 export const getRoleGrouping = (role:Role)=>{

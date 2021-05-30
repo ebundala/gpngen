@@ -2514,7 +2514,7 @@
   resolved "https://registry.yarnpkg.com/@paljs/types/-/types-2.13.0.tgz#5520f932dc4af023415673ed5b97b35e52c56744"
   integrity sha512-AeoGgKuV5FxyhLpBi6QUL+xoi+D8fpIL0fT2CNVY9lZM2he8gH6HkBIxLZNut6Ja9zytCDAHTUGF1fhKJLKJ/Q==
 
-"@prisma/client@^2.23.0":
+"@prisma/client@2.23.0", "@prisma/client@^2.23.0":
   version "2.23.0"
   resolved "https://registry.npmjs.org/@prisma/client/-/client-2.23.0.tgz#4bf16ab19b140873ba79bd159da86842b1746e0a"
   integrity sha512-xsHdo3+wIH0hJVGfKHYTEKtifStjKH0b5t8t7hV32Fypq6+3uxhAi3F25yxuI4XSHXg21nb7Ha82lNwU/0TERA==

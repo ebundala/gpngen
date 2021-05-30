@@ -14,7 +14,7 @@ import {
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import { AuthMiddleware, CasbinModule, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
-import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
+import { BusinessRulesManagerModule,GqlContextInjectorModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
 
@@ -136,7 +136,6 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
        exclude: ['/graphql', '/casbin-admin'],
  
     }), */
-
     ...modules,
     AuthModule,
     BusinessRulesManagerModule
@@ -145,6 +144,5 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(PrismaClientMiddleware, EnforcerMiddleware, AuthMiddleware).forRoutes('/graphql');
-
   }
 }

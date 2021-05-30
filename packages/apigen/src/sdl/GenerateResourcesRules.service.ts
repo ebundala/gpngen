@@ -21,6 +21,7 @@ export class GenerateResourcesRules {
   }
 
   async run(): Promise<void> {
+    throw new Error("Deplicated string rules");
     if (this.options.authorization) {
       const { depth, rulesDir } = this.options.authorization;
       this.logger.debug('Generating resources Auth rules ');

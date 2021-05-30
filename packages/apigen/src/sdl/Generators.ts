@@ -186,8 +186,10 @@ export class Generators {
 export const mkdrIfNotExist = (path) => {
   return !existsSync(path) && mkdirSync(path, { recursive: true });
 }
-export const writeSchemaToFile = (schema: GraphQLSchema, path: string, filename = 'schema.graphql') => {
+export const writeSchemaToFile = (schema: GraphQLSchema, path: string, filename = 'schema.graphql'):string => {
   const txt = printSchema(schema);
   mkdrIfNotExist(path);
-  writeFileSync(join(path, filename), txt);
+  const filePath=join(path, filename);
+  writeFileSync(filePath, txt);
+  return filePath;
 }

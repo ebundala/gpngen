@@ -30,11 +30,11 @@ import {
 
 } from '../../models/graphql';
 import { uploadFile } from '../directives/file.utils';
-import { Prisma } from '@prisma/client'
+import { Gender, Prisma } from '@prisma/client'
 import {
   BusinessRequest,
   BlocAttach,
-  BlocValidate, Bloc
+  BlocValidate, Bloc, PrismaAttach, PrismaHookRequest, PrismaHookHandler
 } from '@mechsoft/business-rules-manager'
 
 import { TenantContext } from '@mechsoft/common';
@@ -186,6 +186,12 @@ export class AuthService {
     return next(v)
   }
 
+  @PrismaAttach('User',"findUnique")
+  async online(args:PrismaHookRequest,n:PrismaHookHandler){
+     debugger
+    args.result['online']=true;
+    return n(args);
+  }
   @BlocValidate('signup.input.credentials.email')
   async oneEmailPerAccount(v: BusinessRequest<TenantContext>) {
     const { args, context } = v;

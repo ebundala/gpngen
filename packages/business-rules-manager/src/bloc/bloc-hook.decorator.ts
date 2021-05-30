@@ -1,5 +1,5 @@
 import { BusinessRulesManager } from './business-rules-manager.service';
-import { BUSINESS_LOGIC_HOOK } from './constants';
+import { BUSINESS_LOGIC_HOOK, PRISMA_LOGIC_HOOK } from './constants';
 
 export function BlocAttach(hook: string, before: boolean = false): MethodDecorator {
     return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor) => {
@@ -10,6 +10,8 @@ export function BlocAttach(hook: string, before: boolean = false): MethodDecorat
         return propertyDescriptor;
     };
 }
+
+
 
 
 // // const injectService = Inject(BusinessRulesManager);

@@ -125,6 +125,9 @@ mutation createService{
       category{
         id(action:allow)
         name(action:allow)
+        image{
+          ...attachment
+        }
       }
       
     }
@@ -173,6 +176,9 @@ mutation updateService{
       category{
         id(action:allow)
         name(action:allow)
+        image{
+          ...attachment
+        }
       }
       
     }
@@ -213,6 +219,9 @@ query findManyOrder{
     
   ){
     status(action:allow)
-    
+    message(action: allow)
+    data{
+      ...order
+    }
   }
 }

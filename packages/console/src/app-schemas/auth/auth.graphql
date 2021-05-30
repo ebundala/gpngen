@@ -21,7 +21,7 @@ enum AuthMode{
 
 type AuthResult {
 	token: String
-	error: Boolean!
+	status: Boolean!
 	message: String!
 	data: User 
 }
@@ -29,7 +29,9 @@ type SignOutResult {
 	status: Boolean
 	message: String
 }
-
+extend type User{
+	online: Boolean
+}
 extend type Mutation {
 	signup(credentials: SignupInput!,organization:OrganizationCreateWithoutOwnerInput): AuthResult!
 	signin(credentials: AuthInput!): AuthResult!
