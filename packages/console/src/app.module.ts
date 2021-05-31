@@ -134,7 +134,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       extensions: []
     }),
     ServeStaticModule.forRoot({
-       rootPath: join(__dirname, '../../', 'public'),
+       rootPath: join(__dirname, '../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],
  
     }), 

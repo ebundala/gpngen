@@ -48,7 +48,7 @@ export const writeStreamToFile = (rs: fs.ReadStream, path: string, type: Attachm
         rs.pipe(ws);
     }
 });
-export const uploadFile = async (file: Promise<FileUpload>, path: string = '../../../../public/uploads',
+export const uploadFile = async (file: Promise<FileUpload>, path: string = '../public/uploads',
     metadata?: any, uid?: String): Promise<any> => {
     const {
         createReadStream,
