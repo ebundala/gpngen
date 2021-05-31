@@ -74,6 +74,7 @@ type User {
   avatorId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
+  _count: UserCountOutputType
 }
 
 type Mutation {
@@ -333,6 +334,31 @@ input LatLon {
   lon: PERMISSION
 }
 
+type Organization {
+  workCompleted(action: PERMISSION): PERMISSION
+  distance(action: PERMISSION): PERMISSION
+  minPrice(action: PERMISSION): PERMISSION
+  compoundRating(action: PERMISSION): PERMISSION
+  id(action: PERMISSION): PERMISSION
+  name(action: PERMISSION): PERMISSION
+  description(action: PERMISSION): PERMISSION
+  logo: Attachment
+  services(where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Service
+  orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
+  staffs(where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): User
+  location: Location
+  offers(where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): ServiceCategory
+  ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
+  owner: User
+  state(action: PERMISSION): PERMISSION
+  createdAt(action: PERMISSION): PERMISSION
+  updatedAt(action: PERMISSION): PERMISSION
+  logoId(action: PERMISSION): PERMISSION
+  locationId(action: PERMISSION): PERMISSION
+  ownerId(action: PERMISSION): PERMISSION
+  _count: OrganizationCountOutputType
+}
+
 type Attachment {
   id(action: PERMISSION): PERMISSION
   path(action: PERMISSION): PERMISSION
@@ -351,6 +377,7 @@ type Attachment {
   serviceCategory: ServiceCategory
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
+  _count: AttachmentCountOutputType
 }
 
 type AttachmentListResponse {
@@ -435,6 +462,7 @@ type Location {
   updatedAt(action: PERMISSION): PERMISSION
   organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
   users(where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): User
+  _count: LocationCountOutputType
 }
 
 type LocationListResponse {
@@ -535,26 +563,6 @@ type Query {
   version(role: Role!, parent: [Role!], action: OPERATION!): PERMISSION
 }
 
-type Organization {
-  id(action: PERMISSION): PERMISSION
-  name(action: PERMISSION): PERMISSION
-  description(action: PERMISSION): PERMISSION
-  logo: Attachment
-  services(where: ServiceWhereInput, orderBy: [ServiceOrderByInput!], cursor: ServiceWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Service
-  orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
-  staffs(where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): User
-  location: Location
-  offers(where: ServiceCategoryWhereInput, orderBy: [ServiceCategoryOrderByInput!], cursor: ServiceCategoryWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): ServiceCategory
-  ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
-  owner: User
-  state(action: PERMISSION): PERMISSION
-  createdAt(action: PERMISSION): PERMISSION
-  updatedAt(action: PERMISSION): PERMISSION
-  logoId(action: PERMISSION): PERMISSION
-  locationId(action: PERMISSION): PERMISSION
-  ownerId(action: PERMISSION): PERMISSION
-}
-
 type OrganizationListResponse {
   status(action: PERMISSION): PERMISSION
   data: Organization
@@ -642,6 +650,7 @@ type Service {
   organizationId(action: PERMISSION): PERMISSION
   imageId(action: PERMISSION): PERMISSION
   serviceCategoryId(action: PERMISSION): PERMISSION
+  _count: ServiceCountOutputType
 }
 
 type ServiceListResponse {
@@ -684,6 +693,7 @@ type ServiceCategory {
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
   imageId(action: PERMISSION): PERMISSION
+  _count: ServiceCategoryCountOutputType
 }
 
 type ServiceCategoryListResponse {
@@ -936,6 +946,24 @@ input CasbinRuleWhereUniqueInput {
   id: PERMISSION
 }
 
+input CasbinRuleOrderByWithAggregationInput {
+  id: PERMISSION
+  ptype: PERMISSION
+  v0: PERMISSION
+  v1: PERMISSION
+  v2: PERMISSION
+  v3: PERMISSION
+  v4: PERMISSION
+  v5: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  _count: CasbinRuleCountOrderByAggregateInput
+  _avg: CasbinRuleAvgOrderByAggregateInput
+  _max: CasbinRuleMaxOrderByAggregateInput
+  _min: CasbinRuleMinOrderByAggregateInput
+  _sum: CasbinRuleSumOrderByAggregateInput
+}
+
 input CasbinRuleScalarWhereWithAggregatesInput {
   AND: [CasbinRuleScalarWhereWithAggregatesInput!]
   OR: [CasbinRuleScalarWhereWithAggregatesInput!]
@@ -1002,6 +1030,27 @@ input UserWhereUniqueInput {
   email: PERMISSION
 }
 
+input UserOrderByWithAggregationInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  avatorId: PERMISSION
+  organizationId: PERMISSION
+  locationId: PERMISSION
+  _count: UserCountOrderByAggregateInput
+  _max: UserMaxOrderByAggregateInput
+  _min: UserMinOrderByAggregateInput
+}
+
 input UserScalarWhereWithAggregatesInput {
   AND: [UserScalarWhereWithAggregatesInput!]
   OR: [UserScalarWhereWithAggregatesInput!]
@@ -1065,6 +1114,26 @@ input AttachmentWhereUniqueInput {
   id: PERMISSION
 }
 
+input AttachmentOrderByWithAggregationInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  _count: AttachmentCountOrderByAggregateInput
+  _avg: AttachmentAvgOrderByAggregateInput
+  _max: AttachmentMaxOrderByAggregateInput
+  _min: AttachmentMinOrderByAggregateInput
+  _sum: AttachmentSumOrderByAggregateInput
+}
+
 input AttachmentScalarWhereWithAggregatesInput {
   AND: [AttachmentScalarWhereWithAggregatesInput!]
   OR: [AttachmentScalarWhereWithAggregatesInput!]
@@ -1122,6 +1191,21 @@ input OrganizationWhereUniqueInput {
   id: PERMISSION
 }
 
+input OrganizationOrderByWithAggregationInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  logoId: PERMISSION
+  locationId: PERMISSION
+  ownerId: PERMISSION
+  _count: OrganizationCountOrderByAggregateInput
+  _max: OrganizationMaxOrderByAggregateInput
+  _min: OrganizationMinOrderByAggregateInput
+}
+
 input OrganizationScalarWhereWithAggregatesInput {
   AND: [OrganizationScalarWhereWithAggregatesInput!]
   OR: [OrganizationScalarWhereWithAggregatesInput!]
@@ -1172,6 +1256,24 @@ input ServiceOrderByInput {
 
 input ServiceWhereUniqueInput {
   id: PERMISSION
+}
+
+input ServiceOrderByWithAggregationInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  price: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizationId: PERMISSION
+  imageId: PERMISSION
+  serviceCategoryId: PERMISSION
+  _count: ServiceCountOrderByAggregateInput
+  _avg: ServiceAvgOrderByAggregateInput
+  _max: ServiceMaxOrderByAggregateInput
+  _min: ServiceMinOrderByAggregateInput
+  _sum: ServiceSumOrderByAggregateInput
 }
 
 input ServiceScalarWhereWithAggregatesInput {
@@ -1225,6 +1327,23 @@ input OrderWhereUniqueInput {
   id: PERMISSION
 }
 
+input OrderOrderByWithAggregationInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  serviceId: PERMISSION
+  organizationId: PERMISSION
+  ownerId: PERMISSION
+  receiptId: PERMISSION
+  _count: OrderCountOrderByAggregateInput
+  _avg: OrderAvgOrderByAggregateInput
+  _max: OrderMaxOrderByAggregateInput
+  _min: OrderMinOrderByAggregateInput
+  _sum: OrderSumOrderByAggregateInput
+}
+
 input OrderScalarWhereWithAggregatesInput {
   AND: [OrderScalarWhereWithAggregatesInput!]
   OR: [OrderScalarWhereWithAggregatesInput!]
@@ -1268,6 +1387,18 @@ input ServiceCategoryWhereUniqueInput {
   id: PERMISSION
 }
 
+input ServiceCategoryOrderByWithAggregationInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  imageId: PERMISSION
+  _count: ServiceCategoryCountOrderByAggregateInput
+  _max: ServiceCategoryMaxOrderByAggregateInput
+  _min: ServiceCategoryMinOrderByAggregateInput
+}
+
 input ServiceCategoryScalarWhereWithAggregatesInput {
   AND: [ServiceCategoryScalarWhereWithAggregatesInput!]
   OR: [ServiceCategoryScalarWhereWithAggregatesInput!]
@@ -1309,6 +1440,21 @@ input RatingWhereUniqueInput {
   id: PERMISSION
 }
 
+input RatingOrderByWithAggregationInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+  _count: RatingCountOrderByAggregateInput
+  _avg: RatingAvgOrderByAggregateInput
+  _max: RatingMaxOrderByAggregateInput
+  _min: RatingMinOrderByAggregateInput
+  _sum: RatingSumOrderByAggregateInput
+}
+
 input RatingScalarWhereWithAggregatesInput {
   AND: [RatingScalarWhereWithAggregatesInput!]
   OR: [RatingScalarWhereWithAggregatesInput!]
@@ -1333,6 +1479,20 @@ input LocationOrderByInput {
 
 input LocationWhereUniqueInput {
   id: PERMISSION
+}
+
+input LocationOrderByWithAggregationInput {
+  id: PERMISSION
+  name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  _count: LocationCountOrderByAggregateInput
+  _avg: LocationAvgOrderByAggregateInput
+  _max: LocationMaxOrderByAggregateInput
+  _min: LocationMinOrderByAggregateInput
+  _sum: LocationSumOrderByAggregateInput
 }
 
 input LocationScalarWhereWithAggregatesInput {
@@ -2171,6 +2331,53 @@ input DateTimeFilter {
   not: NestedDateTimeFilter
 }
 
+input CasbinRuleCountOrderByAggregateInput {
+  id: PERMISSION
+  ptype: PERMISSION
+  v0: PERMISSION
+  v1: PERMISSION
+  v2: PERMISSION
+  v3: PERMISSION
+  v4: PERMISSION
+  v5: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input CasbinRuleAvgOrderByAggregateInput {
+  id: PERMISSION
+}
+
+input CasbinRuleMaxOrderByAggregateInput {
+  id: PERMISSION
+  ptype: PERMISSION
+  v0: PERMISSION
+  v1: PERMISSION
+  v2: PERMISSION
+  v3: PERMISSION
+  v4: PERMISSION
+  v5: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input CasbinRuleMinOrderByAggregateInput {
+  id: PERMISSION
+  ptype: PERMISSION
+  v0: PERMISSION
+  v1: PERMISSION
+  v2: PERMISSION
+  v3: PERMISSION
+  v4: PERMISSION
+  v5: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input CasbinRuleSumOrderByAggregateInput {
+  id: PERMISSION
+}
+
 input IntWithAggregatesFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -2316,6 +2523,60 @@ input OrganizationListRelationFilter {
   none: OrganizationWhereInput
 }
 
+input UserCountOrderByAggregateInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  avatorId: PERMISSION
+  organizationId: PERMISSION
+  locationId: PERMISSION
+}
+
+input UserMaxOrderByAggregateInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  avatorId: PERMISSION
+  organizationId: PERMISSION
+  locationId: PERMISSION
+}
+
+input UserMinOrderByAggregateInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  avatorId: PERMISSION
+  organizationId: PERMISSION
+  locationId: PERMISSION
+}
+
 input DateTimeNullableWithAggregatesFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -2407,6 +2668,61 @@ input ServiceCategoryRelationFilter {
   isNot: ServiceCategoryWhereInput
 }
 
+input AttachmentCountOrderByAggregateInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input AttachmentAvgOrderByAggregateInput {
+  duration: PERMISSION
+  size: PERMISSION
+}
+
+input AttachmentMaxOrderByAggregateInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input AttachmentMinOrderByAggregateInput {
+  id: PERMISSION
+  path: PERMISSION
+  filename: PERMISSION
+  mimetype: PERMISSION
+  encoding: PERMISSION
+  duration: PERMISSION
+  size: PERMISSION
+  attachmentType: PERMISSION
+  downloadable: PERMISSION
+  placement: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input AttachmentSumOrderByAggregateInput {
+  duration: PERMISSION
+  size: PERMISSION
+}
+
 input EnumAttachmentTypeWithAggregatesFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -2431,6 +2747,42 @@ input UserRelationFilter {
   isNot: UserWhereInput
 }
 
+input OrganizationCountOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  logoId: PERMISSION
+  locationId: PERMISSION
+  ownerId: PERMISSION
+}
+
+input OrganizationMaxOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  logoId: PERMISSION
+  locationId: PERMISSION
+  ownerId: PERMISSION
+}
+
+input OrganizationMinOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  logoId: PERMISSION
+  locationId: PERMISSION
+  ownerId: PERMISSION
+}
+
 input FloatFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -2445,6 +2797,53 @@ input FloatFilter {
 input OrganizationRelationFilter {
   is: OrganizationWhereInput
   isNot: OrganizationWhereInput
+}
+
+input ServiceCountOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  price: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizationId: PERMISSION
+  imageId: PERMISSION
+  serviceCategoryId: PERMISSION
+}
+
+input ServiceAvgOrderByAggregateInput {
+  price: PERMISSION
+}
+
+input ServiceMaxOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  price: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizationId: PERMISSION
+  imageId: PERMISSION
+  serviceCategoryId: PERMISSION
+}
+
+input ServiceMinOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  description: PERMISSION
+  price: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizationId: PERMISSION
+  imageId: PERMISSION
+  serviceCategoryId: PERMISSION
+}
+
+input ServiceSumOrderByAggregateInput {
+  price: PERMISSION
 }
 
 input FloatWithAggregatesFilter {
@@ -2471,6 +2870,152 @@ input FloatWithAggregatesFilter {
 input ServiceRelationFilter {
   is: ServiceWhereInput
   isNot: ServiceWhereInput
+}
+
+input OrderCountOrderByAggregateInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  serviceId: PERMISSION
+  organizationId: PERMISSION
+  ownerId: PERMISSION
+  receiptId: PERMISSION
+}
+
+input OrderAvgOrderByAggregateInput {
+  quantity: PERMISSION
+}
+
+input OrderMaxOrderByAggregateInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  serviceId: PERMISSION
+  organizationId: PERMISSION
+  ownerId: PERMISSION
+  receiptId: PERMISSION
+}
+
+input OrderMinOrderByAggregateInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  serviceId: PERMISSION
+  organizationId: PERMISSION
+  ownerId: PERMISSION
+  receiptId: PERMISSION
+}
+
+input OrderSumOrderByAggregateInput {
+  quantity: PERMISSION
+}
+
+input ServiceCategoryCountOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  imageId: PERMISSION
+}
+
+input ServiceCategoryMaxOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  imageId: PERMISSION
+}
+
+input ServiceCategoryMinOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  imageId: PERMISSION
+}
+
+input RatingCountOrderByAggregateInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+}
+
+input RatingAvgOrderByAggregateInput {
+  value: PERMISSION
+}
+
+input RatingMaxOrderByAggregateInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+}
+
+input RatingMinOrderByAggregateInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+}
+
+input RatingSumOrderByAggregateInput {
+  value: PERMISSION
+}
+
+input LocationCountOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input LocationAvgOrderByAggregateInput {
+  lat: PERMISSION
+  lon: PERMISSION
+}
+
+input LocationMaxOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input LocationMinOrderByAggregateInput {
+  id: PERMISSION
+  name: PERMISSION
+  lat: PERMISSION
+  lon: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input LocationSumOrderByAggregateInput {
+  lat: PERMISSION
+  lon: PERMISSION
 }
 
 input StringFieldUpdateOperationsInput {
@@ -6707,6 +7252,13 @@ type CasbinRuleMaxAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
 }
 
+type UserCountOutputType {
+  orders(action: PERMISSION): PERMISSION
+  ratings(action: PERMISSION): PERMISSION
+  organizations(action: PERMISSION): PERMISSION
+  staffOf(action: PERMISSION): PERMISSION
+}
+
 type UserCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   email(action: PERMISSION): PERMISSION
@@ -6760,6 +7312,13 @@ type UserMaxAggregateOutputType {
   avatorId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
+}
+
+type AttachmentCountOutputType {
+  users(action: PERMISSION): PERMISSION
+  services(action: PERMISSION): PERMISSION
+  organizations(action: PERMISSION): PERMISSION
+  orders(action: PERMISSION): PERMISSION
 }
 
 type AttachmentCountAggregateOutputType {
@@ -6818,6 +7377,14 @@ type AttachmentMaxAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
 }
 
+type OrganizationCountOutputType {
+  services(action: PERMISSION): PERMISSION
+  orders(action: PERMISSION): PERMISSION
+  staffs(action: PERMISSION): PERMISSION
+  offers(action: PERMISSION): PERMISSION
+  ratings(action: PERMISSION): PERMISSION
+}
+
 type OrganizationCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
@@ -6853,6 +7420,10 @@ type OrganizationMaxAggregateOutputType {
   logoId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
   ownerId(action: PERMISSION): PERMISSION
+}
+
+type ServiceCountOutputType {
+  orders(action: PERMISSION): PERMISSION
 }
 
 type ServiceCountAggregateOutputType {
@@ -6948,6 +7519,11 @@ type OrderMaxAggregateOutputType {
   receiptId(action: PERMISSION): PERMISSION
 }
 
+type ServiceCategoryCountOutputType {
+  organizations(action: PERMISSION): PERMISSION
+  services(action: PERMISSION): PERMISSION
+}
+
 type ServiceCategoryCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   name(action: PERMISSION): PERMISSION
@@ -7013,6 +7589,11 @@ type RatingMaxAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   ownerId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
+}
+
+type LocationCountOutputType {
+  organizations(action: PERMISSION): PERMISSION
+  users(action: PERMISSION): PERMISSION
 }
 
 type LocationCountAggregateOutputType {
