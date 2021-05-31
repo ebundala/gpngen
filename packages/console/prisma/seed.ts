@@ -162,41 +162,34 @@ const categories: Prisma.ServiceCategoryCreateInput[] = [
         name: 'Massage & SPA',
         image:{
             create:{
-                path:"icons/massage.svg",
-                mimetype: "image/svg",
-                filename: "massage.svg"   
+                path:"icons/massageicon.png",
+                mimetype: "image/png",
+                filename: "massageicon.png"   
             }
         }
         
     },
-    { name: 'Groceries' ,image:{
-        create:{
-            path:"/icons/groceries.svg",
-            mimetype: "image/svg",
-            filename: "groceries.svg"
-        }
-    }},
     { name: 'Food', image:{
         create:{
-            path:"icons/food.svg",
-            mimetype: "image/svg",
-            filename: "food.svg"
+            path:"icons/foodicon.png",
+            mimetype: "image/png",
+            filename: "foodicon.png"
 
         }
     }},
     { name: 'Cleaner', image:{
         create:{
-            path:"cleaner.svg",
-            mimetype: "image/svg",
-            filename: "cleaner.svg"
+            path:"icons/cleanericon.png",
+            mimetype: "image/png",
+            filename: "cleaner.png"
 
         }
     } },
     { name: 'Gas filler', image:{
         create:{
-            path:"gasfiller.svg",
-            mimetype: "image/svg",
-            filename: "gasfiller.svg"
+            path:"icons/gasicon.png",
+            mimetype: "image/png",
+            filename: "gasicon.png"
 
         }
     }}

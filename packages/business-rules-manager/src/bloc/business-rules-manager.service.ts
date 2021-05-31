@@ -3,6 +3,7 @@ import { businessRulesEvaluate, EngineConfig } from "./rules.evalutor";
 import { TenantContext } from "@mechsoft/common";
 import { BaseContext } from 'apollo-server-plugin-base';
 import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@mechsoft/prisma-client";
 type TContext = TenantContext
 export interface BusinessRequest<T extends BaseContext = any> {
     args: any
@@ -10,15 +11,16 @@ export interface BusinessRequest<T extends BaseContext = any> {
     allow: boolean
     context: T
 }
-export interface PrismaHookRequest<T extends BaseContext = any>{
+export interface PrismaHookRequest<T>{
     params: Prisma.MiddlewareParams
-    result:any,
+    result:T,
     rules: string[]
-    context:T
+    prisma:PrismaClient
+    context?:TenantContext
 }
 export declare type BusinessRuleHandler = (args: BusinessRequest<TContext>) => Promise<EngineConfig>
 export declare type BusinessRuleHookHandler = (args: BusinessRequest<TContext>, next?: BusinessRuleHookHandler) => Promise<BusinessRequest<TContext>>
-export declare type PrismaHookHandler = (args: PrismaHookRequest<TContext>, next?: PrismaHookHandler) => Promise<PrismaHookRequest<TContext>>
+export declare type PrismaHookHandler = (args: PrismaHookRequest<any>, next?: PrismaHookHandler) => Promise<PrismaHookRequest<any>>
 
 
 @Injectable()

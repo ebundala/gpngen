@@ -1,9 +1,14 @@
 {
   "extends": "./tsconfig.json",
+  "include": [
+    "src",
+    "prisma",
+  ],
   "exclude": [
     "node_modules",
     "test",
     "dist",
+    "public",
     "**/*spec.ts"
   ],
 }

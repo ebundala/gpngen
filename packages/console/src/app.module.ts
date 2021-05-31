@@ -13,10 +13,12 @@ import {
 } from 'apollo-server-plugin-base';
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
-import { AuthMiddleware, CasbinModule, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
+import { AuthMiddleware, CasbinModule, CasbinService, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
 import { BusinessRulesManagerModule,GqlContextInjectorModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { BusinessLogicModule } from './business-rules/busines.logic.module';
 
 
 
@@ -113,6 +115,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       context: async ({ req }): Promise<TenantContext> => {
 
         const { token, logger, enforcer, prisma, auth } = req;
+        //TODO: remove this after test/dev
+        (enforcer as CasbinService).enableEnforce(false);
         const ctx: TenantContext = {
           tenantId: token ?? 'tenant.id',
           auth: auth,
@@ -129,16 +133,15 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       playground: true,
       extensions: []
     }),
-
-
-    /* ServeStaticModule.forRoot({
-       rootPath: join(__dirname, '../', 'public'),
+    ServeStaticModule.forRoot({
+       rootPath: join(__dirname, '../../', 'public'),
        exclude: ['/graphql', '/casbin-admin'],
  
-    }), */
+    }), 
     ...modules,
     AuthModule,
-    BusinessRulesManagerModule
+    BusinessRulesManagerModule,
+    BusinessLogicModule
   ],
 })
 export class AppModule implements NestModule {

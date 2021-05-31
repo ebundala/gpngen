@@ -34,27 +34,22 @@ export class BusinessRulesManagerModule implements OnModuleInit {
     }
 
     onModuleInit() {
+        this.logger.setContext(BusinessRulesManager.name)
         const wrappers = this.discovery.getProviders();
         debugger;
         let prismaWrapper=wrappers.find((v)=>v.instance instanceof PrismaClient);
-        //let graphqlWrapper=wrappers.find((v)=>v.instance instanceof );
         const prismaClient:PrismaClient = prismaWrapper?.instance;
         if(prismaClient){
 
             const cb:Prisma.Middleware = async (params,next)=>{
                 debugger
-            //    const constroller=this.discovery.getProviders()
-            //    let i:GqlContextInjectorModule
-            //     =constroller.find((v)=>v.instance instanceof GqlContextInjectorModule)?.instance
-                const{action,model}=params;
-               /// let ctx = GqlExecutionContext.create();
-                
+                const{action,model}=params;              
                 const rule=`${model}:${action}`;
-              let hookReq: PrismaHookRequest={
+              let hookReq: PrismaHookRequest<any>={
                   params,
                   result:null,
                   rules:[rule],
-                  context: prismaClient
+                  prisma: prismaClient
                   
               }
                //handle pre prisma hooks

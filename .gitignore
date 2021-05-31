@@ -58,3 +58,5 @@ packages/apigen/test/prisma/generated/
 *.base64
 **/*.base64
 base64Config
+packages/console/public/
+
