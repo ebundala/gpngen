@@ -100,7 +100,7 @@ export class BusinessLogicService {
   }
 
   @BlocAttach('signup.input.organization.location.create.lat')
-  async organizationLocation(v: BusinessRequest<TenantContext>, next) {
+  async businessLocation(v: BusinessRequest<TenantContext>, next) {
 
     debugger
     const { args, context } = v;
@@ -118,7 +118,7 @@ export class BusinessLogicService {
           geom=ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)
           where id=${loc.id};`;
       if (affected) {
-        //todo update input to link to new location
+        //update input to link to new location
         const input = {
           ...others,
           location: {
@@ -150,8 +150,6 @@ export class BusinessLogicService {
 
   @BlocAttach('signup.input.organization.logo.create.path')
   async logo(v: BusinessRequest<TenantContext>, next) {
-    debugger
-    //todo upload avator here
     const { args, context } = v;
     const { organization } = args;
     const file = await uploadFile(organization.logo.create.path)
@@ -162,6 +160,141 @@ export class BusinessLogicService {
     return next(v)
   }
 
+  @BlocAttach('updateOneService.input.data.image.create.path')
+  @BlocAttach('createOneService.input.data.image.create.path')
+  async serviceImage(v: BusinessRequest, next) {
+    debugger
+    const { args, context } = v;
+    const { data, ...rest } = args;
+    const { image } = data
+    const file = await uploadFile(image.create.path)
+    const file2 = await context.prisma.attachment.create({ data: { ...file } })
+
+    if (file2 && file2.id) {
+      v.args.data.image = { connect: { id: file2.id } };
+    }
+    return next(v)
+  }
+
+  @BlocAttach('updateOneUser.input.data.avator.create.path')
+  async updateAvator(v: BusinessRequest, next) {
+    debugger
+    const { args, context } = v;
+    const { data, ...rest } = args;
+    const { avator } = data
+    const file = await uploadFile(avator.create.path)
+    const file2 = await context.prisma.attachment.create({ data: { ...file } })
+
+    if (file2 && file2.id) {
+      v.args.data.avator = { connect: { id: file2.id } };
+    }
+    return next(v)
+  }
+
+  @BlocAttach('updateOneUser.input.data.location.create.lat')
+  async userLocation(v: BusinessRequest, next) {
+    debugger
+    const { args, context } = v;
+    const { prisma, logger } = context;
+    const { data, ...rest } = args;
+    const { location, ...others } = data
+    const { name, lat, lon } = location.create;
+    const loc = await prisma.location.create({
+      data: { name, lat, lon }
+    });
+    if (loc && loc.id) {
+      //create a geom here
+      const affected = await prisma.$executeRaw`UPDATE "Location" 
+            SET 
+            geom=ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)
+            where id=${loc.id};`;
+      if (affected) {
+        //todo update input to link to new location
+        const inputs = {
+          ...others,
+          location: {
+            connect: { id: loc.id }
+          }
+        }
+        v.args = { ...rest, data: inputs }
+      } else {
+        throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
+      }
+    }
+    debugger
+    return next(v)
+  }
+
+
+  @BlocAttach('updateOneOrganization.input.data.logo.create.path')
+  @BlocAttach('createOneOrganization.input.data.logo.create.path')
+  async organizationImage(v: BusinessRequest, next) {
+    debugger
+    const { args, context } = v;
+    const { data, ...rest } = args;
+    const { logo } = data
+    const file = await uploadFile(logo.create.path)
+    const file2 = await context.prisma.attachment.create({ data: { ...file } })
+
+    if (file2 && file2.id) {
+      v.args.data.logo = { connect: { id: file2.id } };
+    }
+    return next(v)
+  }
+  @BlocAttach('updateOneOrganization.input.data.location.create.lat')
+  @BlocAttach('createOneOrganization.input.data.location.create.lat')
+  async organizationLocation(v: BusinessRequest<TenantContext>, next) {
+
+    debugger
+    const { args, context } = v;
+    const { prisma, logger } = context;
+    const { data, ...rest } = args;
+    const { location, ...others } = data
+    const { name, lat, lon } = location.create;
+    const loc = await prisma.location.create({
+      data: { name, lat, lon }
+    });
+    if (loc && loc.id) {
+      //create a geom here
+      const affected = await prisma.$executeRaw`UPDATE "Location" 
+          SET 
+          geom=ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326)
+          where id=${loc.id};`;
+      if (affected) {
+        //todo update input to link to new location
+        const inputs = {
+          ...others,
+          location: {
+            connect: { id: loc.id }
+          }
+        }
+        v.args = { ...rest, data: inputs }
+      } else {
+        throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
+      }
+    }
+    debugger
+    return next(v)
+  }
+
+  @BlocAttach('updateOneOrder.input.data.receipt.create.path')
+  //TODO investigate further not needed maybe for create scenario
+  @BlocAttach('createOneOrder.input.data.receipt.create.path')
+  async orderReceipt(v: BusinessRequest, next) {
+    debugger
+    const { args, context } = v;
+    const { data, ...rest } = args;
+    const { receipt } = data
+    const file = await uploadFile(receipt.create.path)
+    const file2 = await context.prisma.attachment.create({ data: { ...file } })
+
+    if (file2 && file2.id) {
+      v.args.data.receipt = { connect: { id: file2.id } };
+    }
+    return next(v)
+  }
+
+  //Validation rules
   @BlocValidate('signup.input.credentials.email')
   async oneEmailPerAccount(v: BusinessRequest<TenantContext>) {
     const { args, context } = v;
@@ -492,7 +625,7 @@ export class BusinessLogicService {
     let res = result.map((v) => {
       let work = deals.find((d) => d.organizationId === v.id);
       let min = prices.find((p) => p.organizationId == v.id);
-      let rate = ratings.find((r) => r.organizationId);
+      let rate = ratings.find((r) => r.organizationId == v.id);
 
       return {
         ...v,

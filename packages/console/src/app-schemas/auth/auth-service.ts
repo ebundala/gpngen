@@ -2,7 +2,7 @@ import { AppLogger } from '@mechsoft/app-logger';
 import { FirebaseService } from '@mechsoft/firebase-admin';
 import { MailService } from '@mechsoft/mailer';
 import { PrismaClient } from '@mechsoft/prisma-client';
-import { HttpException, HttpService, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 
 import { isEmail, isLength } from 'validator';
@@ -17,15 +17,8 @@ import {
   User,
 
 } from '../../models/graphql';
-import { uploadFile } from '../../utils/file.utils';
-import { Gender, Prisma } from '@prisma/client'
-import {
-  BusinessRequest,
-  BlocAttach,
-  BlocValidate, Bloc, PrismaAttach, PrismaHookRequest, PrismaHookHandler
-} from '@mechsoft/business-rules-manager'
+import { Prisma } from '@prisma/client'
 
-import { TenantContext } from '@mechsoft/common';
 @Injectable() 
 export class AuthService {
   constructor(
