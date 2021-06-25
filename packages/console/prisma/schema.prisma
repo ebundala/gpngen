@@ -1,47 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["selectRelationCount", "orderByAggregateGroup"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-   
- // shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
-
-generator client {
-  provider = "prisma-client-js"
-  previewFeatures = ["selectRelationCount","orderByAggregateGroup"]
-}
-
-enum Role {
-  ANONYMOUS
-  CONSUMER
-  PROVIDER
-  MANAGER
-  SUPERUSER
-}
-
-enum State {
-  PENDING
-  REVIEW
-  REJECTED
-  APPROVED
-  COMPLETED
-  ARCHIVED
-}
-enum Gender {
- MALE
- FEMALE
- UNSPECIFIED
-}
-enum AttachmentType {
-  AUDIO
-  VIDEO
-  DOCUMENT
-  IMAGE
-}
-
-//casbin table
 
 model CasbinRule {
   id        Int      @id @default(autoincrement())
@@ -67,61 +32,63 @@ model User {
   gender         Gender         @default(UNSPECIFIED)
   emailVerified  Boolean        @default(false)
   disabled       Boolean        @default(false)
-  avator         Attachment?    @relation(fields: [avatorId], references: [id])
   role           Role           @default(ANONYMOUS)
   state          State          @default(PENDING)
-  orders         Order[]
-  ratings        Rating[]
-  location       Location?      @relation(fields: [locationId], references: [id])
-  organizations  Organization[] @relation("ownedBy")
-  staffOf        Organization[] @relation("staffOf")
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
-  avatorId       String?        
-  organizationId String?        
-  locationId     String?        
-
+  avatorId       String?
+  locationId     String?
+  organizationId String?
+  avator         Attachment?    @relation(fields: [avatorId], references: [id])
+  location       Location?      @relation(fields: [locationId], references: [id])
+  orders         Order[]
+  organizations  Organization[] @relation("ownedBy")
+  ratings        Rating[]
+  staffOf        Organization[] @relation("staffOf")
+  provides       Order[]        @relation("providedBy")
+  invites        Invite[]   @relation("invitesBy")
+  invited        Invite[]   @relation("invitedBy")
 }
 
 model Attachment {
-  id             String         @id @default(cuid())
-  path           String
-  filename       String?
-  mimetype       String?
-  encoding       String?
-  duration       Int            @default(0)
-  size           Int            @default(0)
-  attachmentType AttachmentType @default(IMAGE)
-  downloadable   Boolean        @default(false)
-  placement      String         @default("default")
-  users          User[]         
-  services       Service[]      
-  organizations  Organization[]  
-  orders         Order[]         
-  serviceCategory ServiceCategory?    
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-
+  id              String           @id @default(cuid())
+  path            String
+  filename        String?
+  mimetype        String?
+  encoding        String?
+  duration        Int              @default(0)
+  size            Int              @default(0)
+  attachmentType  AttachmentType   @default(IMAGE)
+  downloadable    Boolean          @default(false)
+  placement       String           @default("default")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  orders          Order[]
+  organizations   Organization[]
+  services        Service[]
+  serviceCategory ServiceCategory?
+  users           User[]
 }
 
 model Organization {
   id          String            @id @default(cuid())
   name        String
   description String?
-  logo        Attachment        @relation(fields: [logoId], references: [id])
-  services    Service[]
-  orders      Order[]
-  staffs      User[]            @relation("staffOf")
-  location    Location         @relation(fields: [locationId], references: [id])
-  offers      ServiceCategory[]
-  ratings     Rating[]
-  owner       User              @relation("ownedBy", fields: [ownerId], references: [id])
-  state       State           @default(PENDING)
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
-  logoId      String            
-  locationId  String            
-  ownerId     String            
+  logoId      String
+  locationId  String
+  ownerId     String
+  state       State             @default(PENDING)
+  location    Location          @relation(fields: [locationId], references: [id])
+  logo        Attachment        @relation(fields: [logoId], references: [id])
+  owner       User              @relation("ownedBy", fields: [ownerId], references: [id])
+  orders      Order[]
+  ratings     Rating[]
+  services    Service[]
+  offers      ServiceCategory[]
+  staffs      User[]            @relation("staffOf")
+  invites     Invite[]          
 }
 
 model Service {
@@ -130,66 +97,133 @@ model Service {
   description       String?
   price             Float
   state             State           @default(PENDING)
-  organization      Organization    @relation(fields: [organizationId], references: [id])
-  image             Attachment      @relation(fields: [imageId], references: [id])
-  category          ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
-  orders            Order[]
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  organizationId    String          
-  imageId           String          
-  serviceCategoryId String          
+  organizationId    String
+  imageId           String
+  serviceCategoryId String
+  image             Attachment      @relation(fields: [imageId], references: [id])
+  organization      Organization    @relation(fields: [organizationId], references: [id])
+  category          ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  orders            Order[]
 }
 
 model Order {
   id             String       @id @default(cuid())
   quantity       Int
-  service        Service      @relation(fields: [serviceId], references: [id])
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  owner          User         @relation(fields: [ownerId], references: [id])
   state          State        @default(PENDING)
-  receipt        Attachment?  @relation(fields: [receiptId], references: [id])
+  deliveryMode   DeliveryMode[] 
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  serviceId      String       
-  organizationId String       
-  ownerId        String       
-  receiptId      String?      
-  
+  serviceId      String
+  organizationId String
+  ownerId        String
+  providerId     String?
+  receiptId      String?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  owner          User         @relation(fields: [ownerId], references: [id])
+  receipt        Attachment?  @relation(fields: [receiptId], references: [id])
+  service        Service      @relation(fields: [serviceId], references: [id])
+  provider       User?   @relation("providedBy",fields: [providerId],references:[id])
+
 }
 
 model ServiceCategory {
   id            String         @id @default(cuid())
   name          String
-  image         Attachment     @relation(fields: [imageId],references:[id])
   state         State          @default(PENDING)
-  organizations Organization[]
-  services      Service[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  imageId       String         
+  imageId       String         @unique
+  image         Attachment     @relation(fields: [imageId], references: [id])
+  services      Service[]
+  organizations Organization[]
 }
 
 model Rating {
   id             String       @id @default(cuid())
   value          Int
   comment        String?
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  owner          User         @relation(fields: [ownerId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  ownerId        String       
-  organizationId String       
+  ownerId        String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  owner          User         @relation(fields: [ownerId], references: [id])
 }
 
 model Location {
-  id            String                @id @default(cuid())
-  name          String                @default("unknown")
-  geom        Unsupported("GEOGRAPHY(POINT,4326)")?
+  id            String                    @id @default(cuid())
+  name          String                    @default("unknown")
+  geom          Unsupported("geography")?
   lat           Float
   lon           Float
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  organizations Organization[]     
-  users         User[]                
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  organizations Organization[]
+  users         User[]
+}
+model Invite{
+   id            String                    @id @default(cuid())
+   inviter       User                      @relation("invitesBy",fields: [inviterId],references:[id])
+   inviterId     String
+   invitee       User                      @relation("invitedBy",fields: [inviteeId],references:[id])
+   inviteeId     String
+   message       String                    @db.VarChar(256)
+   url           String?                    @db.VarChar(256)
+   organization  Organization?              @relation(fields:[organizationId],references:[id])
+   organizationId String?
+   type          InviteType                @default(INSTALL)
+   state         State                     @default(PENDING)
+   createdAt     DateTime                  @default(now())
+   updatedAt     DateTime                  @updatedAt
+}
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+  @@ignore
+}
+
+enum Role {
+  ANONYMOUS
+  CONSUMER
+  PROVIDER
+  MANAGER
+  SUPERUSER
+}
+
+enum State {
+  PENDING
+  REVIEW
+  REJECTED
+  APPROVED
+  COMPLETED
+  ARCHIVED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum AttachmentType {
+  AUDIO
+  VIDEO
+  DOCUMENT
+  IMAGE
+}
+
+enum DeliveryMode {
+  PICKUP
+  SHIPPING
+  VIRTUAL
+}
+
+enum InviteType {
+  INSTALL
+  ORGANIZATION
 }

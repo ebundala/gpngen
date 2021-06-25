@@ -4,3 +4,4 @@ extend type Organization{
     minPrice: Float
     compoundRating: Float
 }
+

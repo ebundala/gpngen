@@ -11,6 +11,30 @@ export class PolicyQueryResolver {
   
 @Query()
 @UseGuards(AuthorizerGuard)
+findUniqueInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findFirstInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findManyInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
 findUniqueOrder(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }

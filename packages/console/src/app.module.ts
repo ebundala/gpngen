@@ -1,6 +1,6 @@
-import { AppLoggerModule } from '@mechsoft/app-logger';
+import { AppLogger, AppLoggerModule } from '@mechsoft/app-logger';
 import { TenantContext } from '@mechsoft/common';
-import { FirebaseModule } from '@mechsoft/firebase-admin';
+import { FirebaseModule, FirebaseService } from '@mechsoft/firebase-admin';
 import { MailModule } from '@mechsoft/mailer';
 import { PrismaClient, PrismaClientMiddleware, PrismaClientModule } from '@mechsoft/prisma-client';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
@@ -14,11 +14,14 @@ import {
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import { AuthMiddleware, CasbinModule, CasbinService, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
-import { BusinessRulesManagerModule,GqlContextInjectorModule } from '@mechsoft/business-rules-manager';
+import { BusinessRulesManagerModule, GqlContextInjectorModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { BusinessLogicModule } from './business-rules/busines.logic.module';
+import { GraphhopperModule } from './graphhopper/graphhopper.module';
+import { PubSubModule } from './pubsub/pubsub.module';
+import { SubscriptionModule } from './app-schemas/subscriptions/subscription.module';
 
 
 
@@ -81,71 +84,101 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    FirebaseModule,
     AppLoggerModule,
-    MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
-    CasbinModule.forRootAsync({
-      model: './src/authorization/rbac_model.conf',
-      adapterOptions: {
-        log: ['error', 'info', 'query', 'warn']
-      }
-    }),
-    PrismaClientModule,
-    GraphQLModule.forRoot({
-      typePaths: [
-        './src/schemas/**/*.graphql',
-        './src/app-schemas/**/*.graphql',
+    GraphQLModule.forRootAsync({
+      imports: [
+        FirebaseModule,
+        MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
+        PrismaClientModule,
+        CasbinModule.forRootAsync({
+          model: './src/authorization/rbac_model.conf',
+          adapterOptions: {
+            log: ['error', 'info', 'query', 'warn']
+          }
+        }),
+        AppLoggerModule,
+        AuthModule,
+        ...modules,
+        BusinessRulesManagerModule,
+        BusinessLogicModule,
+        
+        SubscriptionModule,
       ],
-      schemaDirectives: {
-        file: UploadDirective,
-      },
-      resolvers: {
-        Upload: UploadTypeResolver
-      },
-      plugins: [
-        {
-          requestDidStart(
-            ctx: GraphQLRequestContext<TenantContext>,
-          ) {
-
-            return RequestLogger;
+      inject: [PrismaClient, CasbinService, FirebaseService],
+      useFactory: (client: PrismaClient,
+        enforcer: CasbinService,
+        app: FirebaseService,
+        logger: AppLogger) => ({
+          typePaths: [
+            './src/schemas/**/*.graphql',
+            './src/app-schemas/**/*.graphql',
+          ],
+          schemaDirectives: {
+            file: UploadDirective,
           },
-        },
-      ],
-      context: async ({ req }): Promise<TenantContext> => {
+          resolvers: {
+            Upload: UploadTypeResolver
+          },
+          plugins: [
+            {
+              requestDidStart(
+                ctx: GraphQLRequestContext<TenantContext>,
+              ) {
 
-        const { token, logger, enforcer, prisma, auth } = req;
-        //TODO: remove this after test/dev
-        (enforcer as CasbinService).enableEnforce(false);
-        const ctx: TenantContext = {
-          tenantId: token ?? 'tenant.id',
-          auth: auth,
-          token: token,
-          enforcer: enforcer,
-          prisma: prisma,
-          logger,
-          timestamp: Date.now()
-        };
-        return ctx;
-      },
-      debug: true,
-      uploads: true,
-      playground: true,
-      extensions: []
-    }),
+                return RequestLogger;
+              },
+            },
+          ],
+          context: async (data): Promise<TenantContext> => {
+            debugger
+            const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
+            const auth = await app.app.auth().verifySessionCookie(token).catch((e)=>({uid:null}));
+
+            //const { token, logger, enforcer, prisma, auth } = req ?? connection?.context;
+
+            //TODO: remove this after test/dev
+            enforcer.enableEnforce(false);
+            const ctx: TenantContext = {
+              tenantId: auth?.uid,
+              auth: auth,
+              token: token,
+              enforcer: enforcer,
+              prisma: client,
+              logger,
+              timestamp: Date.now()
+            };
+            return ctx;
+
+
+          },
+          subscriptions: {
+            onConnect: async (connectionParams,socket,context) => {
+             //TODO make sure authorization is passed according to ws
+              const headers =   {authorization:connectionParams["authorization"]};
+              return { connectionParams, headers};   
+
+            }
+          },
+          debug: true,
+          uploads: true,
+          installSubscriptionHandlers: true,
+          playground: true,
+          extensions: []
+        })
+    }
+    ),
     ServeStaticModule.forRoot({
-       rootPath: join(__dirname, '../', 'public'),
-       exclude: ['/graphql', '/casbin-admin'],
- 
-    }), 
-    ...modules,
-    AuthModule,
-    BusinessRulesManagerModule,
-    BusinessLogicModule
+      rootPath: join(__dirname, '../', 'public'),
+      exclude: ['/graphql', '/casbin-admin'],
+
+    }),
+    PubSubModule,
+    GraphhopperModule.forRoot("http://graphhopper:8989/route"),
+
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(PrismaClientMiddleware, EnforcerMiddleware, AuthMiddleware).forRoutes('/graphql');
+    // consumer.apply(PrismaClientMiddleware, EnforcerMiddleware, AuthMiddleware).forRoutes('/graphql');
   }
 }

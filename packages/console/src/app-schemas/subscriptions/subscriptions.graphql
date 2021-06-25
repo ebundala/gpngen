@@ -1,0 +1,5 @@
+type Subscription{
+    orders(where:OrderWhereInput):OrderResponse!
+    invites(where:InviteWhereInput):InviteResponse!
+    ratings(where:RatingWhereInput):RatingResponse!
+}

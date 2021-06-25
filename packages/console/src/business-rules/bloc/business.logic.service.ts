@@ -489,7 +489,7 @@ export class BusinessLogicService {
     return n(args);
   }
 
-
+  //PRISMA hooks to munipulate data
 
   @PrismaAttach('Organization', "findUnique")
   async findUniqueOrganization(args: PrismaHookRequest<Organization>, n: PrismaHookHandler) {
