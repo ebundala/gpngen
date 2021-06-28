@@ -1,14 +1,13 @@
 import { AppLogger, AppLoggerModule } from "@mechsoft/app-logger";
 import { PrismaClient} from "@mechsoft/prisma-client";
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { Global, Module, OnModuleInit } from "@nestjs/common";
 import { DiscoveryModule, DiscoveryService } from "@nestjs/core";
 import { BusinessRulesManager, PrismaHookRequest } from "./business-rules-manager.service";
 import { BUSINESS_LOGIC_CONTAINER, BUSINESS_LOGIC_HOOK, BUSINESS_LOGIC_VALIDATOR, PRISMA_LOGIC_HOOK } from './constants';
-import { CONTEXT } from '@nestjs/graphql';
-import { GqlContextInjectorModule } from "./gql-context-injector.module";
-import { GqlContextInjector } from "./context-injector";
 import { Prisma } from "@prisma/client";
+import { GraphQLModule } from '@nestjs/graphql';
+import { TenantContext } from "@mechsoft/common";
+
 @Global()
 @Module(
     {
@@ -38,6 +37,9 @@ export class BusinessRulesManagerModule implements OnModuleInit {
         const wrappers = this.discovery.getProviders();
         debugger;
         let prismaWrapper=wrappers.find((v)=>v.instance instanceof PrismaClient);
+      //  let gqlWrapper = wrappers.find((v) => v.instance instanceof GraphQLModule);
+
+
         const prismaClient:PrismaClient = prismaWrapper?.instance;
         if(prismaClient){
 
@@ -45,6 +47,8 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                 debugger
                 const{action,model}=params;              
                 const rule=`${model}:${action}`;
+              //  const gqlServer:GraphQLModule=gqlWrapper.instance;
+              // const context = gqlServer.apolloServer.requestOptions.context;
               let hookReq: PrismaHookRequest<any>={
                   params,
                   result:null,
@@ -68,11 +72,11 @@ export class BusinessRulesManagerModule implements OnModuleInit {
             .filter((wrapper) => wrapper.metatype && Reflect.getMetadata(BUSINESS_LOGIC_CONTAINER, wrapper.metatype))
 
         blocProviders.forEach((b) => {
-            const i = b.instance;
-            const methods = this.getMethods(i)
+            const instance = b.instance;
+            const methods = this.getMethods(instance)
 
             methods.forEach((s) => {
-                const method = i[s];
+                const method = instance[s];
                 const validators: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_VALIDATOR}/${s}`, BusinessRulesManager)
                 const hooks: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_HOOK}/${s}`, BusinessRulesManager)
                 const prismaHooks: string[]=Reflect.getMetadata(`${PRISMA_LOGIC_HOOK}/${s}`, BusinessRulesManager)
@@ -81,7 +85,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                 if (hooks?.length) {
                     //it is a hook 
                     for (let i = 0; i < hooks.length; i++) {
-                        this.bloc.at(hooks[i], method);
+                        this.bloc.at(hooks[i], method,instance);
                         this.logger.log(`BLOC Hook: ${hooks[i]}`)
                     }
                 }
@@ -89,7 +93,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                     //it is a validator
                     for (let i = 0; i < validators.length; i++) {
 
-                        this.bloc.on(validators[1], method)
+                        this.bloc.on(validators[1], method,instance)
                         this.logger.log(`BLOC Validator: ${validators[i]}`)
                     }
                     }
@@ -97,7 +101,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                         //it is a prisma hook
                         for (let i = 0; i < prismaHooks.length; i++) {
     
-                            this.bloc.when(prismaHooks[i], method)
+                            this.bloc.when(prismaHooks[i], method,instance)
                             this.logger.log(`PRISMA hook: ${prismaHooks[i]}`)
                         }
                 }

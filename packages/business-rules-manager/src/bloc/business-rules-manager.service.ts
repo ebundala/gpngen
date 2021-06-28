@@ -26,17 +26,17 @@ export declare type PrismaHookHandler = (args: PrismaHookRequest<any>, next?: Pr
 @Injectable()
 export class BusinessRulesManager {
     
-    private rules: Map<string, BusinessRuleHandler> = new Map();
-    private handles: Map<string, BusinessRuleHookHandler> = new Map();
-    private prismaHooks: Map<string, PrismaHookHandler> = new Map();
-    at(rule: string, cb: BusinessRuleHookHandler) {
-        this.handles.set(rule, cb);
+    private rules: Map<string, [BusinessRuleHandler,any]> = new Map();
+    private handles: Map<string, [BusinessRuleHookHandler,any]> = new Map();
+    private prismaHooks: Map<string, [PrismaHookHandler,any]> = new Map();
+    at(rule: string, cb: BusinessRuleHookHandler,ctx:any) {
+        this.handles.set(rule, [cb,ctx]);
     }
-    on(rule: string, cb: BusinessRuleHandler) {
-        this.rules.set(rule, cb);
+    on(rule: string, cb: BusinessRuleHandler,ctx:any) {
+        this.rules.set(rule, [cb,ctx]);
     }
-    when(rule: string, cb: PrismaHookHandler) {
-        this.prismaHooks.set(rule,cb);
+    when(rule: string, cb: PrismaHookHandler,ctx:any) {
+        this.prismaHooks.set(rule,[cb,ctx]);
     }
     async handleBusinessRequest(req: BusinessRequest<TContext>) {
         const { rules } = req;
@@ -50,7 +50,8 @@ export class BusinessRulesManager {
     }
     async executeBusinesRequest(rule: string, args: any,) {
         if (this.rules.has(rule)) {
-            const engineConfig = await this.rules.get(rule).apply(this, [args]);
+             const [cb,ctx]=this.rules.get(rule)
+             const engineConfig = await cb.apply(ctx, [args]);
             await businessRulesEvaluate(engineConfig)
             return;
         }
@@ -66,7 +67,8 @@ export class BusinessRulesManager {
             const a = hooks[i];
             i++;
             if (i <= hooks.length) {
-                return await hooksMap.get(before ? `before:${a[1]}` : a[1]).apply(this, [req1, excuteHooks]);
+                const[cb,ctx] = hooksMap.get(before ? `before:${a[1]}` : a[1])
+               return await cb.apply(ctx, [req1, excuteHooks]);
             }
             return req1;
 
@@ -83,7 +85,9 @@ export class BusinessRulesManager {
             const a = hooks[i];
             i++;
             if (i <= hooks.length) {
-                return await hooksMap.get(before ? `before:${a}` : a).apply(this, [req1, excuteHooks]);
+                
+                const [cb,ctx]=hooksMap.get(before ? `before:${a}` : a);
+               return await cb.apply(ctx, [req1, excuteHooks]);
             }
             return req1;
 
