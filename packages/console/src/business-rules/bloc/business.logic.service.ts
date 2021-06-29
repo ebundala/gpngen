@@ -4,6 +4,7 @@ import { TenantContext } from "@mechsoft/common";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Prisma, State } from "@prisma/client";
 import { Organization, User } from "src/models/graphql";
+import { RedisCache } from "src/pubsub/redis.service";
 import { uploadFile } from "src/utils/file.utils";
 import {
   canCreateOnlyOneOrganization, isUserSensitiveInfo,
@@ -24,6 +25,7 @@ import {
 export class BusinessLogicService {
   constructor(
     private readonly logger: AppLogger,
+    private readonly redisCache: RedisCache
   ) {
     this.logger.setContext(BusinessLogicService.name);
   }
@@ -92,11 +94,14 @@ export class BusinessLogicService {
     }
 
     const orgs = await gisQuery(prisma, categories, notCategories, nearBy, within, notWithin, skip, take);
+    
+    await this.redisCache.set(`distances`,JSON.stringify(orgs),"PX",5000);
     debugger
     v.args.where = { id: { in: orgs.map((o) => o.id) }, ...others };
 
     v.context['organizationLocationQuery'] = true //mark excuted 
     return next(v)
+
   }
 
   @BlocAttach('signup.input.organization.location.create.lat')
@@ -489,7 +494,7 @@ export class BusinessLogicService {
     return n(args);
   }
 
-  //PRISMA hooks to munipulate data
+  //PRISMA hooks to manipulate data
 
   @PrismaAttach('Organization', "findUnique")
   async findUniqueOrganization(args: PrismaHookRequest<Organization>, n: PrismaHookHandler) {
@@ -568,11 +573,11 @@ export class BusinessLogicService {
     const pArgs: Prisma.OrganizationFindManyArgs = params.args;
 
     const ids = result.map((e) => e.id);
-    prisma.organization.findMany({
-      include: {
+    // prisma.organization.findMany({
+    //   include: {
 
-      }
-    })
+    //   }
+    // })
     // TODO aggregate rating of orgnization
     const ratings = await prisma.rating.groupBy({
       by: ['organizationId'],
@@ -620,19 +625,22 @@ export class BusinessLogicService {
       }
     });
     // TODO aggregate distance from requester
+    debugger
+    const d= await this.redisCache.get(`distances`);
+    const distances:Array<{id:string,distance:number}> = JSON.parse( d ?? "[]");
 
 
     let res = result.map((v) => {
       let work = deals.find((d) => d.organizationId === v.id);
       let min = prices.find((p) => p.organizationId == v.id);
       let rate = ratings.find((r) => r.organizationId == v.id);
-
+      let distance = distances.find((r)=>r.id == v.id)
       return {
         ...v,
         compoundRating: rate?._avg?.value ?? 0,
         workCompleted: work?._count?.id ?? 0,
         minPrice: min?._min?.price ?? 0,
-        distance: 0
+        distance: distance?.distance??0
       }
     });
     args.result = res;

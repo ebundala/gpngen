@@ -4,28 +4,50 @@ import { TenantContext } from "@mechsoft/common";
 import { Invite, InviteResponse, InviteWhereUniqueInput, Order, OrderResponse, OrderWhereUniqueInput, Rating, RatingResponse, RatingWhereUniqueInput } from "src/models/graphql";
 import { FEEDBACK_RECEIVED, INVITE_RECEIVED, ORDER_CHANGED, SubscriptionService } from "./subscription.service";
 import { AuthorizerGuard } from "@mechsoft/enforcer";
-import { Inject, UseGuards } from "@nestjs/common";
-import { PUB_SUB } from "src/pubsub/pubsub.module";
+import {  UseGuards } from "@nestjs/common";
 
 
 @Resolver()
 @UseGuards(AuthorizerGuard)
 export class SubscriptionResolver {
-    constructor(private readonly pubSub: RedisPubSub,private readonly bloc: SubscriptionService) { }
+    constructor(private readonly pubSub: RedisPubSub, private readonly bloc: SubscriptionService) { }
 
     @Subscription(() => OrderResponse, {
-        filter: function (payload: OrderWhereUniqueInput,            
-            variables) {                
-            return true;//payload != null && payload?.id == variables?.args?.id;
+        filter: async (where: OrderWhereUniqueInput,
+            variables, context: TenantContext) => {
+            debugger;
+
+            const { prisma, auth } = context;
+             const order= await prisma.order.findUnique({
+                where, select: {
+                    owner: {
+                        select: { id: true }
+                    },
+                    provider: {
+                        select: { id: true }
+                    },
+                    organization: {
+                        select: {
+                            owner:
+                            {
+                                select: { id: true }
+
+                            }
+                        }
+                    }
+                }
+            });
+           return [order.organization.owner.id,order.owner.id,order.provider.id].includes(auth.uid); 
         },
         resolve: (payload: OrderWhereUniqueInput, args: any, context: TenantContext, info: any) => {
-            debugger
-            const {select} = context.prisma.getSelection(info).valueOf('data', 'Order', { select: {} });
+            debugger;
+
+            const { select } = context.prisma.getSelection(info).valueOf('data', 'Order', { select: {} });
             return context.prisma.order.findUnique({ where: payload, select })
-                .then<OrderResponse, OrderResponse>((invite) => ({
+                .then<OrderResponse, OrderResponse>((order) => ({
                     status: true,
                     message: "ok",
-                    data: invite as Order
+                    data: order as Order
                 })).catch<OrderResponse>(({ message }) => ({
                     status: false,
                     message,
@@ -34,12 +56,10 @@ export class SubscriptionResolver {
 
     })
     orders(@Args("where") args, @Context() context: TenantContext, @Info() info) {
-       // TODO test subscription then uncomment below checks
-     //   if (context.auth?.uid) {
-         ///${context?.auth?.uid??""}
-
-            return this.pubSub.asyncIterator(`${ORDER_CHANGED}`, { args, context, info });
-       // }
+        // TODO test subscription then uncomment below checks
+        //  if (context.auth?.uid) {       
+        return this.pubSub.asyncIterator(`${ORDER_CHANGED}`, { args, context, info });
+        //  }
     }
 
 
@@ -50,7 +70,7 @@ export class SubscriptionResolver {
                 return true;//payload != null && payload?.id == variables?.args?.id;
             },
             resolve: (payload: InviteWhereUniqueInput, args: any, context: TenantContext, info: any) => {
-                const {select} = context.prisma.getSelection(info).valueOf('data', 'Invite', { select: {} });
+                const { select } = context.prisma.getSelection(info).valueOf('data', 'Invite', { select: {} });
 
                 return context.prisma.invite.findUnique({ where: payload, select })
                     .then<InviteResponse, InviteResponse>((invite) => ({
@@ -78,13 +98,13 @@ export class SubscriptionResolver {
                 return payload != null && payload?.id == variables?.args?.id;
             },
             resolve: (payload: RatingWhereUniqueInput, args: any, context: TenantContext, info: any) => {
-                const {select} = context.prisma.getSelection(info).valueOf('data', 'Rating', { select: {} });
+                const { select } = context.prisma.getSelection(info).valueOf('data', 'Rating', { select: {} });
 
                 return context.prisma.rating.findUnique({ where: payload, select })
-                    .then<RatingResponse, RatingResponse>((invite) => ({
+                    .then<RatingResponse, RatingResponse>((rating) => ({
                         status: true,
                         message: "ok",
-                        data: invite as Rating
+                        data: rating as Rating
                     })).catch<RatingResponse>(({ message }) => ({
                         status: false,
                         message,
