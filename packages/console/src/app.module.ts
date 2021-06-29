@@ -2,8 +2,8 @@ import { AppLogger, AppLoggerModule } from '@mechsoft/app-logger';
 import { TenantContext } from '@mechsoft/common';
 import { FirebaseModule, FirebaseService } from '@mechsoft/firebase-admin';
 import { MailModule } from '@mechsoft/mailer';
-import { PrismaClient, PrismaClientMiddleware, PrismaClientModule } from '@mechsoft/prisma-client';
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { PrismaClient, PrismaClientModule } from '@mechsoft/prisma-client';
+import { Inject, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import {
@@ -13,8 +13,8 @@ import {
 } from 'apollo-server-plugin-base';
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
-import { AuthMiddleware, CasbinModule, CasbinService, EnforcerMiddleware, PrismaAdapter } from '@mechsoft/enforcer';
-import { BusinessRulesManagerModule, GqlContextInjectorModule } from '@mechsoft/business-rules-manager';
+import { CasbinModule, CasbinService } from '@mechsoft/enforcer';
+import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -22,6 +22,9 @@ import { BusinessLogicModule } from './business-rules/busines.logic.module';
 import { GraphhopperModule } from './graphhopper/graphhopper.module';
 import { PubSubModule } from './pubsub/pubsub.module';
 import { SubscriptionModule } from './app-schemas/subscriptions/subscription.module';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import IORedis from "ioredis";
+import { RedisCache } from './pubsub/redis.service';
 
 
 
@@ -85,9 +88,11 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AppLoggerModule,
+    PubSubModule,
     GraphQLModule.forRootAsync({
       imports: [
         FirebaseModule,
+        
         MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
         PrismaClientModule,
         CasbinModule.forRootAsync({
@@ -101,14 +106,19 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         ...modules,
         BusinessRulesManagerModule,
         BusinessLogicModule,
-        
         SubscriptionModule,
+       
       ],
-      inject: [PrismaClient, CasbinService, FirebaseService],
+      inject: [PrismaClient, CasbinService, FirebaseService,AppLogger,RedisCache],
       useFactory: (client: PrismaClient,
         enforcer: CasbinService,
         app: FirebaseService,
-        logger: AppLogger) => ({
+        logger: AppLogger,
+        redisCache: RedisCache 
+        ) => {
+          debugger
+
+          return {
           typePaths: [
             './src/schemas/**/*.graphql',
             './src/app-schemas/**/*.graphql',
@@ -133,9 +143,11 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
             debugger
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
             const auth = await app.app.auth().verifySessionCookie(token).catch((e)=>({uid:null}));
-
+             if(auth?.uid){
+              logger.debug(await redisCache.get(`lastseen-${auth.uid}`),"Presence");
+              redisCache.set(`lastseen-${auth.uid}`,Date.now());
+             }
             //const { token, logger, enforcer, prisma, auth } = req ?? connection?.context;
-
             //TODO: remove this after test/dev
             enforcer.enableEnforce(false);
             const ctx: TenantContext = {
@@ -153,10 +165,18 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           },
           subscriptions: {
             onConnect: async (connectionParams,socket,context) => {
+              await redisCache.set("lastseen-xxx",Date.now());
+              logger.debug(await redisCache.get("lastseen-xxx"),"Presence");
+
              //TODO make sure authorization is passed according to ws
               const headers =   {authorization:connectionParams["authorization"]};
               return { connectionParams, headers};   
 
+            }
+            ,
+            onDisconnect: async (webSocket,context)=>{
+              logger.debug(await redisCache.get("lastseen-xxx"),"Presence");
+              await redisCache.set("lastseen-xxx",Date.now());
             }
           },
           debug: true,
@@ -164,7 +184,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           installSubscriptionHandlers: true,
           playground: true,
           extensions: []
-        })
+        };
+      }
     }
     ),
     ServeStaticModule.forRoot({
@@ -172,7 +193,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       exclude: ['/graphql', '/casbin-admin'],
 
     }),
-    PubSubModule,
+    
     GraphhopperModule.forRoot("http://graphhopper:8989/route"),
 
   ],
