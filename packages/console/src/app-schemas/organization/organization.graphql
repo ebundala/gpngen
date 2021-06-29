@@ -1,6 +1,6 @@
 extend type Organization{
     workCompleted: Int
-    distance: Int
+    distance: Float
     minPrice: Float
     compoundRating: Float
 }
