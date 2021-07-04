@@ -67,6 +67,25 @@ services:
       restart_policy:
         condition: on-failure
   
+  redis:
+    image: redis:alpine
+    # ports:
+    #   - 6379:6379
+    networks:
+      webnet:
+
+  graphhopper:
+    build:
+     context:   graphhopper 
+    # ports: 
+    #   - 8989:8989
+    #   - 8990:8990
+    volumes:
+      - ./graphhopper/graph-cache:/usr/src/graph-cache
+      # - ./graphhopper/config.yml:/usr/src/config.yml
+    networks: 
+      webnet:
+
   webserver:
     image: nginx:latest
     ports:

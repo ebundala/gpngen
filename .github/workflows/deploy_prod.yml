@@ -36,6 +36,14 @@ jobs:
           labels: "studio"
           outputs: "type=docker,dest=./oci/studio.tar"
           tags: "studio:${{github.sha}}"
+      - name: Build graphhopper image        
+        uses: docker/build-push-action@v2.4.0
+        with:
+          context: "./graphhopper"
+          file: "./graphhopper/Dockerfile"
+          labels: "graphhopper"
+          outputs: "type=docker,dest=./oci/graphhopper.tar"
+          tags: "graphhopper:${{github.sha}}"
       - name: Build Server image        
         uses: docker/build-push-action@v2.4.0
         with:
@@ -155,7 +163,9 @@ jobs:
            cd /home/${{ secrets.USERNAME }}/app
            docker load -i oci/app.tar
             docker load -i oci/studio.tar
+             docker load -i oci/graphhopper.tar
            mkdir -p console/prisma
+           mkdir -p graphhopper/graph-cache
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
