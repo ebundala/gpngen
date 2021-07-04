@@ -573,11 +573,7 @@ export class BusinessLogicService {
     const pArgs: Prisma.OrganizationFindManyArgs = params.args;
 
     const ids = result.map((e) => e.id);
-    // prisma.organization.findMany({
-    //   include: {
-
-    //   }
-    // })
+    
     // TODO aggregate rating of orgnization
     const ratings = await prisma.rating.groupBy({
       by: ['organizationId'],

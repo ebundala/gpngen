@@ -165,9 +165,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           },
           subscriptions: {
             onConnect: async (connectionParams,socket,context) => {
-              await redisCache.set("lastseen-xxx",Date.now());
-              logger.debug(await redisCache.get("lastseen-xxx"),"Presence");
-
+              
              //TODO make sure authorization is passed according to ws
               const headers =   {authorization:connectionParams["authorization"]};
               return { connectionParams, headers};   

@@ -2,4 +2,9 @@ type Subscription{
     orders(where:OrderWhereInput):OrderResponse!
     invites(where:InviteWhereInput):InviteResponse!
     ratings(where:RatingWhereInput):RatingResponse!
+    locations(where: UserWhereUniqueInput!):LocationResponse!
+}
+
+extend type Mutation{
+    locationFeed(location:LatLon!):LocationResponse!
 }
