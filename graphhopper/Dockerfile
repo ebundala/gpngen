@@ -5,7 +5,8 @@ COPY start.sh /usr/src/start.sh
 WORKDIR /usr/src
 RUN chmod +x start.sh
 #RUN chmod +x download.sh
-RUN wget https://graphhopper.com/public/releases/graphhopper-web-3.0.jar \ 
+
+RUN apt-get install wget && wget https://graphhopper.com/public/releases/graphhopper-web-3.0.jar \ 
 https://download.geofabrik.de/africa/tanzania-latest.osm.pbf 
 # COPY graphhopper-web-3.0.jar /usr/src/graphhopper-web-3.0.jar
 # COPY tanzania-latest.osm.pbf /user/src/tanzania-latest.osm.pbf
