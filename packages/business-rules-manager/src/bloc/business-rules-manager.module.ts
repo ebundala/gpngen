@@ -5,8 +5,6 @@ import { DiscoveryModule, DiscoveryService } from "@nestjs/core";
 import { BusinessRulesManager, PrismaHookRequest } from "./business-rules-manager.service";
 import { BUSINESS_LOGIC_CONTAINER, BUSINESS_LOGIC_HOOK, BUSINESS_LOGIC_VALIDATOR, PRISMA_LOGIC_HOOK } from './constants';
 import { Prisma } from "@prisma/client";
-import { GraphQLModule } from '@nestjs/graphql';
-import { TenantContext } from "@mechsoft/common";
 
 @Global()
 @Module(

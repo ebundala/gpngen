@@ -2,8 +2,9 @@ import { Injectable, Scope } from "@nestjs/common";
 import { businessRulesEvaluate, EngineConfig } from "./rules.evalutor";
 import { TenantContext } from "@mechsoft/common";
 import { BaseContext } from 'apollo-server-plugin-base';
-import { Prisma } from "@prisma/client";
 import { PrismaClient } from "@mechsoft/prisma-client";
+import { Prisma } from "@prisma/client";
+
 type TContext = TenantContext
 export interface BusinessRequest<T extends BaseContext = any> {
     args: any
