@@ -163,8 +163,8 @@ jobs:
           script: |
            cd /home/${{ secrets.USERNAME }}/app
            docker load -i oci/app.tar
-            docker load -i oci/studio.tar
-             docker load -i oci/graphhopper.tar
+           docker load -i oci/studio.tar
+           docker load -i oci/graphhopper.tar
            mkdir -p console/prisma
            mkdir -p graphhopper/graph-cache
            chmod +x scripts/stackdeploy
