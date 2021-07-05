@@ -1,4 +1,4 @@
-import { Prisma } from ".prisma/client";
+import { Prisma } from "@prisma/client";
 import { BusinessRulesManager } from "./business-rules-manager.service";
 import { PRISMA_LOGIC_HOOK } from "./constants";
 
