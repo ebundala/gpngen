@@ -57,7 +57,7 @@ services:
       - redis
     volumes:
       - ${PWD}/console/${GOOGLE_APPLICATION_CREDENTIALS}:/usr/src/app/${GOOGLE_APPLICATION_CREDENTIALS}
-      - ./webserver/web-root:/usr/src/app/dist/public
+      - ./webserver/web-root:/usr/src/app/public
     networks:
       webnet:
 
