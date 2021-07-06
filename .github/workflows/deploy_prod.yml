@@ -167,6 +167,7 @@ jobs:
            docker load -i oci/graphhopper.tar
            mkdir -p console/prisma
            mkdir -p graphhopper/graph-cache
+           mkdir -p redis/data
            chmod +x scripts/stackdeploy
            chmod +x scripts/stackdown
            chmod +x scripts/create_file
