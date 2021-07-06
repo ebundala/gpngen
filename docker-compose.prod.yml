@@ -49,9 +49,12 @@ services:
        SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE: ${SENDGRID_ACCOUNT_DEACTIVATION_TEMPLATE}
        SENDGRID_WELCOME_TEMPLATE: ${SENDGRID_WELCOME_TEMPLATE}
        DATABASE_URL: ${DATABASE_URL}
+       REDIS_HOST: ${REDIS_HOST}
+       REDIS_PORT: ${REDIS_PORT}
       
     depends_on:
       - db
+      - redis
     volumes:
       - ${PWD}/console/${GOOGLE_APPLICATION_CREDENTIALS}:/usr/src/app/${GOOGLE_APPLICATION_CREDENTIALS}
       - ./webserver/web-root:/usr/src/app/dist/public
@@ -68,7 +71,7 @@ services:
         condition: on-failure
   
   redis:
-    image: redis:alpine    
+    image: redis:alpine
     networks:
       webnet:
     deploy:
@@ -119,7 +122,7 @@ services:
         condition: on-failure
         
 networks:
-  webnet:
+  webnet:   
 volumes:
   PGDATA:
 
