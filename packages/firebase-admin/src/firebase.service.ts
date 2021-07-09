@@ -61,7 +61,10 @@ export class FirebaseService {
   get signInWithEmailPath() {
     return this._signInWithEmailPath;
   }
-
+  sendNotification(token: string,payload: _admin.messaging.MessagingPayload,options: _admin.messaging.MessagingOptions){
+    return this.admin.messaging().sendToDevice(token,payload,options);
+  }
+  
   uploadFile(
     userId,
     filename,
