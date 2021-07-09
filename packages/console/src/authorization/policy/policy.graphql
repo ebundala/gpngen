@@ -73,6 +73,7 @@ type User {
   orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
   organizations(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
   ratings(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
+  rated(where: RatingWhereInput, orderBy: [RatingOrderByInput!], cursor: RatingWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Rating
   staffOf(where: OrganizationWhereInput, orderBy: [OrganizationOrderByInput!], cursor: OrganizationWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Organization
   provides(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
   invites(where: InviteWhereInput, orderBy: [InviteOrderByInput!], cursor: InviteWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Invite
@@ -85,6 +86,7 @@ type Mutation {
   signin(role: Role!, parent: [Role!], action: OPERATION!, credentials: AuthInput!): AuthResult
   recoverAccount(role: Role!, parent: [Role!], action: OPERATION!, email: PERMISSION): AuthResult
   signout(role: Role!, parent: [Role!], action: OPERATION!): SignOutResult
+  locationFeed(role: Role!, parent: [Role!], action: OPERATION!, location: LatLon!): LocationResponse
   createOneInvite(role: Role!, parent: [Role!], action: OPERATION!, data: InviteCreateInput!): InviteResponse
   updateOneInvite(role: Role!, parent: [Role!], action: OPERATION!, where: InviteWhereUniqueInput!, data: InviteUpdateInput!): InviteResponse
   deleteOneInvite(role: Role!, parent: [Role!], action: OPERATION!, where: InviteWhereUniqueInput!): InviteResponse
@@ -364,6 +366,13 @@ type Organization {
   staffs(where: UserWhereInput, orderBy: [UserOrderByInput!], cursor: UserWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): User
   invites(where: InviteWhereInput, orderBy: [InviteOrderByInput!], cursor: InviteWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Invite
   _count: OrganizationCountOutputType
+}
+
+type Subscription {
+  orders(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereInput): OrderResponse
+  invites(role: Role!, parent: [Role!], action: OPERATION!, where: InviteWhereInput): InviteResponse
+  ratings(role: Role!, parent: [Role!], action: OPERATION!, where: RatingWhereInput): RatingResponse
+  locations(role: Role!, parent: [Role!], action: OPERATION!, where: UserWhereUniqueInput!): LocationResponse
 }
 
 type Attachment {
@@ -662,6 +671,8 @@ type Rating {
   organizationId(action: PERMISSION): PERMISSION
   organization: Organization
   owner: User
+  user: User
+  userId(action: PERMISSION): PERMISSION
 }
 
 type RatingListResponse {
@@ -923,6 +934,7 @@ enum RatingScalarFieldEnum {
   updatedAt
   ownerId
   organizationId
+  userId
 }
 
 enum LocationScalarFieldEnum {
@@ -1089,6 +1101,7 @@ input UserWhereInput {
   orders: OrderListRelationFilter
   organizations: OrganizationListRelationFilter
   ratings: RatingListRelationFilter
+  rated: RatingListRelationFilter
   staffOf: OrganizationListRelationFilter
   provides: OrderListRelationFilter
   invites: InviteListRelationFilter
@@ -1520,9 +1533,11 @@ input RatingWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   ownerId: StringFilter
-  organizationId: StringFilter
+  organizationId: StringNullableFilter
   organization: OrganizationWhereInput
   owner: UserWhereInput
+  user: UserWhereInput
+  userId: StringNullableFilter
 }
 
 input RatingOrderByInput {
@@ -1533,6 +1548,7 @@ input RatingOrderByInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingWhereUniqueInput {
@@ -1547,6 +1563,7 @@ input RatingOrderByWithAggregationInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
   _count: RatingCountOrderByAggregateInput
   _avg: RatingAvgOrderByAggregateInput
   _max: RatingMaxOrderByAggregateInput
@@ -1564,7 +1581,8 @@ input RatingScalarWhereWithAggregatesInput {
   createdAt: DateTimeWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
   ownerId: StringWithAggregatesFilter
-  organizationId: StringWithAggregatesFilter
+  organizationId: StringNullableWithAggregatesFilter
+  userId: StringNullableWithAggregatesFilter
 }
 
 input LocationOrderByInput {
@@ -1780,7 +1798,8 @@ input UserCreateInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -1805,7 +1824,8 @@ input UserUncheckedCreateInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -1829,7 +1849,8 @@ input UserUpdateInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -1854,7 +1875,8 @@ input UserUncheckedUpdateInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -2342,8 +2364,9 @@ input RatingCreateInput {
   comment: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organization: OrganizationCreateNestedOneWithoutRatingsInput!
-  owner: UserCreateNestedOneWithoutRatingsInput!
+  organization: OrganizationCreateNestedOneWithoutRatingsInput
+  owner: UserCreateNestedOneWithoutRatedInput!
+  user: UserCreateNestedOneWithoutRatingsInput
 }
 
 input RatingUncheckedCreateInput {
@@ -2354,6 +2377,7 @@ input RatingUncheckedCreateInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingUpdateInput {
@@ -2362,8 +2386,9 @@ input RatingUpdateInput {
   comment: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organization: OrganizationUpdateOneRequiredWithoutRatingsInput
-  owner: UserUpdateOneRequiredWithoutRatingsInput
+  organization: OrganizationUpdateOneWithoutRatingsInput
+  owner: UserUpdateOneRequiredWithoutRatedInput
+  user: UserUpdateOneWithoutRatingsInput
 }
 
 input RatingUncheckedUpdateInput {
@@ -2373,7 +2398,8 @@ input RatingUncheckedUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   ownerId: StringFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input RatingCreateManyInput {
@@ -2384,6 +2410,7 @@ input RatingCreateManyInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingUpdateManyMutationInput {
@@ -2401,7 +2428,8 @@ input RatingUncheckedUpdateManyInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   ownerId: StringFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input LocationCreateInput {
@@ -3253,6 +3281,7 @@ input RatingCountOrderByAggregateInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingAvgOrderByAggregateInput {
@@ -3267,6 +3296,7 @@ input RatingMaxOrderByAggregateInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingMinOrderByAggregateInput {
@@ -3277,6 +3307,7 @@ input RatingMinOrderByAggregateInput {
   updatedAt: PERMISSION
   ownerId: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingSumOrderByAggregateInput {
@@ -3425,6 +3456,13 @@ input OrganizationCreateNestedManyWithoutOwnerInput {
   connect: [OrganizationWhereUniqueInput!]
 }
 
+input RatingCreateNestedManyWithoutUserInput {
+  create: [RatingCreateWithoutUserInput!]
+  connectOrCreate: [RatingCreateOrConnectWithoutUserInput!]
+  createMany: RatingCreateManyUserInputEnvelope
+  connect: [RatingWhereUniqueInput!]
+}
+
 input RatingCreateNestedManyWithoutOwnerInput {
   create: [RatingCreateWithoutOwnerInput!]
   connectOrCreate: [RatingCreateOrConnectWithoutOwnerInput!]
@@ -3471,6 +3509,13 @@ input OrganizationUncheckedCreateNestedManyWithoutOwnerInput {
   connectOrCreate: [OrganizationCreateOrConnectWithoutOwnerInput!]
   createMany: OrganizationCreateManyOwnerInputEnvelope
   connect: [OrganizationWhereUniqueInput!]
+}
+
+input RatingUncheckedCreateNestedManyWithoutUserInput {
+  create: [RatingCreateWithoutUserInput!]
+  connectOrCreate: [RatingCreateOrConnectWithoutUserInput!]
+  createMany: RatingCreateManyUserInputEnvelope
+  connect: [RatingWhereUniqueInput!]
 }
 
 input RatingUncheckedCreateNestedManyWithoutOwnerInput {
@@ -3569,6 +3614,20 @@ input OrganizationUpdateManyWithoutOwnerInput {
   deleteMany: [OrganizationScalarWhereInput!]
 }
 
+input RatingUpdateManyWithoutUserInput {
+  create: [RatingCreateWithoutUserInput!]
+  connectOrCreate: [RatingCreateOrConnectWithoutUserInput!]
+  upsert: [RatingUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: RatingCreateManyUserInputEnvelope
+  connect: [RatingWhereUniqueInput!]
+  set: [RatingWhereUniqueInput!]
+  disconnect: [RatingWhereUniqueInput!]
+  delete: [RatingWhereUniqueInput!]
+  update: [RatingUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [RatingUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [RatingScalarWhereInput!]
+}
+
 input RatingUpdateManyWithoutOwnerInput {
   create: [RatingCreateWithoutOwnerInput!]
   connectOrCreate: [RatingCreateOrConnectWithoutOwnerInput!]
@@ -3664,6 +3723,20 @@ input OrganizationUncheckedUpdateManyWithoutOwnerInput {
   update: [OrganizationUpdateWithWhereUniqueWithoutOwnerInput!]
   updateMany: [OrganizationUpdateManyWithWhereWithoutOwnerInput!]
   deleteMany: [OrganizationScalarWhereInput!]
+}
+
+input RatingUncheckedUpdateManyWithoutUserInput {
+  create: [RatingCreateWithoutUserInput!]
+  connectOrCreate: [RatingCreateOrConnectWithoutUserInput!]
+  upsert: [RatingUpsertWithWhereUniqueWithoutUserInput!]
+  createMany: RatingCreateManyUserInputEnvelope
+  connect: [RatingWhereUniqueInput!]
+  set: [RatingWhereUniqueInput!]
+  disconnect: [RatingWhereUniqueInput!]
+  delete: [RatingWhereUniqueInput!]
+  update: [RatingUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [RatingUpdateManyWithWhereWithoutUserInput!]
+  deleteMany: [RatingScalarWhereInput!]
 }
 
 input RatingUncheckedUpdateManyWithoutOwnerInput {
@@ -4434,25 +4507,43 @@ input OrganizationCreateNestedOneWithoutRatingsInput {
   connect: OrganizationWhereUniqueInput
 }
 
+input UserCreateNestedOneWithoutRatedInput {
+  create: UserUncheckedCreateWithoutRatedInput
+  connectOrCreate: UserCreateOrConnectWithoutRatedInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateNestedOneWithoutRatingsInput {
   create: UserUncheckedCreateWithoutRatingsInput
   connectOrCreate: UserCreateOrConnectWithoutRatingsInput
   connect: UserWhereUniqueInput
 }
 
-input OrganizationUpdateOneRequiredWithoutRatingsInput {
+input OrganizationUpdateOneWithoutRatingsInput {
   create: OrganizationUncheckedCreateWithoutRatingsInput
   connectOrCreate: OrganizationCreateOrConnectWithoutRatingsInput
   upsert: OrganizationUpsertWithoutRatingsInput
   connect: OrganizationWhereUniqueInput
+  disconnect: PERMISSION
+  delete: PERMISSION
   update: OrganizationUncheckedUpdateWithoutRatingsInput
 }
 
-input UserUpdateOneRequiredWithoutRatingsInput {
+input UserUpdateOneRequiredWithoutRatedInput {
+  create: UserUncheckedCreateWithoutRatedInput
+  connectOrCreate: UserCreateOrConnectWithoutRatedInput
+  upsert: UserUpsertWithoutRatedInput
+  connect: UserWhereUniqueInput
+  update: UserUncheckedUpdateWithoutRatedInput
+}
+
+input UserUpdateOneWithoutRatingsInput {
   create: UserUncheckedCreateWithoutRatingsInput
   connectOrCreate: UserCreateOrConnectWithoutRatingsInput
   upsert: UserUpsertWithoutRatingsInput
   connect: UserWhereUniqueInput
+  disconnect: PERMISSION
+  delete: PERMISSION
   update: UserUncheckedUpdateWithoutRatingsInput
 }
 
@@ -5011,13 +5102,44 @@ input OrganizationCreateManyOwnerInputEnvelope {
   skipDuplicates: PERMISSION
 }
 
+input RatingCreateWithoutUserInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organization: OrganizationCreateNestedOneWithoutRatingsInput
+  owner: UserCreateNestedOneWithoutRatedInput!
+}
+
+input RatingUncheckedCreateWithoutUserInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+}
+
+input RatingCreateOrConnectWithoutUserInput {
+  where: RatingWhereUniqueInput!
+  create: RatingUncheckedCreateWithoutUserInput!
+}
+
+input RatingCreateManyUserInputEnvelope {
+  data: [RatingCreateManyUserInput!]!
+  skipDuplicates: PERMISSION
+}
+
 input RatingCreateWithoutOwnerInput {
   id: PERMISSION
   value: PERMISSION
   comment: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organization: OrganizationCreateNestedOneWithoutRatingsInput!
+  organization: OrganizationCreateNestedOneWithoutRatingsInput
+  user: UserCreateNestedOneWithoutRatingsInput
 }
 
 input RatingUncheckedCreateWithoutOwnerInput {
@@ -5027,6 +5149,7 @@ input RatingUncheckedCreateWithoutOwnerInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingCreateOrConnectWithoutOwnerInput {
@@ -5313,18 +5436,18 @@ input OrganizationScalarWhereInput {
   state: EnumStateFilter
 }
 
-input RatingUpsertWithWhereUniqueWithoutOwnerInput {
+input RatingUpsertWithWhereUniqueWithoutUserInput {
   where: RatingWhereUniqueInput!
-  update: RatingUncheckedUpdateWithoutOwnerInput!
-  create: RatingUncheckedCreateWithoutOwnerInput!
+  update: RatingUncheckedUpdateWithoutUserInput!
+  create: RatingUncheckedCreateWithoutUserInput!
 }
 
-input RatingUpdateWithWhereUniqueWithoutOwnerInput {
+input RatingUpdateWithWhereUniqueWithoutUserInput {
   where: RatingWhereUniqueInput!
-  data: RatingUncheckedUpdateWithoutOwnerInput!
+  data: RatingUncheckedUpdateWithoutUserInput!
 }
 
-input RatingUpdateManyWithWhereWithoutOwnerInput {
+input RatingUpdateManyWithWhereWithoutUserInput {
   where: RatingScalarWhereInput!
   data: RatingUncheckedUpdateManyWithoutRatingsInput!
 }
@@ -5339,7 +5462,24 @@ input RatingScalarWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   ownerId: StringFilter
-  organizationId: StringFilter
+  organizationId: StringNullableFilter
+  userId: StringNullableFilter
+}
+
+input RatingUpsertWithWhereUniqueWithoutOwnerInput {
+  where: RatingWhereUniqueInput!
+  update: RatingUncheckedUpdateWithoutOwnerInput!
+  create: RatingUncheckedCreateWithoutOwnerInput!
+}
+
+input RatingUpdateWithWhereUniqueWithoutOwnerInput {
+  where: RatingWhereUniqueInput!
+  data: RatingUncheckedUpdateWithoutOwnerInput!
+}
+
+input RatingUpdateManyWithWhereWithoutOwnerInput {
+  where: RatingScalarWhereInput!
+  data: RatingUncheckedUpdateManyWithoutRatedInput!
 }
 
 input OrganizationUpsertWithWhereUniqueWithoutStaffsInput {
@@ -5577,7 +5717,8 @@ input UserCreateWithoutAvatorInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -5601,7 +5742,8 @@ input UserUncheckedCreateWithoutAvatorInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -5789,7 +5931,8 @@ input UserCreateWithoutOrganizationsInput {
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -5813,7 +5956,8 @@ input UserUncheckedCreateWithoutOrganizationsInput {
   locationId: PERMISSION
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -5866,7 +6010,8 @@ input RatingCreateWithoutOrganizationInput {
   comment: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  owner: UserCreateNestedOneWithoutRatingsInput!
+  owner: UserCreateNestedOneWithoutRatedInput!
+  user: UserCreateNestedOneWithoutRatingsInput
 }
 
 input RatingUncheckedCreateWithoutOrganizationInput {
@@ -5876,6 +6021,7 @@ input RatingUncheckedCreateWithoutOrganizationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   ownerId: PERMISSION
+  userId: PERMISSION
 }
 
 input RatingCreateOrConnectWithoutOrganizationInput {
@@ -5967,7 +6113,8 @@ input UserCreateWithoutStaffOfInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
   invited: InviteCreateNestedManyWithoutInviteeInput
@@ -5991,7 +6138,8 @@ input UserUncheckedCreateWithoutStaffOfInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -6126,7 +6274,8 @@ input UserUpdateWithoutOrganizationsInput {
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -6150,7 +6299,8 @@ input UserUncheckedUpdateWithoutOrganizationsInput {
   locationId: NullableStringFieldUpdateOperationsInput
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -6540,7 +6690,8 @@ input UserCreateWithoutOrdersInput {
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -6564,7 +6715,8 @@ input UserUncheckedCreateWithoutOrdersInput {
   locationId: PERMISSION
   organizationId: PERMISSION
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -6629,7 +6781,8 @@ input UserCreateWithoutProvidesInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   invites: InviteCreateNestedManyWithoutInviterInput
   invited: InviteCreateNestedManyWithoutInviteeInput
@@ -6653,7 +6806,8 @@ input UserUncheckedCreateWithoutProvidesInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
 }
@@ -6722,7 +6876,8 @@ input UserUpdateWithoutOrdersInput {
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -6746,7 +6901,8 @@ input UserUncheckedUpdateWithoutOrdersInput {
   locationId: NullableStringFieldUpdateOperationsInput
   organizationId: NullableStringFieldUpdateOperationsInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -6849,7 +7005,8 @@ input UserUpdateWithoutProvidesInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   invites: InviteUpdateManyWithoutInviterInput
   invited: InviteUpdateManyWithoutInviteeInput
@@ -6873,7 +7030,8 @@ input UserUncheckedUpdateWithoutProvidesInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
 }
@@ -7107,6 +7265,60 @@ input OrganizationCreateOrConnectWithoutRatingsInput {
   create: OrganizationUncheckedCreateWithoutRatingsInput!
 }
 
+input UserCreateWithoutRatedInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  organizationId: PERMISSION
+  avator: AttachmentCreateNestedOneWithoutUsersInput
+  location: LocationCreateNestedOneWithoutUsersInput
+  orders: OrderCreateNestedManyWithoutOwnerInput
+  organizations: OrganizationCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  staffOf: OrganizationCreateNestedManyWithoutStaffsInput
+  provides: OrderCreateNestedManyWithoutProviderInput
+  invites: InviteCreateNestedManyWithoutInviterInput
+  invited: InviteCreateNestedManyWithoutInviteeInput
+}
+
+input UserUncheckedCreateWithoutRatedInput {
+  id: PERMISSION
+  email: PERMISSION
+  displayName: PERMISSION
+  phoneNumber: PERMISSION
+  dateOfBirth: PERMISSION
+  gender: PERMISSION
+  emailVerified: PERMISSION
+  disabled: PERMISSION
+  role: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  avatorId: PERMISSION
+  locationId: PERMISSION
+  organizationId: PERMISSION
+  orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
+  organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  provides: OrderUncheckedCreateNestedManyWithoutProviderInput
+  invites: InviteUncheckedCreateNestedManyWithoutInviterInput
+  invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
+}
+
+input UserCreateOrConnectWithoutRatedInput {
+  where: UserWhereUniqueInput!
+  create: UserUncheckedCreateWithoutRatedInput!
+}
+
 input UserCreateWithoutRatingsInput {
   id: PERMISSION
   email: PERMISSION
@@ -7125,6 +7337,7 @@ input UserCreateWithoutRatingsInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -7149,6 +7362,7 @@ input UserUncheckedCreateWithoutRatingsInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -7196,6 +7410,60 @@ input OrganizationUncheckedUpdateWithoutRatingsInput {
   invites: InviteUncheckedUpdateManyWithoutOrganizationInput
 }
 
+input UserUpsertWithoutRatedInput {
+  update: UserUncheckedUpdateWithoutRatedInput!
+  create: UserUncheckedCreateWithoutRatedInput!
+}
+
+input UserUpdateWithoutRatedInput {
+  id: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  displayName: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  disabled: BoolFieldUpdateOperationsInput
+  role: EnumRoleFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  avator: AttachmentUpdateOneWithoutUsersInput
+  location: LocationUpdateOneWithoutUsersInput
+  orders: OrderUpdateManyWithoutOwnerInput
+  organizations: OrganizationUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  staffOf: OrganizationUpdateManyWithoutStaffsInput
+  provides: OrderUpdateManyWithoutProviderInput
+  invites: InviteUpdateManyWithoutInviterInput
+  invited: InviteUpdateManyWithoutInviteeInput
+}
+
+input UserUncheckedUpdateWithoutRatedInput {
+  id: StringFieldUpdateOperationsInput
+  email: StringFieldUpdateOperationsInput
+  displayName: StringFieldUpdateOperationsInput
+  phoneNumber: NullableStringFieldUpdateOperationsInput
+  dateOfBirth: NullableDateTimeFieldUpdateOperationsInput
+  gender: EnumGenderFieldUpdateOperationsInput
+  emailVerified: BoolFieldUpdateOperationsInput
+  disabled: BoolFieldUpdateOperationsInput
+  role: EnumRoleFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  avatorId: NullableStringFieldUpdateOperationsInput
+  locationId: NullableStringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  orders: OrderUncheckedUpdateManyWithoutOwnerInput
+  organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  provides: OrderUncheckedUpdateManyWithoutProviderInput
+  invites: InviteUncheckedUpdateManyWithoutInviterInput
+  invited: InviteUncheckedUpdateManyWithoutInviteeInput
+}
+
 input UserUpsertWithoutRatingsInput {
   update: UserUncheckedUpdateWithoutRatingsInput!
   create: UserUncheckedCreateWithoutRatingsInput!
@@ -7219,6 +7487,7 @@ input UserUpdateWithoutRatingsInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -7243,6 +7512,7 @@ input UserUncheckedUpdateWithoutRatingsInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -7307,7 +7577,8 @@ input UserCreateWithoutLocationInput {
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -7331,7 +7602,8 @@ input UserUncheckedCreateWithoutLocationInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
@@ -7397,7 +7669,8 @@ input UserCreateWithoutInvitesInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invited: InviteCreateNestedManyWithoutInviteeInput
@@ -7421,7 +7694,8 @@ input UserUncheckedCreateWithoutInvitesInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invited: InviteUncheckedCreateNestedManyWithoutInviteeInput
 }
@@ -7449,7 +7723,8 @@ input UserCreateWithoutInvitedInput {
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
-  ratings: RatingCreateNestedManyWithoutOwnerInput
+  ratings: RatingCreateNestedManyWithoutUserInput
+  rated: RatingCreateNestedManyWithoutOwnerInput
   staffOf: OrganizationCreateNestedManyWithoutStaffsInput
   provides: OrderCreateNestedManyWithoutProviderInput
   invites: InviteCreateNestedManyWithoutInviterInput
@@ -7473,7 +7748,8 @@ input UserUncheckedCreateWithoutInvitedInput {
   organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
-  ratings: RatingUncheckedCreateNestedManyWithoutOwnerInput
+  ratings: RatingUncheckedCreateNestedManyWithoutUserInput
+  rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
   provides: OrderUncheckedCreateNestedManyWithoutProviderInput
   invites: InviteUncheckedCreateNestedManyWithoutInviterInput
 }
@@ -7543,7 +7819,8 @@ input UserUpdateWithoutInvitesInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invited: InviteUpdateManyWithoutInviteeInput
@@ -7567,7 +7844,8 @@ input UserUncheckedUpdateWithoutInvitesInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
 }
@@ -7595,7 +7873,8 @@ input UserUpdateWithoutInvitedInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -7619,7 +7898,8 @@ input UserUncheckedUpdateWithoutInvitedInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
 }
@@ -7685,6 +7965,16 @@ input OrganizationCreateManyOwnerInput {
   state: PERMISSION
 }
 
+input RatingCreateManyUserInput {
+  id: PERMISSION
+  value: PERMISSION
+  comment: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  ownerId: PERMISSION
+  organizationId: PERMISSION
+}
+
 input RatingCreateManyOwnerInput {
   id: PERMISSION
   value: PERMISSION
@@ -7692,6 +7982,7 @@ input RatingCreateManyOwnerInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   organizationId: PERMISSION
+  userId: PERMISSION
 }
 
 input OrderCreateManyProviderInput {
@@ -7813,22 +8104,24 @@ input OrganizationUncheckedUpdateManyWithoutOrganizationsInput {
   state: EnumStateFieldUpdateOperationsInput
 }
 
-input RatingUpdateWithoutOwnerInput {
+input RatingUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
   value: IntFieldUpdateOperationsInput
   comment: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organization: OrganizationUpdateOneRequiredWithoutRatingsInput
+  organization: OrganizationUpdateOneWithoutRatingsInput
+  owner: UserUpdateOneRequiredWithoutRatedInput
 }
 
-input RatingUncheckedUpdateWithoutOwnerInput {
+input RatingUncheckedUpdateWithoutUserInput {
   id: StringFieldUpdateOperationsInput
   value: IntFieldUpdateOperationsInput
   comment: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
+  ownerId: StringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input RatingUncheckedUpdateManyWithoutRatingsInput {
@@ -7837,7 +8130,38 @@ input RatingUncheckedUpdateManyWithoutRatingsInput {
   comment: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
+  ownerId: StringFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+}
+
+input RatingUpdateWithoutOwnerInput {
+  id: StringFieldUpdateOperationsInput
+  value: IntFieldUpdateOperationsInput
+  comment: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  organization: OrganizationUpdateOneWithoutRatingsInput
+  user: UserUpdateOneWithoutRatingsInput
+}
+
+input RatingUncheckedUpdateWithoutOwnerInput {
+  id: StringFieldUpdateOperationsInput
+  value: IntFieldUpdateOperationsInput
+  comment: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
+}
+
+input RatingUncheckedUpdateManyWithoutRatedInput {
+  id: StringFieldUpdateOperationsInput
+  value: IntFieldUpdateOperationsInput
+  comment: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  organizationId: NullableStringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input OrganizationUpdateWithoutStaffsInput {
@@ -8162,7 +8486,8 @@ input UserUpdateWithoutAvatorInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -8186,7 +8511,8 @@ input UserUncheckedUpdateWithoutAvatorInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -8229,6 +8555,7 @@ input RatingCreateManyOrganizationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   ownerId: PERMISSION
+  userId: PERMISSION
 }
 
 input ServiceCreateManyOrganizationInput {
@@ -8287,7 +8614,8 @@ input RatingUpdateWithoutOrganizationInput {
   comment: NullableStringFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  owner: UserUpdateOneRequiredWithoutRatingsInput
+  owner: UserUpdateOneRequiredWithoutRatedInput
+  user: UserUpdateOneWithoutRatingsInput
 }
 
 input RatingUncheckedUpdateWithoutOrganizationInput {
@@ -8297,6 +8625,7 @@ input RatingUncheckedUpdateWithoutOrganizationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   ownerId: StringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input ServiceUpdateWithoutOrganizationInput {
@@ -8372,7 +8701,8 @@ input UserUpdateWithoutStaffOfInput {
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
   invited: InviteUpdateManyWithoutInviteeInput
@@ -8396,7 +8726,8 @@ input UserUncheckedUpdateWithoutStaffOfInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -8631,7 +8962,8 @@ input UserUpdateWithoutLocationInput {
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
-  ratings: RatingUpdateManyWithoutOwnerInput
+  ratings: RatingUpdateManyWithoutUserInput
+  rated: RatingUpdateManyWithoutOwnerInput
   staffOf: OrganizationUpdateManyWithoutStaffsInput
   provides: OrderUpdateManyWithoutProviderInput
   invites: InviteUpdateManyWithoutInviterInput
@@ -8655,7 +8987,8 @@ input UserUncheckedUpdateWithoutLocationInput {
   organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
-  ratings: RatingUncheckedUpdateManyWithoutOwnerInput
+  ratings: RatingUncheckedUpdateManyWithoutUserInput
+  rated: RatingUncheckedUpdateManyWithoutOwnerInput
   provides: OrderUncheckedUpdateManyWithoutProviderInput
   invites: InviteUncheckedUpdateManyWithoutInviterInput
   invited: InviteUncheckedUpdateManyWithoutInviteeInput
@@ -8827,6 +9160,7 @@ type UserCountOutputType {
   orders(action: PERMISSION): PERMISSION
   organizations(action: PERMISSION): PERMISSION
   ratings(action: PERMISSION): PERMISSION
+  rated(action: PERMISSION): PERMISSION
   staffOf(action: PERMISSION): PERMISSION
   provides(action: PERMISSION): PERMISSION
   invites(action: PERMISSION): PERMISSION
@@ -9139,6 +9473,7 @@ type RatingCountAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   ownerId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
+  userId(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
 
@@ -9158,6 +9493,7 @@ type RatingMinAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   ownerId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
+  userId(action: PERMISSION): PERMISSION
 }
 
 type RatingMaxAggregateOutputType {
@@ -9168,6 +9504,7 @@ type RatingMaxAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   ownerId(action: PERMISSION): PERMISSION
   organizationId(action: PERMISSION): PERMISSION
+  userId(action: PERMISSION): PERMISSION
 }
 
 type LocationCountOutputType {

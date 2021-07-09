@@ -43,7 +43,8 @@ model User {
   location       Location?      @relation(fields: [locationId], references: [id])
   orders         Order[]
   organizations  Organization[] @relation("ownedBy")
-  ratings        Rating[]
+  ratings        Rating[]       @relation("ratingsBy")
+  rated        Rating[]       @relation("ratedBy")
   staffOf        Organization[] @relation("staffOf")
   provides       Order[]        @relation("providedBy")
   invites        Invite[]   @relation("invitesBy")
@@ -147,9 +148,11 @@ model Rating {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   ownerId        String
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  owner          User         @relation(fields: [ownerId], references: [id])
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  owner          User         @relation("ratedBy",fields: [ownerId], references: [id])
+  user           User?         @relation("ratingsBy",fields: [userId],references:[id])
+  userId         String?      
 }
 
 model Location {

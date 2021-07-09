@@ -43,6 +43,14 @@ signout(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() i
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
+locationFeed(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Mutation()
+@UseGuards(AuthorizerGuard)
 createOneInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }

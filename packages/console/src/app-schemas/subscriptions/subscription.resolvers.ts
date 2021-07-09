@@ -144,6 +144,7 @@ export class SubscriptionResolver {
             //todo filter who recieves data;
             const { auth, prisma } = context
             const order = await prisma.order.findFirst({
+                
                 where: {
                     OR: [
                         {
