@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/console",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "",
   "author": "",
   "private": true,
@@ -42,8 +42,8 @@
     "@mechsoft/apigen": "^0.1.0",
     "@mechsoft/app-logger": "^0.0.10-alpha.2",
     "@mechsoft/business-rules-manager": "^0.1.2",
-    "@mechsoft/enforcer": "^0.1.2",
-    "@mechsoft/firebase-admin": "^0.0.10-alpha.2",
+    "@mechsoft/enforcer": "^0.1.3",
+    "@mechsoft/firebase-admin": "^0.1.3",
     "@mechsoft/mailer": "^0.0.10-alpha.2",
     "@mechsoft/prisma-client": "^0.1.0",
     "@nestjs/common": "^7.5.1",
