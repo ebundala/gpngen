@@ -490,6 +490,8 @@ export class BusinessLogicService {
 
   @PrismaAttach('User', "findUnique")
   async online(args: PrismaHookRequest<User>, n: PrismaHookHandler) {
+    //todo read a user online status from a redis cache 
+    const {result} = args;
     if (args.result != null) args.result.online = true;
     return n(args);
   }
@@ -497,9 +499,10 @@ export class BusinessLogicService {
   //PRISMA hooks to manipulate data
 
   @PrismaAttach('Organization', "findUnique")
+  @PrismaAttach('Organization', "findFirst")
   async findUniqueOrganization(args: PrismaHookRequest<Organization>, n: PrismaHookHandler) {
     const { prisma, params, result, context } = args;
-    const pArgs: Prisma.OrganizationFindUniqueArgs = params.args;
+    //const pArgs: Prisma.OrganizationFindUniqueArgs = params.args;
     // TODO aggregate rating of orgnization
     const ratings = await prisma.rating.groupBy({
       by: ['organizationId'],
