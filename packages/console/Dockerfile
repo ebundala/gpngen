@@ -9,7 +9,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # If you are building your code for production
 # RUN npm ci --only=production
@@ -17,7 +17,7 @@ ARG GOOGLE_APPLICATION_CREDENTIALS=firebase-adminsdk.json
 # Bundle app source
 COPY . .
 RUN yarn run prisma:generate && yarn run api:gen 
-RUN rm -rf node_modules && yarn install --frozen-lockfile
+#RUN rm -rf node_modules && yarn install --frozen-lockfile
 RUN yarn run build
 #attach static files volume here
 VOLUME [ "/usr/src/app/dist/public" ] 
