@@ -55,7 +55,7 @@
     "@nestjs/serve-static": "^2.1.4",
     "@prisma/client": "^2.23.0",
     "@types/ioredis": "^4.26.4",
-    "apollo-server-express": "^2.21.0",
+    "apollo-server-express": "2.21.0",
     "get-audio-duration": "^2.0.3",
     "get-value": "^3.0.1",
     "graphql": "^15.5.0",
