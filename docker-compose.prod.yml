@@ -92,8 +92,8 @@ services:
       #     memory: 1g
       restart_policy:
         condition: on-failure
-    volumes:
-      - ./graphhopper/graph-cache:/usr/src/graph-cache
+    # volumes:
+    #   - ./graphhopper/graph-cache:/usr/src/graph-cache
       # - ./graphhopper/config.yml:/usr/src/config.yml
     networks: 
       webnet:
