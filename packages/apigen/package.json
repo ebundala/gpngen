@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/apigen",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@apollo/gateway": "^0.33.0",
-    "@mechsoft/app-logger": "^0.0.10-alpha.2",
+    "@mechsoft/app-logger": "^0.1.4",
     "@nestjs/common": "^8.0.4",
     "@nestjs/graphql": "^8.0.2",
     "@paljs/plugins": "^3.6.1",

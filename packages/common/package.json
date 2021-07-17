@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/common",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -25,8 +25,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mechsoft/app-logger": "^0.0.10-alpha.2",
-    "@mechsoft/prisma-client": "^0.1.0",
+    "@mechsoft/app-logger": "^0.1.4",
+    "@mechsoft/prisma-client": "^0.1.4",
     "@nestjs/common": "^8.0.4",
     "apollo-server-plugin-base": "^3.0.1",
     "casbin": "^5.9.1",
