@@ -81,14 +81,14 @@ jobs:
           labels: "studio"
           outputs: "type=docker,dest=./oci/studio.tar"
           tags: "studio:${{github.sha}}"
-      - name: Build graphhopper image        
-        uses: docker/build-push-action@v2.4.0
-        with:
-          context: "./graphhopper"
-          file: "./graphhopper/Dockerfile"
-          labels: "graphhopper"
-          outputs: "type=docker,dest=./oci/graphhopper.tar"
-          tags: "graphhopper:${{github.sha}}"
+      # - name: Build graphhopper image        
+      #   uses: docker/build-push-action@v2.4.0
+      #   with:
+      #     context: "./graphhopper"
+      #     file: "./graphhopper/Dockerfile"
+      #     labels: "graphhopper"
+      #     outputs: "type=docker,dest=./oci/graphhopper.tar"
+      #     tags: "graphhopper:${{github.sha}}"
       - name: Copy app image files to remote
         uses: appleboy/scp-action@master
         with:
