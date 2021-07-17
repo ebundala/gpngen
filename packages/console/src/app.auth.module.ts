@@ -54,8 +54,8 @@ import { PolicyModule } from "./authorization/policy/PolicyModule";
                 return ctx;
             },
             debug: true,
-            uploads: false,
-            playground: true,
+            //uploads: false,
+           // playground: true,
 
         }),
 

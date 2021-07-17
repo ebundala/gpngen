@@ -1,0 +1,14 @@
+scalar JSONObject
+
+input RouteQueryInput{
+    data: JSONObject!
+}
+type RouteResponse{
+    status: Boolean!
+    message: String!
+    data:JSONObject
+}
+
+extend type Query{
+    route(data:RouteQueryInput!):RouteResponse!
+}

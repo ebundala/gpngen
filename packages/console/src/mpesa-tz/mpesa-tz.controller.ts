@@ -7,7 +7,7 @@ export class MpesaTzController {
     constructor(private readonly service: MpesaTzService, private readonly logger: AppLogger) { }
     @Post('paybill')
     async paybill(@Body() body: PaybillDto, @Headers() headers, @Param() params) {
-        this.logger.setContext(MpesaTzController.name);
+      //  this.logger.setContext(MpesaTzController.name);
         this.logger.debug(body)
         // this.logger.warn(headers)
         // this.logger.debug(params);        

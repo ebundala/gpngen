@@ -1,9 +1,11 @@
+import { IResolverOptions } from "apollo-server-express";
 import {
     GraphQLInputField, GraphQLScalarType, GraphQLNonNull
 } from "graphql";
 import { SchemaDirectiveVisitor, } from "graphql-tools";
-import { FileUpload } from '@apollographql/graphql-upload-8-fork'
-import { IResolverOptions } from "apollo-server-express";
+import { FileUpload } from 'graphql-upload'
+import {JSONResolver} from 'graphql-scalars'
+//import { IResolverOptions } from "apollo-server-express";
 export class UploadDirective extends SchemaDirectiveVisitor {
     visitInputFieldDefinition(field: GraphQLInputField) {
         debugger
@@ -77,7 +79,7 @@ export class Upload extends GraphQLScalarType {
         this._path = path;
     }
 }
-export const UploadTypeResolver: IResolverOptions = {
+export const UploadTypeResolver: IResolverOptions ={
     __resolveType: () => Upload.name,
     resolve: (_, args, ctx) => new Upload(args),
 }

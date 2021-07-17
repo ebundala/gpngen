@@ -29,7 +29,7 @@ export class AuthService {
   ) {
     this.httpService.axiosRef.defaults.baseURL = this.firebaseApp.signInWithProviderHost;
     this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
-    this.logger.setContext(AuthService.name);
+    //this.logger.setContext(AuthService.name);
   }
  
   async signup(credentials: SignupInput, prisma: PrismaClient, select, organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {

@@ -14,7 +14,7 @@ export class SdlGeneratorModule {
     private readonly sdlgen: SdlGeneratorService,
     private readonly logger: AppLogger,
     private readonly typings: GenerateResourcesRules) {
-    this.logger.setContext(SdlGeneratorModule.name);
+    //this.logger.setContext(SdlGeneratorModule.name);
   }
 
 

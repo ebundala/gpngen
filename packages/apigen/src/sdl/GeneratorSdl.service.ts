@@ -15,7 +15,7 @@ export class SdlGeneratorService extends Generators {
     private readonly logger: AppLogger,
   ) {
     super(schemaPath, customOptions);
-    this.logger.setContext(SdlGeneratorService.name);
+   // this.logger.setContext(SdlGeneratorService.name);
   }
   // async onModuleInit() {
   //   await this.run();

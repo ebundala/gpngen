@@ -32,7 +32,7 @@ export class MpesaTzService {
         //this.httpService.axiosRef.defaults.baseURL = baseUrl;
         this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
         this.links = new Endpoints(baseUrl);
-        this.logger.setContext(MpesaTzService.name);
+       // this.logger.setContext(MpesaTzService.name);
         this.initKey();
     }
     private initKey() {

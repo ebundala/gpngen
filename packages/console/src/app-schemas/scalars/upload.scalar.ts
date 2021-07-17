@@ -1,6 +1,6 @@
 import { Scalar, CustomScalar } from '@nestjs/graphql';
 import { GraphQLScalarType, Kind, ValueNode } from 'graphql';
-import { FileUpload } from '@apollographql/graphql-upload-8-fork'
+import { FileUpload } from 'graphql-upload'
 
 @Scalar('Upload')
 export class Upload implements CustomScalar<{ file: Promise<FileUpload>, path: string }, any>{

@@ -17,7 +17,7 @@ export class GenerateResourcesRules {
 
     this.options = customOptions;
     this.schemaPath = schemaPath;
-    this.logger.setContext(GenerateResourcesRules.name);
+   // this.logger.setContext(GenerateResourcesRules.name);
   }
 
   async run(): Promise<void> {

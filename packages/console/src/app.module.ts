@@ -19,13 +19,13 @@ import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { BusinessLogicModule } from './business-rules/busines.logic.module';
-import { GraphhopperModule } from './graphhopper/graphhopper.module';
+import { GraphhopperModule } from './app-schemas/graphhopper/graphhopper.module';
 import { PubSubModule } from './pubsub/pubsub.module';
 import { SubscriptionModule } from './app-schemas/subscriptions/subscription.module';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import IORedis from "ioredis";
 import { RedisCache } from './pubsub/redis.service';
-
+import {JSONObjectResolver} from 'graphql-scalars'
 
 
 
@@ -92,8 +92,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
     GraphQLModule.forRootAsync({
       imports: [
         FirebaseModule,
-        
         MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
+        GraphhopperModule.forRoot("http://graphhopper:8989/route"),
         PrismaClientModule,
         CasbinModule.forRootAsync({
           model: './src/authorization/rbac_model.conf',
@@ -123,22 +123,26 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
             './src/schemas/**/*.graphql',
             './src/app-schemas/**/*.graphql',
           ],
-          schemaDirectives: {
-            file: UploadDirective,
-          },
-          resolvers: {
-            Upload: UploadTypeResolver
-          },
-          plugins: [
-            {
-              requestDidStart(
-                ctx: GraphQLRequestContext<TenantContext>,
-              ) {
+         schemaDirectives: {
+           file: UploadDirective,
+         },
+        //  typeDefs:[
+        //    JSONDefinition,
+        //  ],
+         resolvers: {
+           Upload: UploadTypeResolver,
+           JSONObject:JSONObjectResolver
+         },
+          //  plugins: [   
+          //   {
+          //     requestDidStart:(
+          //       ctx: GraphQLRequestContext<TenantContext>,
+          //     ) =>{
 
-                return RequestLogger;
-              },
-            },
-          ],
+          //       return RequestLogger;
+          //     },
+          //   },
+          //  ],
           context: async (data): Promise<TenantContext> => {
             debugger
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
@@ -177,6 +181,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
               await redisCache.set("lastseen-xxx",Date.now());
             }
           },
+          
           debug: true,
           uploads: true,
           installSubscriptionHandlers: true,
@@ -192,7 +197,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
 
     }),
     
-    GraphhopperModule.forRoot("http://graphhopper:8989/route"),
+   
 
   ],
 })

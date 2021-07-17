@@ -9,7 +9,7 @@ export class GraphhopperService{
   ) {
    // this.httpService.axiosRef.defaults.baseURL = url;
   //  this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
-    this.logger.setContext(GraphhopperService.name);
+   // this.logger.setContext(GraphhopperService.name);
 }
         // GET     / (com.graphhopper.http.resources.RootResource)
         // GET     /health (com.graphhopper.resources.HealthcheckResource)

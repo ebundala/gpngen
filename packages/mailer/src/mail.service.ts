@@ -21,7 +21,7 @@ export class MailService {
         private readonly config: ConfigService,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(MailService.name);
+       // this.logger.setContext(MailService.name);
         this.from = this.config.get<string>("SENDGRID_SENDER_EMAIL");
         this.accountActivationTemplateId = this.config.get<string>("SENDGRID_ACCOUNT_ACTIVATION_TEMPLATE");
          this.welcomeTemplateId = this.config.get<string>("SENDGRID_WELCOME_TEMPLATE");

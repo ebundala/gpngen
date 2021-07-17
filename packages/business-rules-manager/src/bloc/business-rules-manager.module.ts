@@ -19,7 +19,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
         private readonly bloc: BusinessRulesManager,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(BusinessRulesManager.name)
+       // this.logger.setContext(BusinessRulesManager.name)
     }
     getMethods(obj) {
         let properties = new Set<string>()
@@ -31,7 +31,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
     }
 
     onModuleInit() {
-        this.logger.setContext(BusinessRulesManager.name)
+       // this.logger.setContext(BusinessRulesManager.name)
         const wrappers = this.discovery.getProviders();
         debugger;
         let prismaWrapper=wrappers.find((v)=>v.instance instanceof PrismaClient);

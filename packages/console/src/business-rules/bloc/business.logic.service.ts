@@ -27,7 +27,8 @@ export class BusinessLogicService {
     private readonly logger: AppLogger,
     private readonly redisCache: RedisCache
   ) {
-    this.logger.setContext(BusinessLogicService.name);
+    //this.logger.setContext(BusinessLogicService.name);
+    
   }
 
   @BlocAttach('findManyOrganization.input.where.location.within')

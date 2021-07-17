@@ -4,7 +4,6 @@ import { SdlGeneratorServiceOptions } from './sdl/config.options';
 export { DMMF } from '@prisma/client/runtime';
 export { getDMMF } from '@prisma/sdk';
 export * from './gen.resources.rules';
-export * from './graphql.module';
 export * from './roles';
 export * from './sdl/config.options';
 export * from './sdl/CreateQueriesAndMutations';
