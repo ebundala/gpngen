@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as mime from 'mime-types';
 import { join } from 'path';
 import { AttachmentType } from 'src/models/graphql';
-import { GraphQLUpload, FileUpload } from '@apollographql/graphql-upload-8-fork'
+import { GraphQLUpload, FileUpload } from 'graphql-upload'
 import * as sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { getAudioDurationInSeconds } from 'get-audio-duration'

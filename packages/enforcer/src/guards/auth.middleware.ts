@@ -8,7 +8,7 @@ export class AuthMiddleware implements NestMiddleware {
     private readonly logger: AppLogger,
     private readonly app: FirebaseService,
   ) {
-    this.logger.setContext(AuthMiddleware.name);
+    //this.logger.setContext(AuthMiddleware.name);
   }
   async use(req: any, res: any, next: () => void) {
     const { headers } = req;
