@@ -18,7 +18,7 @@ import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { BusinessLogicModule } from './business-rules/busines.logic.module';
+import { BusinessLogicModule,} from './business-rules/busines.logic.module';
 import { GraphhopperModule } from './app-schemas/graphhopper/graphhopper.module';
 import { PubSubModule } from './pubsub/pubsub.module';
 import { SubscriptionModule } from './app-schemas/subscriptions/subscription.module';
@@ -26,7 +26,9 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import IORedis from "ioredis";
 import { RedisCache } from './pubsub/redis.service';
 import {JSONObjectResolver} from 'graphql-scalars'
+import { GraphQLSchema } from 'graphql';
 
+import { BlocFieldResolverExplorer } from "@mechsoft/business-rules-manager";
 
 
 
@@ -109,14 +111,20 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         SubscriptionModule,
        
       ],
-      inject: [PrismaClient, CasbinService, FirebaseService,AppLogger,RedisCache],
+      inject: [
+        PrismaClient,
+        
+         CasbinService, 
+        FirebaseService,AppLogger,RedisCache,BlocFieldResolverExplorer,],
       useFactory: (client: PrismaClient,
         enforcer: CasbinService,
         app: FirebaseService,
         logger: AppLogger,
-        redisCache: RedisCache 
+        redisCache: RedisCache,
+        fieldResoverExplorer: BlocFieldResolverExplorer
         ) => {
           debugger
+
 
           return {
           typePaths: [
@@ -131,7 +139,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         //  ],
          resolvers: {
            Upload: UploadTypeResolver,
-           JSONObject:JSONObjectResolver
+           JSONObject:JSONObjectResolver,
+           ...fieldResoverExplorer.explore()
          },
           //  plugins: [   
           //   {
@@ -143,6 +152,9 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           //     },
           //   },
           //  ],
+          transformSchema: (schema: GraphQLSchema) => {
+            return schema;
+          },
           context: async (data): Promise<TenantContext> => {
             debugger
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]

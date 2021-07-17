@@ -5,13 +5,15 @@ import { DiscoveryModule, DiscoveryService } from "@nestjs/core";
 import { BusinessRulesManager, PrismaHookRequest } from "./business-rules-manager.service";
 import { BUSINESS_LOGIC_CONTAINER, BUSINESS_LOGIC_HOOK, BUSINESS_LOGIC_VALIDATOR, PRISMA_LOGIC_HOOK } from './constants';
 import { Prisma } from "@prisma/client";
+import { BlocFieldResolverExplorer } from "./bloc-field.explorer.service";
+import { getMethods } from "./utils";
 
 @Global()
 @Module(
     {
         imports: [DiscoveryModule, AppLoggerModule],
-        providers: [BusinessRulesManager],
-        exports: [BusinessRulesManager],
+        providers: [BusinessRulesManager,BlocFieldResolverExplorer],
+        exports: [BusinessRulesManager,BlocFieldResolverExplorer],
     }
 )
 export class BusinessRulesManagerModule implements OnModuleInit {
@@ -21,14 +23,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
     ) {
        // this.logger.setContext(BusinessRulesManager.name)
     }
-    getMethods(obj) {
-        let properties = new Set<string>()
-        let currentObj = obj
-        do {
-            Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
-        } while ((currentObj = Object.getPrototypeOf(currentObj)))
-        return [...properties.keys()].filter(item => typeof obj[item] === 'function')
-    }
+   
 
     onModuleInit() {
        // this.logger.setContext(BusinessRulesManager.name)
@@ -71,7 +66,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
 
         blocProviders.forEach((b) => {
             const instance = b.instance;
-            const methods = this.getMethods(instance)
+            const methods = getMethods(instance)
 
             methods.forEach((s) => {
                 const method = instance[s];

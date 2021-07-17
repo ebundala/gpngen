@@ -1,5 +1,5 @@
 import { AppLogger } from "@mechsoft/app-logger";
-import { Bloc, BlocAttach, BlocValidate, BusinessRequest, PrismaAttach, PrismaHookHandler, PrismaHookRequest } from "@mechsoft/business-rules-manager";
+import { Bloc, BlocAttach, BlocFieldResolver, BlocValidate, BusinessRequest, PrismaAttach, PrismaHookHandler, PrismaHookRequest } from "@mechsoft/business-rules-manager";
 import { TenantContext } from "@mechsoft/common";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Prisma, State } from "@prisma/client";
@@ -46,18 +46,18 @@ export class BusinessLogicService {
     const { location, ...others } = args.where;
     const { nearBy, within, notWithin, } = location;
     const { skip, take } = args;
-    const { every } = args.where.offers ?? {}
+    const { every,some } = args.where.offers ?? {}
     let categories = [], notCategories = [];
-    if (every?.id?.equals) {
+    if (some?.id?.equals) {
       categories.push(every.id.equals)
     }
-    if (every?.id?.in) {
+    if (some?.id?.in) {
       categories.push(...every.id.in)
     }
-    if (every?.id?.notEqual) {
+    if (some?.id?.notEqual) {
       notCategories.push(every.id.notEqual)
     }
-    if (every?.id?.notIn) {
+    if (some?.id?.notIn) {
       notCategories.push(...every.id.notIn)
     }
 
@@ -96,8 +96,8 @@ export class BusinessLogicService {
 
     const orgs = await gisQuery(prisma, categories, notCategories, nearBy, within, notWithin, skip, take);
     
-    await this.redisCache.set(`distances`,JSON.stringify(orgs),"PX",5000);
-    debugger
+    //await this.redisCache.set(`distances`,JSON.stringify(orgs),"PX",5000);
+    v.context["distances"] = orgs;
     v.args.where = { id: { in: orgs.map((o) => o.id) }, ...others };
 
     v.context['organizationLocationQuery'] = true //mark excuted 
@@ -198,7 +198,7 @@ export class BusinessLogicService {
   }
 
   @BlocAttach('updateOneUser.input.data.location.create.lat')
-  async userLocation(v: BusinessRequest, next) {
+  async createUserLocation(v: BusinessRequest, next) {
     debugger
     const { args, context } = v;
     const { prisma, logger } = context;
@@ -489,13 +489,7 @@ export class BusinessLogicService {
     return { rules: [connectSelf, ordersRule, onlyOneRating], facts };
   }
 
-  @PrismaAttach('User', "findUnique")
-  async online(args: PrismaHookRequest<User>, n: PrismaHookHandler) {
-    //todo read a user online status from a redis cache 
-    const {result} = args;
-    if (args.result != null) args.result.online = true;
-    return n(args);
-  }
+  
 
   //PRISMA hooks to manipulate data
 
@@ -624,28 +618,51 @@ export class BusinessLogicService {
 
       }
     });
-    // TODO aggregate distance from requester
-    debugger
-    const d= await this.redisCache.get(`distances`);
-    const distances:Array<{id:string,distance:number}> = JSON.parse( d ?? "[]");
+    
 
 
     let res = result.map((v) => {
       let work = deals.find((d) => d.organizationId === v.id);
       let min = prices.find((p) => p.organizationId == v.id);
       let rate = ratings.find((r) => r.organizationId == v.id);
-      let distance = distances.find((r)=>r.id == v.id)
+     
       return {
         ...v,
         compoundRating: rate?._avg?.value ?? 0,
         workCompleted: work?._count?.id ?? 0,
         minPrice: min?._min?.price ?? 0,
-        distance: distance?.distance??0
+        distance: 0
       }
     });
     args.result = res;
     return n(args);
   }
 
+  @BlocFieldResolver("Organization","distance")
+  distance(org:Organization,args,ctx:TenantContext,info:any){
+    const distances = ctx["distances"]??[];
+    if(distances){
+     return distances.find((d)=>d.id==org.id)?.distance??0
+    }
+    return 0;
+  }
+@BlocFieldResolver("User","location")
+  async userLocation(user:User,args,ctx:TenantContext,info:any){
+    const {auth}=ctx;
+    if(auth){
+     //todo get user location from cache
+    }
+    return user.location;
+  }
+  @BlocFieldResolver("User","online")
+  async online(parent:User,args,ctx:TenantContext,info:any) {
+    debugger;
+    const {auth} = ctx;
+    const key = `last-seen-${auth.uid}`;
+    const lastseen= await this.redisCache.get(key);
+    this.logger.debug(`lastseen-${auth.uid} ${lastseen}`);
+    //todo calculate user is online or not; use dates instead of boolean
+    return true;
+  }
 
 }
