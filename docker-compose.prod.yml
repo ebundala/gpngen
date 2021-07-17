@@ -82,21 +82,21 @@ services:
       #     memory: 1g
       restart_policy:
         condition: on-failure
-  # graphhopper:
-  #   image: graphhopper:${IMAGE_TAG}
-  #   deploy:
-  #     replicas: 1
-  #     # resources:
-  #     #   limits:
-  #     #     cpus: "1"
-  #     #     memory: 1g
-  #     restart_policy:
-  #       condition: on-failure
-  #   volumes:
-  #     - ./graphhopper/graph-cache:/usr/src/graph-cache
-  #     # - ./graphhopper/config.yml:/usr/src/config.yml
-  #   networks: 
-  #     webnet:
+  graphhopper:
+    image: graphhopper:${IMAGE_TAG}
+    deploy:
+      replicas: 1
+      # resources:
+      #   limits:
+      #     cpus: "1"
+      #     memory: 1g
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - ./graphhopper/graph-cache:/usr/src/graph-cache
+      # - ./graphhopper/config.yml:/usr/src/config.yml
+    networks: 
+      webnet:
 
   webserver:
     image: nginx:latest
