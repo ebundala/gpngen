@@ -27,15 +27,7 @@ jobs:
       - name: create oci dir
         run: mkdir oci
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Build graphhopper image        
-        uses: docker/build-push-action@v2.4.0
-        with:
-          context: "./graphhopper"
-          file: "./graphhopper/Dockerfile"
-          labels: "graphhopper"
-          outputs: "type=docker,dest=./oci/graphhopper.tar"
-          tags: "graphhopper:${{github.sha}}"
+        uses: docker/setup-buildx-action@v1     
       - name: Build app Server image        
         uses: docker/build-push-action@v2.4.0
         with:
@@ -89,6 +81,14 @@ jobs:
           labels: "studio"
           outputs: "type=docker,dest=./oci/studio.tar"
           tags: "studio:${{github.sha}}"
+      - name: Build graphhopper image        
+        uses: docker/build-push-action@v2.4.0
+        with:
+          context: "./graphhopper"
+          file: "./graphhopper/Dockerfile"
+          labels: "graphhopper"
+          outputs: "type=docker,dest=./oci/graphhopper.tar"
+          tags: "graphhopper:${{github.sha}}"
       - name: Copy app image files to remote
         uses: appleboy/scp-action@master
         with:
