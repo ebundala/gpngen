@@ -96,7 +96,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
       imports: [
         FirebaseModule,
         MailModule.forRoot({ apikey: process.env.SENDGRID_API_KEY }),
-        GraphhopperModule.forRoot("http://graphhopper:8989/route"),
+       // GraphhopperModule.forRoot("http://graphhopper:8989/route"),
         PrismaClientModule,
         CasbinModule.forRootAsync({
           model: './src/authorization/rbac_model.conf',
@@ -110,7 +110,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         BusinessRulesManagerModule,
         BusinessLogicModule,
         SubscriptionModule,
-        MpesaTzModule
+      //  MpesaTzModule
       ],
       inject: [
         PrismaClient,
