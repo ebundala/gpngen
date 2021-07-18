@@ -14,14 +14,14 @@ services:
     #     delay: 10s
     #   restart_policy:
     #     condition: on-failure
-  graphhopper:
-    build:
-     context:   /media/ebundala/data46/data/my_projects/projects/graphhopper 
-    # ports: 
-    #   - 8989:8989
-    #   - 8990:8990
-    networks: 
-      webnet:
+  # graphhopper:
+  #   build:
+  #    context:   /media/ebundala/data46/data/my_projects/projects/graphhopper 
+  #   # ports: 
+  #   #   - 8989:8989
+  #   #   - 8990:8990
+  #   networks: 
+  #     webnet:
   # shadowdb:
   #   image: ${POSTGRES_TAG}
   #   ports:

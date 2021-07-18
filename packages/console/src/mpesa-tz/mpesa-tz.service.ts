@@ -48,7 +48,7 @@ export class MpesaTzService {
         return this.KEY.encrypt(data, 'base64');
     }
 
-    @Cron(CronExpression.EVERY_5_MINUTES)
+    @Cron(CronExpression.EVERY_30_MINUTES)
     async generateToken() {
         const authorization = `Bearer ${this.encrypt(this.API_KEY)}`;
         this.logger.debug('......essueing new session start....')
