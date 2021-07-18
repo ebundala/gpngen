@@ -8,11 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { getAudioDurationInSeconds } from 'get-audio-duration'
 import { mkdrIfNotExist } from '@mechsoft/apigen';
 
-export const resizer = (rs: fs.ReadStream, ws: fs.WriteStream) => {
+export const resizer = (rs: fs.ReadStream, ws: fs.WriteStream,size = {height:480,width:408}) => {
     const st = sharp()
         .resize({
-            width: 480,
-            height: 480,
+            ...size,
             fit: sharp.fit.cover,
             position: sharp.strategy.entropy
         }).webp();
@@ -26,7 +25,7 @@ export const resizer = (rs: fs.ReadStream, ws: fs.WriteStream) => {
     st.on('error', onError.bind(this));
     return st;
 }
-export const writeStreamToFile = (rs: fs.ReadStream, path: string, type: AttachmentType) => new Promise((resolve, reject) => {
+export const writeStreamToFile = (rs: fs.ReadStream, path: string, type: AttachmentType,size={height:480,width:480}) => new Promise((resolve, reject) => {
     const ws = fs.createWriteStream(path);
     const onError = (e) => {
         ws.close();
@@ -36,16 +35,49 @@ export const writeStreamToFile = (rs: fs.ReadStream, path: string, type: Attachm
 
     }
     rs.on('error', onError.bind(this));
-    ws.on('error', onError.bind(this));
-    ws.on('finish', () => {
+    
+    if (type == AttachmentType.IMAGE) {
+        
+        const ws360=fs.createWriteStream(`${path}.thumbnail-360.webp`);
+        const ws240=fs.createWriteStream(`${path}.thumbnail-240.webp`);
+        const ws160=fs.createWriteStream(`${path}.thumbnail-160.webp`);
+        const ws128=fs.createWriteStream(`${path}.thumbnail-128.webp`);
+        const ws80=fs.createWriteStream(`${path}.thumbnail-80.webp`);
+        const wstr = [ws,ws80,ws128,ws160,ws240,ws360]
+       Promise.all
+       (wstr.map((w)=>{
+            return new Promise((resolve,reject)=>{
+                w.on('error', (e) => {
+                    reject(e);
+                });
+                w.on('finish', () => {
+                    const size = w.bytesWritten;
+                   
+                    resolve(size);
+                });
+            });
+        })).then(([size,..._])=>{
+            wstr.forEach((v)=>v.close());
+            resolve({ path, size:size });
+        }).catch((e)=>{
+            reject(e);
+            wstr.forEach((v)=>v.close());
+        })
+        rs.pipe(resizer(rs, ws,size)).pipe(ws)
+        rs.pipe(resizer(rs, ws360,{height:360,width:360})).pipe(ws360);
+        rs.pipe(resizer(rs, ws240,{height:240,width:240})).pipe(ws240);
+        rs.pipe(resizer(rs, ws160,{height:160,width:160})).pipe(ws160);
+        rs.pipe(resizer(rs, ws128,{height:128,width:128})).pipe(ws128);
+        rs.pipe(resizer(rs, ws80,{height:80,width:80})).pipe(ws80);
+
+    } else {
+        rs.pipe(ws);
+        ws.on('error', onError.bind(this));
+        ws.on('finish', () => {
         const size = ws.bytesWritten;
         ws.close();
         resolve({ path, size });
     });
-    if (type == AttachmentType.IMAGE) {
-        rs.pipe(resizer(rs, ws)).pipe(ws);
-    } else {
-        rs.pipe(ws);
     }
 });
 export const uploadFile = async (file: Promise<FileUpload>, path: string = '../../public/uploads',
@@ -59,7 +91,7 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
         return await Promise.resolve(undefined);
     }
     const stream = createReadStream()
-
+    debugger;
     const uuid = uuidv4();
     let [type, subtype] = mimetype.split("/");
     let ext = mime.extension(mimetype);
@@ -134,6 +166,11 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
                     duration = 0;
                 }
             }
+            if(t === AttachmentType.IMAGE){
+               
+            }
+                
+            
             const url = `${path}/${fname}`.replace(/(\.\.\/)|public\//g, '');
             return {
                 path: url,
