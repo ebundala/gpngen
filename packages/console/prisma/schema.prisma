@@ -49,6 +49,16 @@ model User {
   provides       Order[]        @relation("providedBy")
   invites        Invite[]   @relation("invitesBy")
   invited        Invite[]   @relation("invitedBy")
+  device         Device? 
+  transactions   Transaction[]
+}
+model Device {
+  id          String  @id   @default(cuid())
+  fcm_id      String
+  device_id   String
+  type        String @default("ANDROID")
+  user        User @relation(fields: [userId],references:[id])
+  userId      String
 }
 
 model Attachment {
@@ -69,6 +79,7 @@ model Attachment {
   services        Service[]
   serviceCategory ServiceCategory?
   users           User[]
+  paymentMethods  PaymentMethod?
 }
 
 model Organization {
@@ -114,6 +125,7 @@ model Order {
   quantity       Int
   state          State        @default(PENDING)
   deliveryMode   DeliveryMode[] 
+  notes          String?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   serviceId      String
@@ -121,11 +133,15 @@ model Order {
   ownerId        String
   providerId     String?
   receiptId      String?
+  locationId     String?
   organization   Organization @relation(fields: [organizationId], references: [id])
   owner          User         @relation(fields: [ownerId], references: [id])
   receipt        Attachment?  @relation(fields: [receiptId], references: [id])
   service        Service      @relation(fields: [serviceId], references: [id])
   provider       User?   @relation("providedBy",fields: [providerId],references:[id])
+  location       Location?    @relation("deliveryAt",fields: [locationId],references:[id])
+  mpesa_payment  MpesaPayment?
+  selcom_payment SelcomPayment?
 
 }
 
@@ -161,10 +177,12 @@ model Location {
   geom          Unsupported("geography")?
   lat           Float
   lon           Float
+  state         State                     @default(PENDING)
   createdAt     DateTime                  @default(now())
   updatedAt     DateTime                  @updatedAt
   organizations Organization[]
   users         User[]
+  order         Order? @relation("deliveryAt")
 }
 model Invite{
    id            String                    @id @default(cuid())
@@ -190,6 +208,92 @@ model spatial_ref_sys {
   @@ignore
 }
 
+model PaymentMethod{
+  id    String @id @default(cuid())
+  name  String
+  description String?
+  logo Attachment @relation(fields:[attachmentId],references:[id])
+  attachmentId String
+  state                           State   @default(PENDING)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
+model Transaction {
+    id          String @id  @default(cuid())
+    paymentMethode String 
+    type          TransactionType
+    initiator     User @relation(fields:[userId],references:[id])
+    userId        String
+    mpesaPayment MpesaPayment? @relation(fields:[mpesaPaymentId],references:[id])
+    mpesaPaymentId String?
+    selcomPayment SelcomPayment? @relation(fields:[selcomPaymentId],references:[id])
+    selcomPaymentId String?
+    selcomDisbursement SelcomDisbursement? @relation(fields:[selcomDisbursementId],references:[id])
+    selcomDisbursementId String?
+     state                           State   @default(PENDING)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+model MpesaPayment {
+  id                              String @id  @default(cuid())
+  input_Amount                    String
+  input_Country                   String  @default("TZN")
+  input_Currency                  String  @default("TZS")
+  input_CustomerMSISDN            String
+  input_ServiceProviderCode       String
+  input_ThirdPartyConversationID  String
+  input_TransactionReference      String
+  input_PurchasedItemsDesc        String
+  output_ConversationID           String?
+  output_ResponseCode             String?
+  output_ResponseDesc             String?
+  output_ThirdPartyConversationID String?
+  output_TransactionID            String?
+  order                           Order @relation(fields: [input_ThirdPartyConversationID],references:[id])
+  transaction Transaction?
+  state                           State   @default(PENDING)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
+
+model SelcomDisbursement {
+  id String @id @default(cuid())
+  amount      Int
+  reference   String?
+  resultCode  String?
+  status      SelcomPaymentStatus      @default(PENDING)
+  transId     String                           
+  userId      Int
+  utilitycode SelcomUtilityCode
+  utilityref  String
+  validation  SelcomPaymentStatus  @default(PENDING)
+  transaction Transaction?
+  state      State                 @default(PENDING)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
+model SelcomPayment {
+  id         String @id @default(cuid())
+  transId    String                     
+  amount     Int
+  msisdn     String
+  operator   String?
+  reference  String?
+  resultCode String?
+  status     SelcomPaymentStatus     @default(PENDING)
+  utilityref Int
+  validation SelcomPaymentStatus @default(PENDING)
+  order                           Order @relation(fields: [orderId],references:[id])
+  orderId       String
+  transaction Transaction?
+  state         State             @default(PENDING)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+}
+
 enum Role {
   ANONYMOUS
   CONSUMER
@@ -205,6 +309,7 @@ enum State {
   APPROVED
   COMPLETED
   ARCHIVED
+  DELETED
 }
 
 enum Gender {
@@ -229,4 +334,26 @@ enum DeliveryMode {
 enum InviteType {
   INSTALL
   ORGANIZATION
+}
+
+enum TransactionType {
+  PAYMENT 
+  DISBURSEMENT
+}
+
+enum SelcomUtilityCode {
+  VMCASHIN
+  AMCASHIN
+  TPCASHIN
+  EZCASHIN
+  SPCASHIN
+  HPCASHIN
+  TTCASHIN
+}
+
+
+enum SelcomPaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }

@@ -2,8 +2,7 @@ import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaClient } from '@prisma/client';
-import { writeFile } from 'fs/promises';
-import NodeRsa from 'node-rsa';
+import * as NodeRsa from 'node-rsa';
 import { join } from 'path';
 import { AppLogger } from '@mechsoft/app-logger';
 import { HTTP_CLIENT_CONFIG } from './mpesa-tz.module';
@@ -19,7 +18,6 @@ export class MpesaTzService {
     private SESSION_KEY: string;
     private KEY: NodeRsa;
     constructor(
-        private readonly prisma: PrismaClient,
         private readonly config: ConfigService,
         private readonly logger: AppLogger,
         private readonly httpService: HttpService
@@ -50,10 +48,10 @@ export class MpesaTzService {
         return this.KEY.encrypt(data, 'base64');
     }
 
-    @Cron(CronExpression.EVERY_30_MINUTES)
+    @Cron(CronExpression.EVERY_5_MINUTES)
     async generateToken() {
         const authorization = `Bearer ${this.encrypt(this.API_KEY)}`;
-        this.logger.debug('......essuing new session start....')
+        this.logger.debug('......essueing new session start....')
 
         try {
             const result = await this.httpService.axiosRef.get<SessionResponse>(this.links.getToken, {
@@ -71,7 +69,7 @@ export class MpesaTzService {
                 if (data.output_ResponseCode == "INS-0") {
                     const cb = () => {
                         this.SESSION_KEY = data.output_SessionID;
-                        //this.logger.debug(`new session ${this.SESSION_KEY}`);
+                        this.logger.debug(`new session ${this.SESSION_KEY}`);
                     }
                     setTimeout(cb.bind(this), 30000);
 
@@ -80,12 +78,12 @@ export class MpesaTzService {
         } catch (e) {
             this.generateToken();
         }
-        this.logger.debug('.....essuing new session end.......')
+        this.logger.debug('.....essueing new session end.......')
     }
 
     async handleWebhook() { }
     async queryPaymentStatus() { }
-    async paybill(body: PaybillDto, headers) {
+    async paybill(body: PaybillDto) {
         // delete headers.host;
 
         try {
@@ -119,7 +117,7 @@ export class MpesaTzService {
         const st = `
         ${JSON.stringify(data)}
         `
-        await writeFile(f, st, { flag: "a" });
+       // await writeFile(f, st, { flag: "a" });
         this.logger.debug("log file written ", MpesaTzService.name)
         return data
     }

@@ -11,7 +11,7 @@ export class MpesaTzController {
         this.logger.debug(body)
         // this.logger.warn(headers)
         // this.logger.debug(params);        
-        return this.service.paybill(body, headers);
+        return this.service.paybill(body);
     }
 
 }

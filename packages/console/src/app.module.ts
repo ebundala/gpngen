@@ -29,6 +29,7 @@ import {JSONObjectResolver} from 'graphql-scalars'
 import { GraphQLSchema } from 'graphql';
 
 import { BlocFieldResolverExplorer } from "@mechsoft/business-rules-manager";
+import { MpesaTzModule } from './mpesa-tz/mpesa-tz.module';
 
 
 
@@ -109,7 +110,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         BusinessRulesManagerModule,
         BusinessLogicModule,
         SubscriptionModule,
-       
+        MpesaTzModule
       ],
       inject: [
         PrismaClient,
