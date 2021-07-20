@@ -29,7 +29,7 @@ export class GraphhopperService{
         const buffer = Buffer.from(
             JSON.stringify(body??{}),
           );
-          debugger;
+          ;
       return  this.httpService.axiosRef.post(this.url,
         buffer        
         ).then(({data,status,statusText,})=>{
