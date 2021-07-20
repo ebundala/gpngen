@@ -50,7 +50,7 @@ class AuthorizeType extends GraphQLScalarType {
             // https://github.com/graphql/graphql-js/blob/31ae8a8e8312/src/type/definition.js#L425-L446
 
             serialize(value) {
-                debugger;
+                
                 // value = type.serialize(value);
                 //enforce here
                 const { enforcer, auth } = context;
@@ -58,7 +58,7 @@ class AuthorizeType extends GraphQLScalarType {
             },
 
             parseValue(value) {
-                debugger
+                
                 //enforce here
                 //return type.parseValue(value);
                 const { enforcer, auth } = context;

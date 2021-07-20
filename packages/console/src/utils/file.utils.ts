@@ -91,7 +91,7 @@ export const uploadFile = async (file: Promise<FileUpload>, path: string = '../.
         return await Promise.resolve(undefined);
     }
     const stream = createReadStream()
-    debugger;
+    
     const uuid = uuidv4();
     let [type, subtype] = mimetype.split("/");
     let ext = mime.extension(mimetype);

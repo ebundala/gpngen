@@ -161,11 +161,11 @@ export const createPolicySchema = (dir: string, schemaRelativePath: string) => {
 
 
 export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, variableValues?: any) => {
-    // debugger
+    // 
     const ast = visit(op, {
         Variable: {
             leave(node) {
-                debugger
+                
                 if (variableValues) {
                     if (variableValues[node.name.value]) {
                         return variableValues[node.name.value] ?? fieldValue;
@@ -262,20 +262,20 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, va
 
         FragmentDefinition: {
             leave(node) {
-                //debugger
+                //
                 return node.selectionSet
             }
         },
         InlineFragment: {
             leave(node) {
-                // debugger
+                // 
                 return { ...node, fv: node.selectionSet }
 
             }
         },
         FragmentSpread: {
             leave(node) {
-                // debugger
+                // 
                 let fragDefAst
                 if (fragments) {
                     fragDefAst = createRuleAst(fragments[node.name.value], fieldValue, fragments)
@@ -287,7 +287,7 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, va
         SelectionSet: {
             leave(node) {
                 let f = {};
-                //  debugger
+                //  
                 node.selections.forEach((v) => {
                     f = { ...f, ...(v as any).fv };
                 })
@@ -300,7 +300,6 @@ export const createRuleAst = (op: ASTNode, fieldValue?: any, fragments?: any, va
             }
         }
     })
-    // debugger
 
     return ast;
 }

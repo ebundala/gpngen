@@ -10,7 +10,7 @@ export class AuthorizerGuard implements CanActivate {
   canActivate(
     ctx: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
-    debugger
+    
     const gqlHost = GqlExecutionContext.create(ctx);
 
     let args = gqlHost.getArgs()

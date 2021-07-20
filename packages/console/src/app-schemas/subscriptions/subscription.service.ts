@@ -19,7 +19,7 @@ export class SubscriptionService {
   @PrismaAttach("Order", "update")
   async orderHasbeenUpdated(args: PrismaHookRequest<Order>, n: PrismaHookHandler) {
     const { result } = args;
-    debugger
+    
     await this.pubSub.publish(`${ORDER_CHANGED}`, { id: result.id })
     return n(args);
   }

@@ -18,7 +18,7 @@ export class SubscriptionResolver {
         filter: async (where: OrderWhereUniqueInput,
             variables, context: TenantContext) => {
 
-            debugger
+            
             const { prisma, auth } = context;
             const order = await prisma.order.findUnique({
                 where, select: {
@@ -140,7 +140,7 @@ export class SubscriptionResolver {
     @Subscription(() => LocationResponse, {
         filter: async (where: UserWhereUniqueInput,
             variables, context: TenantContext) => {
-           // debugger;
+           // ;
             //todo filter who recieves data;
             const { auth, prisma } = context
             const order = await prisma.order.findFirst({
@@ -199,7 +199,7 @@ export class SubscriptionResolver {
             return order != null;
         },
         resolve: async function (this: SubscriptionResolver, where: UserWhereUniqueInput, args: any, context: TenantContext, info: any): Promise<LocationResponse | {}> {
-          //  debugger;
+          //  ;
             const key = `location/${where.id}`;
             const latlon = await this.bloc.getUserLocation(where.id);
             if (latlon) {
@@ -232,7 +232,7 @@ export class SubscriptionResolver {
 
     @Mutation(() => LocationResponse)
     async locationFeed(@Args('location') location: LatLon, @Context() context: TenantContext, @Info() info): Promise<LocationResponse | {}> {
-        debugger;
+        
         if (context.auth?.uid && location) {
             await this.bloc.updateUserLocation(context.auth.uid, location);
             return {
