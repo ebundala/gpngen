@@ -1,0 +1,14 @@
+input PaybillRequest {
+    msisdn: String!
+    currency: String
+    orderId:  String!
+    method: String
+}
+type PaybillResponse{
+    status: Boolean!
+    message: String!
+    data:   Transaction
+}
+extend type Mutation {
+    paybill(data:PaybillRequest):PaybillResponse!
+}
