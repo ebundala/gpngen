@@ -3,11 +3,10 @@ import { TenantContext } from '@mechsoft/common';
 import { FirebaseModule, FirebaseService } from '@mechsoft/firebase-admin';
 import { MailModule } from '@mechsoft/mailer';
 import { PrismaClient, PrismaClientModule } from '@mechsoft/prisma-client';
-import { Inject, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import {
-  GraphQLRequestContext,
   GraphQLRequestContextWillSendResponse,
   GraphQLRequestListener
 } from 'apollo-server-plugin-base';
@@ -19,17 +18,16 @@ import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { BusinessLogicModule,} from './business-rules/busines.logic.module';
-import { GraphhopperModule } from './app-schemas/graphhopper/graphhopper.module';
 import { PubSubModule } from './pubsub/pubsub.module';
 import { SubscriptionModule } from './app-schemas/subscriptions/subscription.module';
-import { RedisPubSub } from 'graphql-redis-subscriptions';
-import IORedis from "ioredis";
 import { RedisCache } from './pubsub/redis.service';
 import {JSONObjectResolver} from 'graphql-scalars'
-import { GraphQLSchema } from 'graphql';
 
 import { BlocFieldResolverExplorer } from "@mechsoft/business-rules-manager";
 import { MpesaTzModule } from './mpesa-tz/mpesa-tz.module';
+import { PaymentModule } from './app-schemas/payment/payment.module';
+import { GoogleMapModule } from './app-schemas/geolocation/googlemap.module';
+import { FcmRegistrationModule } from './app-schemas/fcm-registration/fcm-registration.module';
 
 
 
@@ -59,7 +57,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
   // responseForOperation(
   //   requestContext: GraphQLRequestContextResponseForOperation<TenantContext>,
   // ): ValueOrPromise<GraphQLResponse | null> {
-  //   debugger;
+  //   ;
   //   console.log('responseForOperation');
   //   return null
   // },
@@ -110,7 +108,10 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         BusinessRulesManagerModule,
         BusinessLogicModule,
         SubscriptionModule,
-      //  MpesaTzModule
+        MpesaTzModule,
+        PaymentModule,
+        GoogleMapModule.forRoot(),
+        FcmRegistrationModule
       ],
       inject: [
         PrismaClient,
@@ -124,8 +125,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         redisCache: RedisCache,
         fieldResoverExplorer: BlocFieldResolverExplorer
         ) => {
-          debugger
-
+          
 
           return {
           typePaths: [
@@ -141,7 +141,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
          resolvers: {
            Upload: UploadTypeResolver,
            JSONObject:JSONObjectResolver,
-           ...fieldResoverExplorer.explore()
+           ...fieldResoverExplorer.exploreResolvers()
          },
           //  plugins: [   
           //   {
@@ -153,18 +153,16 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           //     },
           //   },
           //  ],
-          transformSchema: (schema: GraphQLSchema) => {
-            return schema;
-          },
+
+         
           context: async (data): Promise<TenantContext> => {
             debugger
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
             const auth = await app.app.auth().verifySessionCookie(token).catch((e)=>({uid:null}));
              if(auth?.uid){
               logger.debug(await redisCache.get(`lastseen-${auth.uid}`),"Presence");
-              redisCache.set(`lastseen-${auth.uid}`,Date.now());
+              redisCache.set(`lastseen-${auth.uid}`,(new Date()).toUTCString());
              }
-            //const { token, logger, enforcer, prisma, auth } = req ?? connection?.context;
             //TODO: remove this after test/dev
             enforcer.enableEnforce(false);
             const ctx: TenantContext = {
@@ -176,7 +174,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
               logger,
               timestamp: Date.now()
             };
-            return ctx;
+            return {...ctx,...fieldResoverExplorer.createDataloaders(null,null,ctx,null)};
 
 
           },

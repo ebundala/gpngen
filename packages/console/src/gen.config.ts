@@ -12,11 +12,18 @@ const options: SdlGeneratorServiceOptions = {
 
     // excludeFields: ['Id'],
     excludeQueriesAndMutationsByModel: {
-      'User': ['createOne', 'deleteMany']
+      'User': ['createOne', 'deleteMany'],
+      'Invite':['findFirst','upsertOne'],
+      // 'PaymentMethod':['findFirst','upsertOne'],
+      // 'SelcomDisbursement':['findFirst','upsertOne'],
+      // 'SelcomPayment':['findFirst','upsertOne',],
+      // 'SelcomPayment':['findFirst','upsertOne'],
+      // 'SelcomPayment':['findFirst','upsertOne'],
     },
     excludeQueriesAndMutations: [
-      'upsertOne', 'aggregate', 'deleteMany', 'updateMany', 'findCount'
+      'upsertOne', 'aggregate', 'deleteMany', 'updateMany', 'findCount','deleteOne'
     ],
+    
     excludeModels: [
       {
         name: 'CasbinRule',
@@ -30,6 +37,36 @@ const options: SdlGeneratorServiceOptions = {
       },
       {
         name: 'Attachment',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'Transaction',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'MpesaPayment',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'SelcomDisbursement',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'SelcomPayment',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'SelcomPayment',
+        queries: true,
+        mutations: true,
+      },
+      {
+        name: 'Device',
         queries: true,
         mutations: true,
       },
