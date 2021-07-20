@@ -8,7 +8,7 @@ const getDefaultPolicies = async () => {
     const pv = new PROVIDER();
     const cs = new CONSUMER();
     const an = new ANONYMOUS();
-    // debugger;
+    // ;
     const superUser = getRolePolicies(su)
     const manager = getRolePolicies(mn)
     const provider = getRolePolicies(pv)
@@ -41,7 +41,7 @@ const createRoles = async () => {
 
     }
     const casbin = new CasbinService(options)
-    debugger
+    
     const { policies, roleGroups } = await getDefaultPolicies();
     const cl = (casbin.getAdapter() as PrismaAdapter);
     await cl.prisma.casbinRule.deleteMany();

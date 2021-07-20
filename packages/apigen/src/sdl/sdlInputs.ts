@@ -89,7 +89,6 @@ function createInput(options?: OptionsType) {
   
   `;
     });
-  debugger
     const inputObjectTypes = [...schema.inputObjectTypes.prisma];
     if (schema.inputObjectTypes.model)
       inputObjectTypes.push(...schema.inputObjectTypes.model);
@@ -153,7 +152,7 @@ function createInput(options?: OptionsType) {
 export const sdlInputs = (options?: OptionsType) => {
   const gql = require('graphql-tag');
   return gql`
-    ${createInput(options)}
+   ${createInput(options)}
   `;
 };
 

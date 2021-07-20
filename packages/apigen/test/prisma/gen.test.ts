@@ -7,7 +7,7 @@
 // generateResourcesRules(schemaPath, rulesDir, depth).then(()=>{
 //     console.log("completed")
 // }).catch((e) => {
-//     debugger;
+//     ;
 //     console.error(e)
 // })
 

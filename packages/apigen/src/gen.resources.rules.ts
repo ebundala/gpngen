@@ -54,7 +54,7 @@ export const generateResourcesRules = async (schemaPath: string, rulesPath: stri
     }
 
     const findInputResources = (inputTypes, path, p: Set<string>, depth) => {
-          // debugger
+          
         for (let i2 = 0; i2 < inputTypes.length; i2++) {
             const { type, namespace, location, isList } = inputTypes[i2];
             let input: DMMF.InputType;
