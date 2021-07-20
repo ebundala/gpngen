@@ -55,7 +55,7 @@ model User {
 model Device {
   id          String  @id   @default(cuid())
   fcm_id      String
-  device_id   String
+  device_id   String  @unique
   type        String @default("ANDROID")
   user        User @relation(fields: [userId],references:[id])
   userId      String
