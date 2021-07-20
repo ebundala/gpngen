@@ -28,7 +28,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
     onModuleInit() {
        // this.logger.setContext(BusinessRulesManager.name)
         const wrappers = this.discovery.getProviders();
-        debugger;
+        
         let prismaWrapper=wrappers.find((v)=>v.instance instanceof PrismaClient);
       //  let gqlWrapper = wrappers.find((v) => v.instance instanceof GraphQLModule);
 
@@ -37,7 +37,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
         if(prismaClient){
 
             const cb:Prisma.Middleware = async (params,next)=>{
-                debugger
+                
                 const{action,model}=params;              
                 const rule=`${model}:${action}`;
               //  const gqlServer:GraphQLModule=gqlWrapper.instance;
@@ -53,7 +53,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
               hookReq = await this.bloc.handlePrismaHookRequest(hookReq,true);
               hookReq.result=await next(hookReq.params);
 
-              debugger
+              
               //handle post prisma hooks
               hookReq = await this.bloc.handlePrismaHookRequest(hookReq);
               return hookReq.result;
@@ -73,7 +73,7 @@ export class BusinessRulesManagerModule implements OnModuleInit {
                 const validators: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_VALIDATOR}/${s}`, BusinessRulesManager)
                 const hooks: string[] = Reflect.getMetadata(`${BUSINESS_LOGIC_HOOK}/${s}`, BusinessRulesManager)
                 const prismaHooks: string[]=Reflect.getMetadata(`${PRISMA_LOGIC_HOOK}/${s}`, BusinessRulesManager)
-                debugger
+                
 
                 if (hooks?.length) {
                     //it is a hook 

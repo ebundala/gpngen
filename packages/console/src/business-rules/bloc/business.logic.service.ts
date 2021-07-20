@@ -1,8 +1,10 @@
 import { AppLogger } from "@mechsoft/app-logger";
-import { Bloc, BlocAttach, BlocFieldResolver, BlocValidate, BusinessRequest, PrismaAttach, PrismaHookHandler, PrismaHookRequest } from "@mechsoft/business-rules-manager";
+import { Bloc, BlocAttach, BlocFieldResolver, BlocValidate, BusinessRequest, DataloaderArg, PrismaAttach, PrismaHookHandler, PrismaHookRequest } from "@mechsoft/business-rules-manager";
+import { DataloaderCtx } from "@mechsoft/business-rules-manager";
 import { TenantContext } from "@mechsoft/common";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Prisma, State } from "@prisma/client";
+import * as DataLoader from "dataloader";
 import { Organization, User } from "src/models/graphql";
 import { RedisCache } from "src/pubsub/redis.service";
 import { uploadFile } from "src/utils/file.utils";
@@ -36,7 +38,7 @@ export class BusinessLogicService {
   @BlocAttach('findManyOrganization.input.where.location.nearBy.lon')
   @BlocAttach('findManyOrganization.input.where.location.notWithin')
   async organizationLocationQuery(v: BusinessRequest<TenantContext>, next) {
-    debugger
+    
     if (v.context['organizationLocationQuery']) {
       //if excuted return without re excuting
       return next(v)
@@ -108,7 +110,7 @@ export class BusinessLogicService {
   @BlocAttach('signup.input.organization.location.create.lat')
   async businessLocation(v: BusinessRequest<TenantContext>, next) {
 
-    debugger
+    
     const { args, context } = v;
     const { prisma, logger } = context;
     const { organization, ...rest } = args;
@@ -136,7 +138,7 @@ export class BusinessLogicService {
         throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
       }
     }
-    debugger
+    
     return next(v)
   }
 
@@ -169,7 +171,7 @@ export class BusinessLogicService {
   @BlocAttach('updateOneService.input.data.image.create.path')
   @BlocAttach('createOneService.input.data.image.create.path')
   async serviceImage(v: BusinessRequest, next) {
-    debugger
+    
     const { args, context } = v;
     const { data, ...rest } = args;
     const { image } = data
@@ -184,7 +186,7 @@ export class BusinessLogicService {
 
   @BlocAttach('updateOneUser.input.data.avator.create.path')
   async updateAvator(v: BusinessRequest, next) {
-    debugger
+    
     const { args, context } = v;
     const { data, ...rest } = args;
     const { avator } = data
@@ -199,7 +201,7 @@ export class BusinessLogicService {
 
   @BlocAttach('updateOneUser.input.data.location.create.lat')
   async createUserLocation(v: BusinessRequest, next) {
-    debugger
+    
     const { args, context } = v;
     const { prisma, logger } = context;
     const { data, ...rest } = args;
@@ -227,7 +229,7 @@ export class BusinessLogicService {
         throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
       }
     }
-    debugger
+    
     return next(v)
   }
 
@@ -235,7 +237,7 @@ export class BusinessLogicService {
   @BlocAttach('updateOneOrganization.input.data.logo.create.path')
   @BlocAttach('createOneOrganization.input.data.logo.create.path')
   async organizationImage(v: BusinessRequest, next) {
-    debugger
+    
     const { args, context } = v;
     const { data, ...rest } = args;
     const { logo } = data
@@ -251,7 +253,7 @@ export class BusinessLogicService {
   @BlocAttach('createOneOrganization.input.data.location.create.lat')
   async organizationLocation(v: BusinessRequest<TenantContext>, next) {
 
-    debugger
+    
     const { args, context } = v;
     const { prisma, logger } = context;
     const { data, ...rest } = args;
@@ -279,7 +281,7 @@ export class BusinessLogicService {
         throw new HttpException('Failed to create location', HttpStatus.BAD_REQUEST)
       }
     }
-    debugger
+    
     return next(v)
   }
 
@@ -287,7 +289,7 @@ export class BusinessLogicService {
   //TODO investigate further not needed maybe for create scenario
   @BlocAttach('createOneOrder.input.data.receipt.create.path')
   async orderReceipt(v: BusinessRequest, next) {
-    debugger
+    
     const { args, context } = v;
     const { data, ...rest } = args;
     const { receipt } = data
@@ -331,7 +333,7 @@ export class BusinessLogicService {
   @BlocValidate('findUniqueUser')
   async findUniqueUserBloc(v: BusinessRequest) {
 
-    debugger
+    
     const { args, context } = v;
     const { where } = args;
     const { auth, select } = context;
@@ -372,7 +374,7 @@ export class BusinessLogicService {
     const { args, context } = v;
     const { data } = args;
     const { prisma, auth } = context;
-    debugger
+    
     const service = await prisma.service.findFirst({
       where: {
         id: data?.service?.connect?.id,
@@ -654,15 +656,23 @@ export class BusinessLogicService {
     }
     return user.location;
   }
-  @BlocFieldResolver("User","online")
-  async online(parent:User,args,ctx:TenantContext,info:any) {
+  @BlocFieldResolver("User","lastSeen",function(this:BusinessLogicService,...args){
+    return new DataLoader(async function (keys){
+      
+
+      const lastseen= await this.redisCache.mget(keys);
+      return lastseen;
+    })
+  })
+  async lastSeen(parent:User,args,@DataloaderCtx() ctx:TenantContext,info:any,
+  @DataloaderArg() dataloader:DataLoader<string,string>) {
     debugger;
-    const {auth} = ctx;
-    const key = `last-seen-${auth.uid}`;
-    const lastseen= await this.redisCache.get(key);
-    this.logger.debug(`lastseen-${auth.uid} ${lastseen}`);
-    //todo calculate user is online or not; use dates instead of boolean
-    return true;
+    // const {auth} = ctx;
+    // const key = `last-seen-${parent.id}`;
+    // const lastseen= await this.redisCache.get(key);
+    // this.logger.debug(`lastseen-${parent.id} ${lastseen}`);
+    // return lastseen;
+    return dataloader.load(parent.id)
   }
 
 }
