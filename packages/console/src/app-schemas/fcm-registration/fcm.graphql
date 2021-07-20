@@ -1,0 +1,4 @@
+extend type Mutation {
+    
+    registerDevice(data:DeviceUpdateWithoutUserInput!):DeviceResponse!
+}
