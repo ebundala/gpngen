@@ -1,7 +1,6 @@
 import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaClient } from '@prisma/client';
 import * as NodeRsa from 'node-rsa';
 import { join } from 'path';
 import { AppLogger } from '@mechsoft/app-logger';
@@ -17,6 +16,7 @@ export class MpesaTzService {
     private SESSION_TTL: number;
     private SESSION_KEY: string;
     private KEY: NodeRsa;
+    public MPESA_ORG_SHORTCODE:string;
     constructor(
         private readonly config: ConfigService,
         private readonly logger: AppLogger,
@@ -26,7 +26,7 @@ export class MpesaTzService {
         this.SESSION_TTL = this.config.get<number>('MPESA_SESSION_TTL');
         this.PUB_KEY = this.config.get<string>('MPESA_PUB_KEY')
         this.API_KEY = this.config.get<string>('MPESA_API_KEY');
-
+        this.MPESA_ORG_SHORTCODE = this.config.get<string>("MPESA_ORG_SHORTCODE")
         //this.httpService.axiosRef.defaults.baseURL = baseUrl;
         this.httpService.axiosRef.defaults.headers.post['Content-Type'] = 'application/json';
         this.links = new Endpoints(baseUrl);
@@ -83,12 +83,12 @@ export class MpesaTzService {
 
     async handleWebhook() { }
     async queryPaymentStatus() { }
-    async paybill(body: PaybillDto) {
+    async paybill(body: PaybillDto): Promise<PaymentResponse> {
         // delete headers.host;
 
         try {
 
-            debugger
+            
             const authorization = `Bearer ${this.encrypt(this.SESSION_KEY)}`;
             this.logger.debug("KEY IS " + authorization);
             const result = await this.httpService.axiosRef.post<PaymentResponse>(this.links.payment, body, {
@@ -103,7 +103,7 @@ export class MpesaTzService {
             this.logger.debug(result.data)
             return result.data;
         } catch (e) {
-            debugger
+            
             this.logger.error(e.message);
             return e.response.data
         }

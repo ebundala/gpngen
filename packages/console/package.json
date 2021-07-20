@@ -40,6 +40,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.1.16",
     "@mechsoft/apigen": "^0.1.4",
     "@mechsoft/app-logger": "^0.1.4",
     "@mechsoft/business-rules-manager": "^0.1.5",
@@ -56,6 +57,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@prisma/client": "^2.27.0",
     "apollo-server-express": "^2.0.0",
+    "dataloader": "^2.0.0",
     "get-audio-duration": "^2.0.3",
     "get-value": "^3.0.1",
     "graphql": "^15.5.1",

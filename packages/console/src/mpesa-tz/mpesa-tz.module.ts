@@ -23,7 +23,7 @@ export const HTTP_CLIENT_CONFIG = {
   imports: [
     HttpModule.register(HTTP_CLIENT_CONFIG)
   ],
-  controllers: [MpesaTzController],
+ // controllers: [MpesaTzController],
   providers: [MpesaTzService],
   exports:[MpesaTzService]
 })
