@@ -30,7 +30,7 @@ type SignOutResult {
 	message: String
 }
 extend type User{
-	online: Boolean
+	lastSeen: DateTime
 }
 extend type Mutation {
 	signup(credentials: SignupInput!,organization:OrganizationCreateWithoutOwnerInput): AuthResult!

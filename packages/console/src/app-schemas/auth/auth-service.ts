@@ -65,7 +65,7 @@ export class AuthService {
       organization: OrganizationCreateWithoutOwnerInput = null): Promise<AuthResult> {
     const { email, password, displayName, phoneNumber, avator, gender, dateOfBirth } = data;
     let user;
-    debugger
+    
     try {
       if (!isEmail(email)) {
         throw new GraphQLError('Invalid Email');
@@ -119,7 +119,7 @@ export class AuthService {
           message: "Thank you for registering\n you will receive a confimation email when your account is ready",
         }
       } catch (e) {
-        //debugger;
+        //;
         if (user && user.uid && !await this.cleanUpOnSignUpFailure(user.uid, prisma)) {
 
           throw new GraphQLError(`Failed to cleanup user signup errors\n ${e?.message}`)
@@ -129,7 +129,7 @@ export class AuthService {
 
       }
     } catch ({ message }) {
-      debugger
+      
 
       throw new GraphQLError(message)
     }
@@ -138,7 +138,7 @@ export class AuthService {
   }
 
   private async cleanUpOnSignUpFailure(uid: string, prisma: PrismaClient) {
-    debugger
+    
     const remove1 = await this.firebaseApp.admin
       .auth()
       .deleteUser(uid)
@@ -229,7 +229,7 @@ export class AuthService {
         //   // Create session cookie and return it.
         const token = await this.firebaseApp.admin.auth()
           .createSessionCookie(idToken, { expiresIn });
-        debugger
+        
         const user = prisma.user.findUnique({ where: { id: decodedIdToken.uid }, select });
 
         return {
