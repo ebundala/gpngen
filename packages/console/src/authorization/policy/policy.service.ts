@@ -5,7 +5,7 @@ import { filterAdminArgs, getAcessAst, getRulesFromAccessAst, rulesToAst } from 
 @Injectable()
 export class PolicyService {
     async handle(root: any, args: any, ctx: TenantContext, info: any) {
-        debugger;
+        ;
         const { prisma, enforcer } = ctx;
         const { role, parent, action, ...restArgs } = args;
         const parents = parent ?? [];
@@ -48,7 +48,7 @@ export class PolicyService {
 
             //  const result3 = await enforcer.removeGroupingPolicies(groupingToRemove)
             //const result4 = await enforcer.addGroupingPolicies(groupingToAdd);
-            debugger
+            
             switch (action) {
                 case 'create':
                     await this.createPolicies(enforcer, role, rules, parents, policyOwn, policyAll, groupingAll)
@@ -63,7 +63,7 @@ export class PolicyService {
 
 
             }
-            debugger
+            
         }
         const policyToReturn = (await enforcer.getImplicitPermissionsForUser(role));
 

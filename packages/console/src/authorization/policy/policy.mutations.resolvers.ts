@@ -43,6 +43,22 @@ signout(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() i
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
+registerDevice(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Mutation()
+@UseGuards(AuthorizerGuard)
+paybill(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Mutation()
+@UseGuards(AuthorizerGuard)
 locationFeed(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
@@ -67,14 +83,6 @@ updateOneInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
-deleteOneInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
 createOneOrder(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
@@ -84,14 +92,6 @@ createOneOrder(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @I
 @Mutation()
 @UseGuards(AuthorizerGuard)
 updateOneOrder(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-deleteOneOrder(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
@@ -115,7 +115,15 @@ updateOneOrganization(@Parent() parent, @Args() args, @Context() ctx: TenantCont
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
-deleteOneOrganization(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+createOnePaymentMethod(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Mutation()
+@UseGuards(AuthorizerGuard)
+updateOnePaymentMethod(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
@@ -139,14 +147,6 @@ updateOneRating(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
-deleteOneRating(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
 createOneService(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
@@ -156,14 +156,6 @@ createOneService(@Parent() parent, @Args() args, @Context() ctx: TenantContext, 
 @Mutation()
 @UseGuards(AuthorizerGuard)
 updateOneService(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-deleteOneService(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
@@ -187,23 +179,7 @@ updateOneServiceCategory(@Parent() parent, @Args() args, @Context() ctx: TenantC
 
 @Mutation()
 @UseGuards(AuthorizerGuard)
-deleteOneServiceCategory(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
 updateOneUser(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
-    return this.service.handle(parent, args, ctx, info);
-  }
-
-
-
-@Mutation()
-@UseGuards(AuthorizerGuard)
-deleteOneUser(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 

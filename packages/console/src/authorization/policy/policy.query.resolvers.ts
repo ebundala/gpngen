@@ -11,7 +11,7 @@ export class PolicyQueryResolver {
   
 @Query()
 @UseGuards(AuthorizerGuard)
-findUniqueInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+route(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
@@ -19,7 +19,23 @@ findUniqueInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, 
 
 @Query()
 @UseGuards(AuthorizerGuard)
-findFirstInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+geocode(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+reverseGeocode(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findUniqueInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
@@ -76,6 +92,30 @@ findFirstOrganization(@Parent() parent, @Args() args, @Context() ctx: TenantCont
 @Query()
 @UseGuards(AuthorizerGuard)
 findManyOrganization(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findUniquePaymentMethod(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findFirstPaymentMethod(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
+findManyPaymentMethod(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }
 
