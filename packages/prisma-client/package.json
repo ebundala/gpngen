@@ -1,6 +1,6 @@
 {
   "name": "@mechsoft/prisma-client",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@mechsoft/app-logger": "^0.1.4",
+    "@mechsoft/app-logger": "^0.2.0",
     "@nestjs/common": "^8.0.4",
     "@paljs/plugins": "^3.6.1",
     "@prisma/client": "^2.27.0",
