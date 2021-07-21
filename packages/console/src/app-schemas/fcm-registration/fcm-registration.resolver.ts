@@ -3,7 +3,7 @@ import { AuthorizerGuard } from '@mechsoft/enforcer';
 import { UseGuards } from '@nestjs/common';
 import { DeviceResponse, DeviceUpdateWithoutUserInput } from 'src/models/graphql';
 import { FcmRegistrationService } from './fcm-registration.service';
-import { TenantContext } from '../../../../common/dist';
+import { TenantContext } from '@mechsoft/common';
 
 @Resolver((of)=>DeviceResponse)
 @UseGuards(AuthorizerGuard)
