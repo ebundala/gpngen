@@ -15,7 +15,7 @@ RUN yarn install
 ARG GOOGLE_APPLICATION_CREDENTIALS=firebase-adminsdk.json
 # Bundle app source
 COPY . .
-RUN yarn run prisma:generate && yarn run api:gen 
+RUN yarn run prisma:generate
 #RUN rm -rf node_modules && yarn install --frozen-lockfile
 RUN yarn run build
 #attach static files volume here

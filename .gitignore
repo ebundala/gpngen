@@ -62,3 +62,4 @@ packages/console/public/
 .yarn
 
 .yarnrc.yml
+itahuduma.session.sql
