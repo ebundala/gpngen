@@ -1,0 +1,55 @@
+type Location {
+          id: String!
+          name: String!
+          lat: Float!
+          lon: Float!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          organizations(where: OrganizationWhereInput
+              orderBy: [OrganizationOrderByInput!]
+              cursor: OrganizationWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrganizationScalarFieldEnum!]
+              ): [Organization!]!
+          users(where: UserWhereInput
+              orderBy: [UserOrderByInput!]
+              cursor: UserWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [UserScalarFieldEnum!]
+              ): [User!]!
+          order: Order
+          _count: LocationCountOutputType
+    }
+
+      type LocationListResponse {
+        status: Boolean!
+        data: [Location!]
+        message: String!
+      }
+     
+
+      type LocationResponse {
+        status: Boolean!
+        data: Location
+        message: String!
+      }
+      
+      type LocationBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateLocationResponse {
+        status: Boolean!
+        data: AggregateLocation
+        message: String!
+      }
+      type LocationCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

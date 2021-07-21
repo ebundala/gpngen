@@ -1,0 +1,48 @@
+type SelcomPayment {
+          id: String!
+          transId: String!
+          amount: Int!
+          msisdn: String!
+          operator: String
+          reference: String
+          resultCode: String
+          status: SelcomPaymentStatus!
+          utilityref: Int!
+          validation: SelcomPaymentStatus!
+          order: Order!
+          orderId: String!
+          transaction: Transaction
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type SelcomPaymentListResponse {
+        status: Boolean!
+        data: [SelcomPayment!]
+        message: String!
+      }
+     
+
+      type SelcomPaymentResponse {
+        status: Boolean!
+        data: SelcomPayment
+        message: String!
+      }
+      
+      type SelcomPaymentBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateSelcomPaymentResponse {
+        status: Boolean!
+        data: AggregateSelcomPayment
+        message: String!
+      }
+      type SelcomPaymentCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

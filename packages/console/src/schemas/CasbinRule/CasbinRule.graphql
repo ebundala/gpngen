@@ -1,0 +1,42 @@
+type CasbinRule {
+          id: Int!
+          ptype: String!
+          v0: String
+          v1: String
+          v2: String
+          v3: String
+          v4: String
+          v5: String
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type CasbinRuleListResponse {
+        status: Boolean!
+        data: [CasbinRule!]
+        message: String!
+      }
+     
+
+      type CasbinRuleResponse {
+        status: Boolean!
+        data: CasbinRule
+        message: String!
+      }
+      
+      type CasbinRuleBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateCasbinRuleResponse {
+        status: Boolean!
+        data: AggregateCasbinRule
+        message: String!
+      }
+      type CasbinRuleCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

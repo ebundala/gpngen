@@ -1,0 +1,38 @@
+type Device {
+          id: String!
+          fcm_id: String!
+          device_id: String!
+          type: String!
+          user: User!
+          userId: String!
+    }
+
+      type DeviceListResponse {
+        status: Boolean!
+        data: [Device!]
+        message: String!
+      }
+     
+
+      type DeviceResponse {
+        status: Boolean!
+        data: Device
+        message: String!
+      }
+      
+      type DeviceBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateDeviceResponse {
+        status: Boolean!
+        data: AggregateDevice
+        message: String!
+      }
+      type DeviceCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

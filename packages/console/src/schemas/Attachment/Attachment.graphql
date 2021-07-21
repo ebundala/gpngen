@@ -1,0 +1,75 @@
+type Attachment {
+          id: String!
+          path: String!
+          filename: String
+          mimetype: String
+          encoding: String
+          duration: Int!
+          size: Int!
+          attachmentType: AttachmentType!
+          downloadable: Boolean!
+          placement: String!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          orders(where: OrderWhereInput
+              orderBy: [OrderOrderByInput!]
+              cursor: OrderWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrderScalarFieldEnum!]
+              ): [Order!]!
+          organizations(where: OrganizationWhereInput
+              orderBy: [OrganizationOrderByInput!]
+              cursor: OrganizationWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrganizationScalarFieldEnum!]
+              ): [Organization!]!
+          services(where: ServiceWhereInput
+              orderBy: [ServiceOrderByInput!]
+              cursor: ServiceWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [ServiceScalarFieldEnum!]
+              ): [Service!]!
+          serviceCategory: ServiceCategory
+          users(where: UserWhereInput
+              orderBy: [UserOrderByInput!]
+              cursor: UserWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [UserScalarFieldEnum!]
+              ): [User!]!
+          paymentMethods: PaymentMethod
+          _count: AttachmentCountOutputType
+    }
+
+      type AttachmentListResponse {
+        status: Boolean!
+        data: [Attachment!]
+        message: String!
+      }
+     
+
+      type AttachmentResponse {
+        status: Boolean!
+        data: Attachment
+        message: String!
+      }
+      
+      type AttachmentBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateAttachmentResponse {
+        status: Boolean!
+        data: AggregateAttachment
+        message: String!
+      }
+      type AttachmentCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

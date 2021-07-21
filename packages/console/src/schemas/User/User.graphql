@@ -1,0 +1,138 @@
+type User {
+          id: String!
+          email: String!
+          displayName: String!
+          phoneNumber: String
+          dateOfBirth: DateTime
+          gender: Gender!
+          emailVerified: Boolean!
+          disabled: Boolean!
+          role: Role!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          avatorId: String
+          locationId: String
+          organizationId: String
+          avator: Attachment
+          location: Location
+          orders(where: OrderWhereInput
+              orderBy: [OrderOrderByInput!]
+              cursor: OrderWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrderScalarFieldEnum!]
+              ): [Order!]!
+          organizations(where: OrganizationWhereInput
+              orderBy: [OrganizationOrderByInput!]
+              cursor: OrganizationWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrganizationScalarFieldEnum!]
+              ): [Organization!]!
+          ratings(where: RatingWhereInput
+              orderBy: [RatingOrderByInput!]
+              cursor: RatingWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [RatingScalarFieldEnum!]
+              ): [Rating!]!
+          rated(where: RatingWhereInput
+              orderBy: [RatingOrderByInput!]
+              cursor: RatingWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [RatingScalarFieldEnum!]
+              ): [Rating!]!
+          staffOf(where: OrganizationWhereInput
+              orderBy: [OrganizationOrderByInput!]
+              cursor: OrganizationWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrganizationScalarFieldEnum!]
+              ): [Organization!]!
+          provides(where: OrderWhereInput
+              orderBy: [OrderOrderByInput!]
+              cursor: OrderWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrderScalarFieldEnum!]
+              ): [Order!]!
+          invites(where: InviteWhereInput
+              orderBy: [InviteOrderByInput!]
+              cursor: InviteWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [InviteScalarFieldEnum!]
+              ): [Invite!]!
+          invited(where: InviteWhereInput
+              orderBy: [InviteOrderByInput!]
+              cursor: InviteWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [InviteScalarFieldEnum!]
+              ): [Invite!]!
+          device: Device
+          transactions(where: TransactionWhereInput
+              orderBy: [TransactionOrderByInput!]
+              cursor: TransactionWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [TransactionScalarFieldEnum!]
+              ): [Transaction!]!
+          _count: UserCountOutputType
+    }
+
+      type UserListResponse {
+        status: Boolean!
+        data: [User!]
+        message: String!
+      }
+     
+
+      type UserResponse {
+        status: Boolean!
+        data: User
+        message: String!
+      }
+      
+      type UserBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateUserResponse {
+        status: Boolean!
+        data: AggregateUser
+        message: String!
+      }
+      type UserCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueUser(where: UserWhereUniqueInput!): UserResponse!
+    findFirstUser(
+      where: UserWhereInput
+      orderBy: [UserOrderByInput!]
+      cursor: UserWhereUniqueInput
+      distinct: [UserScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): UserResponse!
+    findManyUser(
+      where: UserWhereInput
+      orderBy: [UserOrderByInput!]
+      cursor: UserWhereUniqueInput
+      distinct: [UserScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): UserListResponse!
+  }
+extend type Mutation {
+    updateOneUser(
+      where: UserWhereUniqueInput!
+      data: UserUpdateInput!
+    ): UserResponse!
+  }

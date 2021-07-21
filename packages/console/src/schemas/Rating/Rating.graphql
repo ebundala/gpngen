@@ -1,0 +1,68 @@
+type Rating {
+          id: String!
+          value: Int!
+          comment: String
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          ownerId: String!
+          organizationId: String
+          organization: Organization
+          owner: User!
+          user: User
+          userId: String
+    }
+
+      type RatingListResponse {
+        status: Boolean!
+        data: [Rating!]
+        message: String!
+      }
+     
+
+      type RatingResponse {
+        status: Boolean!
+        data: Rating
+        message: String!
+      }
+      
+      type RatingBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateRatingResponse {
+        status: Boolean!
+        data: AggregateRating
+        message: String!
+      }
+      type RatingCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueRating(where: RatingWhereUniqueInput!): RatingResponse!
+    findFirstRating(
+      where: RatingWhereInput
+      orderBy: [RatingOrderByInput!]
+      cursor: RatingWhereUniqueInput
+      distinct: [RatingScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): RatingResponse!
+    findManyRating(
+      where: RatingWhereInput
+      orderBy: [RatingOrderByInput!]
+      cursor: RatingWhereUniqueInput
+      distinct: [RatingScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): RatingListResponse!
+  }
+extend type Mutation {
+    createOneRating(data: RatingCreateInput!): RatingResponse!
+    updateOneRating(
+      where: RatingWhereUniqueInput!
+      data: RatingUpdateInput!
+    ): RatingResponse!
+  }

@@ -1,0 +1,79 @@
+type ServiceCategory {
+          id: String!
+          name: String!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          imageId: String!
+          image: Attachment!
+          services(where: ServiceWhereInput
+              orderBy: [ServiceOrderByInput!]
+              cursor: ServiceWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [ServiceScalarFieldEnum!]
+              ): [Service!]!
+          organizations(where: OrganizationWhereInput
+              orderBy: [OrganizationOrderByInput!]
+              cursor: OrganizationWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrganizationScalarFieldEnum!]
+              ): [Organization!]!
+          _count: ServiceCategoryCountOutputType
+    }
+
+      type ServiceCategoryListResponse {
+        status: Boolean!
+        data: [ServiceCategory!]
+        message: String!
+      }
+     
+
+      type ServiceCategoryResponse {
+        status: Boolean!
+        data: ServiceCategory
+        message: String!
+      }
+      
+      type ServiceCategoryBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateServiceCategoryResponse {
+        status: Boolean!
+        data: AggregateServiceCategory
+        message: String!
+      }
+      type ServiceCategoryCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueServiceCategory(where: ServiceCategoryWhereUniqueInput!): ServiceCategoryResponse!
+    findFirstServiceCategory(
+      where: ServiceCategoryWhereInput
+      orderBy: [ServiceCategoryOrderByInput!]
+      cursor: ServiceCategoryWhereUniqueInput
+      distinct: [ServiceCategoryScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): ServiceCategoryResponse!
+    findManyServiceCategory(
+      where: ServiceCategoryWhereInput
+      orderBy: [ServiceCategoryOrderByInput!]
+      cursor: ServiceCategoryWhereUniqueInput
+      distinct: [ServiceCategoryScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): ServiceCategoryListResponse!
+  }
+extend type Mutation {
+    createOneServiceCategory(data: ServiceCategoryCreateInput!): ServiceCategoryResponse!
+    updateOneServiceCategory(
+      where: ServiceCategoryWhereUniqueInput!
+      data: ServiceCategoryUpdateInput!
+    ): ServiceCategoryResponse!
+  }

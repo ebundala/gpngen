@@ -1,0 +1,78 @@
+type Order {
+          id: String!
+          quantity: Int!
+          state: State!
+          deliveryMode: [DeliveryMode!]!
+          notes: String
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          serviceId: String!
+          organizationId: String!
+          ownerId: String!
+          providerId: String
+          receiptId: String
+          locationId: String
+          organization: Organization!
+          owner: User!
+          receipt: Attachment
+          service: Service!
+          provider: User
+          location: Location
+          mpesa_payment: MpesaPayment
+          selcom_payment: SelcomPayment
+    }
+
+      type OrderListResponse {
+        status: Boolean!
+        data: [Order!]
+        message: String!
+      }
+     
+
+      type OrderResponse {
+        status: Boolean!
+        data: Order
+        message: String!
+      }
+      
+      type OrderBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateOrderResponse {
+        status: Boolean!
+        data: AggregateOrder
+        message: String!
+      }
+      type OrderCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueOrder(where: OrderWhereUniqueInput!): OrderResponse!
+    findFirstOrder(
+      where: OrderWhereInput
+      orderBy: [OrderOrderByInput!]
+      cursor: OrderWhereUniqueInput
+      distinct: [OrderScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): OrderResponse!
+    findManyOrder(
+      where: OrderWhereInput
+      orderBy: [OrderOrderByInput!]
+      cursor: OrderWhereUniqueInput
+      distinct: [OrderScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): OrderListResponse!
+  }
+extend type Mutation {
+    createOneOrder(data: OrderCreateInput!): OrderResponse!
+    updateOneOrder(
+      where: OrderWhereUniqueInput!
+      data: OrderUpdateInput!
+    ): OrderResponse!
+  }

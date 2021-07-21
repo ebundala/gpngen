@@ -1,0 +1,112 @@
+type Organization {
+          id: String!
+          name: String!
+          description: String
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          logoId: String!
+          locationId: String!
+          ownerId: String!
+          state: State!
+          location: Location!
+          logo: Attachment!
+          owner: User!
+          orders(where: OrderWhereInput
+              orderBy: [OrderOrderByInput!]
+              cursor: OrderWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrderScalarFieldEnum!]
+              ): [Order!]!
+          ratings(where: RatingWhereInput
+              orderBy: [RatingOrderByInput!]
+              cursor: RatingWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [RatingScalarFieldEnum!]
+              ): [Rating!]!
+          services(where: ServiceWhereInput
+              orderBy: [ServiceOrderByInput!]
+              cursor: ServiceWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [ServiceScalarFieldEnum!]
+              ): [Service!]!
+          offers(where: ServiceCategoryWhereInput
+              orderBy: [ServiceCategoryOrderByInput!]
+              cursor: ServiceCategoryWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [ServiceCategoryScalarFieldEnum!]
+              ): [ServiceCategory!]!
+          staffs(where: UserWhereInput
+              orderBy: [UserOrderByInput!]
+              cursor: UserWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [UserScalarFieldEnum!]
+              ): [User!]!
+          invites(where: InviteWhereInput
+              orderBy: [InviteOrderByInput!]
+              cursor: InviteWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [InviteScalarFieldEnum!]
+              ): [Invite!]!
+          _count: OrganizationCountOutputType
+    }
+
+      type OrganizationListResponse {
+        status: Boolean!
+        data: [Organization!]
+        message: String!
+      }
+     
+
+      type OrganizationResponse {
+        status: Boolean!
+        data: Organization
+        message: String!
+      }
+      
+      type OrganizationBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateOrganizationResponse {
+        status: Boolean!
+        data: AggregateOrganization
+        message: String!
+      }
+      type OrganizationCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueOrganization(where: OrganizationWhereUniqueInput!): OrganizationResponse!
+    findFirstOrganization(
+      where: OrganizationWhereInput
+      orderBy: [OrganizationOrderByInput!]
+      cursor: OrganizationWhereUniqueInput
+      distinct: [OrganizationScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): OrganizationResponse!
+    findManyOrganization(
+      where: OrganizationWhereInput
+      orderBy: [OrganizationOrderByInput!]
+      cursor: OrganizationWhereUniqueInput
+      distinct: [OrganizationScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): OrganizationListResponse!
+  }
+extend type Mutation {
+    createOneOrganization(data: OrganizationCreateInput!): OrganizationResponse!
+    updateOneOrganization(
+      where: OrganizationWhereUniqueInput!
+      data: OrganizationUpdateInput!
+    ): OrganizationResponse!
+  }

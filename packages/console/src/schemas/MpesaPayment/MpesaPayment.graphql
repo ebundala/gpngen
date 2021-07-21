@@ -1,0 +1,51 @@
+type MpesaPayment {
+          id: String!
+          input_Amount: String!
+          input_Country: String!
+          input_Currency: String!
+          input_CustomerMSISDN: String!
+          input_ServiceProviderCode: String!
+          input_ThirdPartyConversationID: String!
+          input_TransactionReference: String!
+          input_PurchasedItemsDesc: String!
+          output_ConversationID: String
+          output_ResponseCode: String
+          output_ResponseDesc: String
+          output_ThirdPartyConversationID: String
+          output_TransactionID: String
+          order: Order!
+          transaction: Transaction
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type MpesaPaymentListResponse {
+        status: Boolean!
+        data: [MpesaPayment!]
+        message: String!
+      }
+     
+
+      type MpesaPaymentResponse {
+        status: Boolean!
+        data: MpesaPayment
+        message: String!
+      }
+      
+      type MpesaPaymentBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateMpesaPaymentResponse {
+        status: Boolean!
+        data: AggregateMpesaPayment
+        message: String!
+      }
+      type MpesaPaymentCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

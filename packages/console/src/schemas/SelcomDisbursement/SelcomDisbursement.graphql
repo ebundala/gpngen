@@ -1,0 +1,46 @@
+type SelcomDisbursement {
+          id: String!
+          amount: Int!
+          reference: String
+          resultCode: String
+          status: SelcomPaymentStatus!
+          transId: String!
+          userId: Int!
+          utilitycode: SelcomUtilityCode!
+          utilityref: String!
+          validation: SelcomPaymentStatus!
+          transaction: Transaction
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type SelcomDisbursementListResponse {
+        status: Boolean!
+        data: [SelcomDisbursement!]
+        message: String!
+      }
+     
+
+      type SelcomDisbursementResponse {
+        status: Boolean!
+        data: SelcomDisbursement
+        message: String!
+      }
+      
+      type SelcomDisbursementBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateSelcomDisbursementResponse {
+        status: Boolean!
+        data: AggregateSelcomDisbursement
+        message: String!
+      }
+      type SelcomDisbursementCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      

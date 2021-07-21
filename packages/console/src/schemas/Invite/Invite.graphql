@@ -1,0 +1,62 @@
+type Invite {
+          id: String!
+          inviter: User!
+          inviterId: String!
+          invitee: User!
+          inviteeId: String!
+          message: String!
+          url: String
+          organization: Organization
+          organizationId: String
+          type: InviteType!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type InviteListResponse {
+        status: Boolean!
+        data: [Invite!]
+        message: String!
+      }
+     
+
+      type InviteResponse {
+        status: Boolean!
+        data: Invite
+        message: String!
+      }
+      
+      type InviteBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateInviteResponse {
+        status: Boolean!
+        data: AggregateInvite
+        message: String!
+      }
+      type InviteCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueInvite(where: InviteWhereUniqueInput!): InviteResponse!
+    findManyInvite(
+      where: InviteWhereInput
+      orderBy: [InviteOrderByInput!]
+      cursor: InviteWhereUniqueInput
+      distinct: [InviteScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): InviteListResponse!
+  }
+extend type Mutation {
+    createOneInvite(data: InviteCreateInput!): InviteResponse!
+    updateOneInvite(
+      where: InviteWhereUniqueInput!
+      data: InviteUpdateInput!
+    ): InviteResponse!
+  }

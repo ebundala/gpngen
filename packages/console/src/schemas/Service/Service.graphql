@@ -1,0 +1,78 @@
+type Service {
+          id: String!
+          name: String!
+          description: String
+          price: Float!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+          organizationId: String!
+          imageId: String!
+          serviceCategoryId: String!
+          image: Attachment!
+          organization: Organization!
+          category: ServiceCategory!
+          orders(where: OrderWhereInput
+              orderBy: [OrderOrderByInput!]
+              cursor: OrderWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [OrderScalarFieldEnum!]
+              ): [Order!]!
+          _count: ServiceCountOutputType
+    }
+
+      type ServiceListResponse {
+        status: Boolean!
+        data: [Service!]
+        message: String!
+      }
+     
+
+      type ServiceResponse {
+        status: Boolean!
+        data: Service
+        message: String!
+      }
+      
+      type ServiceBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateServiceResponse {
+        status: Boolean!
+        data: AggregateService
+        message: String!
+      }
+      type ServiceCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniqueService(where: ServiceWhereUniqueInput!): ServiceResponse!
+    findFirstService(
+      where: ServiceWhereInput
+      orderBy: [ServiceOrderByInput!]
+      cursor: ServiceWhereUniqueInput
+      distinct: [ServiceScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): ServiceResponse!
+    findManyService(
+      where: ServiceWhereInput
+      orderBy: [ServiceOrderByInput!]
+      cursor: ServiceWhereUniqueInput
+      distinct: [ServiceScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): ServiceListResponse!
+  }
+extend type Mutation {
+    createOneService(data: ServiceCreateInput!): ServiceResponse!
+    updateOneService(
+      where: ServiceWhereUniqueInput!
+      data: ServiceUpdateInput!
+    ): ServiceResponse!
+  }

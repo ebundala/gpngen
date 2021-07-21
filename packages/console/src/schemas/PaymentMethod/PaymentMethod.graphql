@@ -1,0 +1,65 @@
+type PaymentMethod {
+          id: String!
+          name: String!
+          description: String
+          logo: Attachment!
+          attachmentId: String!
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type PaymentMethodListResponse {
+        status: Boolean!
+        data: [PaymentMethod!]
+        message: String!
+      }
+     
+
+      type PaymentMethodResponse {
+        status: Boolean!
+        data: PaymentMethod
+        message: String!
+      }
+      
+      type PaymentMethodBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregatePaymentMethodResponse {
+        status: Boolean!
+        data: AggregatePaymentMethod
+        message: String!
+      }
+      type PaymentMethodCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      extend type Query {
+    findUniquePaymentMethod(where: PaymentMethodWhereUniqueInput!): PaymentMethodResponse!
+    findFirstPaymentMethod(
+      where: PaymentMethodWhereInput
+      orderBy: [PaymentMethodOrderByInput!]
+      cursor: PaymentMethodWhereUniqueInput
+      distinct: [PaymentMethodScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): PaymentMethodResponse!
+    findManyPaymentMethod(
+      where: PaymentMethodWhereInput
+      orderBy: [PaymentMethodOrderByInput!]
+      cursor: PaymentMethodWhereUniqueInput
+      distinct: [PaymentMethodScalarFieldEnum!]
+      skip: Int
+      take: Int
+    ): PaymentMethodListResponse!
+  }
+extend type Mutation {
+    createOnePaymentMethod(data: PaymentMethodCreateInput!): PaymentMethodResponse!
+    updateOnePaymentMethod(
+      where: PaymentMethodWhereUniqueInput!
+      data: PaymentMethodUpdateInput!
+    ): PaymentMethodResponse!
+  }

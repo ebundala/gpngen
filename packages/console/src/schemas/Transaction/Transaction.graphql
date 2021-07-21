@@ -1,0 +1,46 @@
+type Transaction {
+          id: String!
+          paymentMethode: String!
+          type: TransactionType!
+          initiator: User!
+          userId: String!
+          mpesaPayment: MpesaPayment
+          mpesaPaymentId: String
+          selcomPayment: SelcomPayment
+          selcomPaymentId: String
+          selcomDisbursement: SelcomDisbursement
+          selcomDisbursementId: String
+          state: State!
+          createdAt: DateTime!
+          updatedAt: DateTime!
+    }
+
+      type TransactionListResponse {
+        status: Boolean!
+        data: [Transaction!]
+        message: String!
+      }
+     
+
+      type TransactionResponse {
+        status: Boolean!
+        data: Transaction
+        message: String!
+      }
+      
+      type TransactionBatchResponse {
+        status: Boolean!
+        data: BatchPayload
+        message: String!
+      }
+      type AggregateTransactionResponse {
+        status: Boolean!
+        data: AggregateTransaction
+        message: String!
+      }
+      type TransactionCountResponse {
+        status: Boolean!
+        data: Int
+        message: String!
+      }
+      
