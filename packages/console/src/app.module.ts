@@ -108,8 +108,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         BusinessRulesManagerModule,
         BusinessLogicModule,
         SubscriptionModule,
-      //  MpesaTzModule,
-       // PaymentModule,
+        MpesaTzModule,
+        PaymentModule,
         GoogleMapModule.forRoot(),
         FcmRegistrationModule
       ],
