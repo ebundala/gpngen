@@ -13,7 +13,7 @@ import {
 import { AuthModule } from './app-schemas/auth/auth.module';
 import { UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import { CasbinModule, CasbinService } from '@mechsoft/enforcer';
-import { BusinessRulesManagerModule } from '@mechsoft/business-rules-manager';
+import { BusinessRulesManagerModule,BlocFieldResolverExplorer } from '@mechsoft/business-rules-manager';
 import modules from './schemas';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -23,11 +23,11 @@ import { SubscriptionModule } from './app-schemas/subscriptions/subscription.mod
 import { RedisCache } from './pubsub/redis.service';
 import {JSONObjectResolver} from 'graphql-scalars'
 
-import { BlocFieldResolverExplorer } from "@mechsoft/business-rules-manager";
 import { MpesaTzModule } from './mpesa-tz/mpesa-tz.module';
 import { PaymentModule } from './app-schemas/payment/payment.module';
 import { GoogleMapModule } from './app-schemas/geolocation/googlemap.module';
 import { FcmRegistrationModule } from './app-schemas/fcm-registration/fcm-registration.module';
+import { ThumbnailDirective } from './app-schemas/directives/thumbnail.directive';
 
 
 
@@ -134,7 +134,9 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           ],
          schemaDirectives: {
            file: UploadDirective,
+          
          },
+       
         //  typeDefs:[
         //    JSONDefinition,
         //  ],
@@ -160,8 +162,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
             const auth = await app.app.auth().verifySessionCookie(token).catch((e)=>({uid:null}));
              if(auth?.uid){
-              logger.debug(await redisCache.get(`lastseen-${auth.uid}`),"Presence");
-              redisCache.set(`lastseen-${auth.uid}`,(new Date()).toUTCString());
+              logger.debug(await redisCache.get(`last-seen-${auth.uid}`),"Presence");
+              await redisCache.set(`last-seen-${auth.uid}`,(new Date()).toISOString(),"EX",60*3);
              }
             //TODO: remove this after test/dev
             enforcer.enableEnforce(false);
@@ -197,7 +199,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           uploads: true,
           installSubscriptionHandlers: true,
           playground: true,
-          extensions: []
+         // extensions: []
         };
       }
     }

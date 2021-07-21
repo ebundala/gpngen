@@ -2,6 +2,7 @@ import { SdlGeneratorServiceOptions, writeSchemaToFile,createPolicySchema} from 
 import { join } from 'path';
 import { Upload, UploadDirective, UploadTypeResolver } from './app-schemas/directives/uploader.directive';
 import {JSONObjectResolver} from 'graphql-scalars'
+import { ThumbnailDirective } from './app-schemas/directives/thumbnail.directive';
 
 const options: SdlGeneratorServiceOptions = {
   schemaPath: './prisma/schema.prisma',
@@ -97,6 +98,7 @@ const options: SdlGeneratorServiceOptions = {
     //playground: false,
     schemaDirectives: {
       file: UploadDirective,
+      thumbnail:ThumbnailDirective
     },
     resolvers: {
       Upload: UploadTypeResolver,

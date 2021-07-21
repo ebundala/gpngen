@@ -1,5 +1,16 @@
 directive @file(path:String) on  INPUT_FIELD_DEFINITION
+
+directive @thumbnail(size:ImageSize!) on FIELD
+
 scalar Upload
+
+enum ImageSize {
+    smallest
+    small
+    medium
+    large
+    biggest
+}
 
 extend input AttachmentCreateInput{
     path: String! @file(path:"../../../../public/uploads")

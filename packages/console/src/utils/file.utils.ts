@@ -38,11 +38,11 @@ export const writeStreamToFile = (rs: fs.ReadStream, path: string, type: Attachm
     
     if (type == AttachmentType.IMAGE) {
         
-        const ws360=fs.createWriteStream(`${path}.thumbnail-360.webp`);
-        const ws240=fs.createWriteStream(`${path}.thumbnail-240.webp`);
-        const ws160=fs.createWriteStream(`${path}.thumbnail-160.webp`);
-        const ws128=fs.createWriteStream(`${path}.thumbnail-128.webp`);
-        const ws80=fs.createWriteStream(`${path}.thumbnail-80.webp`);
+        const ws360=fs.createWriteStream(`${path}.thumbnail-largest.webp`);
+        const ws240=fs.createWriteStream(`${path}.thumbnail-large.webp`);
+        const ws160=fs.createWriteStream(`${path}.thumbnail-medium.webp`);
+        const ws128=fs.createWriteStream(`${path}.thumbnail-small.webp`);
+        const ws80=fs.createWriteStream(`${path}.thumbnail-smallest.webp`);
         const wstr = [ws,ws80,ws128,ws160,ws240,ws360]
        Promise.all
        (wstr.map((w)=>{

@@ -4,7 +4,7 @@ import {
 } from "graphql";
 import { SchemaDirectiveVisitor, } from "graphql-tools";
 import { FileUpload } from 'graphql-upload'
-import {JSONResolver} from 'graphql-scalars'
+//import {JSONResolver} from 'graphql-scalars'
 //import { IResolverOptions } from "apollo-server-express";
 export class UploadDirective extends SchemaDirectiveVisitor {
     visitInputFieldDefinition(field: GraphQLInputField) {
