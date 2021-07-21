@@ -11,27 +11,8 @@ export function BlocFieldResolver(type: string, field: string,dataloaderFactory?
         let method = descriptor.value;
 
         descriptor.value = function () {
-           //1. get argument marked as dataloader
-           //2. get argument marked as context
-           //3. retrieve dataloader from contex and reasign to 1 value
            
-           let dataloaderArg:{key:any,value:any},context:{key:Number,value:any};
-           for(let i =0;i<arguments.length;i++){
-               if(!!Reflect.getOwnMetadata(DATALOADER_ARGUMENT_KEY,arguments[i])){
-                   
-                  dataloaderArg={key:i,value:arguments[i]}
-               }
-               if(!!Reflect.getOwnMetadata(DATALOADER_ARGUMENT_CONTEXT_KEY,arguments[i]))
-               {
-                   
-                    context = {key:i,value:arguments[i]}
-               }
-           }
-           if(dataloaderArg&&context){
-               arguments[dataloaderArg.key] = context[`${type}_${field}`];
-           }
-        
-          return method.apply(this, arguments);
+          return method.apply(this, [...arguments,arguments[2][`${type}_${field}`]]);
         }
         return descriptor;
     };
@@ -39,7 +20,8 @@ export function BlocFieldResolver(type: string, field: string,dataloaderFactory?
 
 export function DataloaderArg(){
     return(target: Object, propertyKey: string | symbol, parameterIndex: number) =>{
-    Reflect.defineMetadata( DATALOADER_ARGUMENT_KEY,true,target);
+           
+        Reflect.defineMetadata( DATALOADER_ARGUMENT_KEY,true,target);
   }
 }
   export function DataloaderCtx(){
