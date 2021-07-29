@@ -76,7 +76,8 @@ export class MpesaTzService {
                 }
             }
         } catch (e) {
-            this.generateToken();
+            setTimeout(this.generateToken.bind(this), 6630000);
+            
         }
         this.logger.debug('.....essueing new session end.......')
     }

@@ -98,7 +98,7 @@ const options: SdlGeneratorServiceOptions = {
     //playground: false,
     schemaDirectives: {
       file: UploadDirective,
-      thumbnail:ThumbnailDirective
+      //thumbnail:ThumbnailDirective
     },
     resolvers: {
       Upload: UploadTypeResolver,

@@ -28,6 +28,7 @@ import { PaymentModule } from './app-schemas/payment/payment.module';
 import { GoogleMapModule } from './app-schemas/geolocation/googlemap.module';
 import { FcmRegistrationModule } from './app-schemas/fcm-registration/fcm-registration.module';
 import { ThumbnailDirective } from './app-schemas/directives/thumbnail.directive';
+import { mergeSchemas } from 'apollo-server-express';
 
 
 
@@ -123,7 +124,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
         app: FirebaseService,
         logger: AppLogger,
         redisCache: RedisCache,
-        fieldResoverExplorer: BlocFieldResolverExplorer
+        fieldResolverExplorer: BlocFieldResolverExplorer
         ) => {
           
 
@@ -143,7 +144,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
          resolvers: {
            Upload: UploadTypeResolver,
            JSONObject:JSONObjectResolver,
-           ...fieldResoverExplorer.exploreResolvers()
+           ...fieldResolverExplorer.exploreResolvers()           
          },
           //  plugins: [   
           //   {
@@ -155,8 +156,21 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           //     },
           //   },
           //  ],
+          // resolverValidationOptions:{
+          //   requireResolversForArgs:true
+          // },
+          // directiveResolvers:{
+          //   thumbnail:{
+          //     __resolveType: (args) => {
+          //       debugger
+          //     },
+          //     resolve: (args) => {
+          //       debugger
+          //     },
+          //   }
 
-         
+          // },
+          
           context: async (data): Promise<TenantContext> => {
             debugger
             const [realm,token]=(data.req?.headers?.authorization??data.connection?.context?.headers?.authorization)?.split(" ")??["",""]
@@ -176,7 +190,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
               logger,
               timestamp: Date.now()
             };
-            return {...ctx,...fieldResoverExplorer.createDataloaders(null,null,ctx,null)};
+            return {...ctx,...fieldResolverExplorer.createDataloaders(null,null,ctx,null)};
 
 
           },

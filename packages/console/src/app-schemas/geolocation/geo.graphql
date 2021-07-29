@@ -1,51 +1,22 @@
 scalar JSONObject
-input LatLng {
+
+input LatLngInput {
     lat: Float!
     lng: Float!
 }
-enum TravelMode {
-driving
-walking
-bicycling
-transit
-}
-enum UnitSystem {
-    METRIC
-    IMPERIAL
-}
-enum TravelRestriction {
-    tolls
-    highways
-    ferries
-    traffic
-    indoor
-    }
 
-
-enum TrafficModel {
-    best_guess
-    pessimistic
-    optimistic
-}
-enum TransitMode {
-    bus 
-    subway
-    train 
-    tram 
-    rail
+type LatLng {
+    lat: Float!
+    lng: Float!
 }
 
-enum TransitRoutingPreference {
-    less_walking 
-    fewer_transfers
-}
 
 
 input RouteQueryInput{
-    origin: LatLng!
-    destination: LatLng!
+    origin: LatLngInput!
+    destination: LatLngInput!
     mode:  TravelMode
-    waypoints: [LatLng!]
+    waypoints: [LatLngInput!]
     alternatives: Boolean
     avoid: [TravelRestriction!]
     language: Language
@@ -62,48 +33,268 @@ input RouteQueryInput{
 type RouteResponse{
     status: Boolean!
     message: String!
-    data:JSONObject
+    data:DirectionsResponseData
+}
+type DirectionsResponseData {
+    geocoded_waypoints: [GeocodedWaypoint]
+    routes: [DirectionsRoute]
+    available_travel_modes: [String]
+}
+type GeocodedWaypoint {
+    geocoder_status: GeocodedWaypointStatus
+    partial_match: Boolean
+    place_id: String
+    types: [AddressType]
+
+}
+enum GeocodedWaypointStatus {
+    OK
+    ZERO_RESULTS
+}
+
+enum DirectionsReponseStatus {
+    OK 
+    NOT_FOUND 
+    ZERO_RESULTS 
+    MAX_WAYPOINTS_EXCEEDED 
+    MAX_ROUTE_LENGTH_EXCEEDED 
+    INVALID_REQUEST 
+    OVER_DAILY_LIMIT 
+    OVER_QUERY_LIMIT 
+    REQUEST_DENIED 
+    UNKNOWN_ERROR 
+}
+type DirectionsRoute {
+    summary: String
+    legs: [RouteLeg]
+    waypoint_order: [Float]
+    overview_polyline: Polyline
+    bounds: LatLngBounds
+    copyrights: String
+    warnings: [String]
+    fare: TransitFare
+    overview_path:[LatLng]
+}
+type Polyline {
+    points: String
+}
+type TransitFare {
+    currency: String
+    value: Float
+    text: String
+}
+type RouteLeg {
+    steps: [DirectionsStep]
+    
+    distance: MapDistance
+    
+    duration: MapDuration
+    
+    duration_in_traffic: MapDuration
+    arrival_time: MapTime
+    
+    departure_time: MapTime
+    
+    start_location: LatLng
+    
+    end_location: LatLng
+    start_address: String
+    end_address: String
+}
+
+type DirectionsStep {
+    html_instructions: String
+   
+    distance: MapDistance
+   
+    duration: MapDuration
+    start_location: LatLng
+    end_location: LatLng
+    
+    maneuver: Maneuver
+   
+    polyline: Polyline
+    
+    steps: DirectionsStep
+    transit_details: TransitDetails
+}
+
+type TransitDetails {
+    
+    arrival_stop: TransitStop
+    
+    departure_stop: TransitStop
+    
+    arrival_time: MapTime
+    
+    departure_time: MapTime
+    
+    headsign: String
+   
+    headway: Float
+    
+    num_stops: Float
+    
+    line: TransitLine
+}
+
+type  TransitStop {
+    
+    name: String
+    
+    location: LatLng
+}
+
+type  TransitLine {
+    
+    name: String
+    
+    short_name: String
+    
+    color: String
+   
+    agencies: [TransitAgency]
+    
+    url: String
+    
+    icon: String
+    
+    text_color: String
+    
+    vehicle: TransitVehicle
+}
+
+type  TransitAgency {
+    
+    name: String
+    
+    phone: String
+    
+    url: String
+}
+type  TransitVehicle {
+    
+    name: String
+    
+    type: VehicleType
+    
+    icon: String
+    
+    local_icon: String
+}
+
+
+type MapDistance {
+    value: Float
+    text: String
+}
+
+type MapDuration {
+    value: Float
+    text: String
+}
+
+type MapTime {
+     value: DateTime
+    text: String
+    time_zone: String
 }
 input GeocodeInput {
     place_id: String
     address: String
-    bounds: LatLngBounds
+    bounds: LatLngBoundsInput
     language: String
     region: String
-    components: GeocodeComponents
+    components: GeocodeComponentsInput
 }
 input ReverseGeocodeInput {
     place_id: String
-    latlng: LatLng
+    latlng: LatLngInput
     language: Language
     result_type: [AddressType!]
     location_type: [ReverseGeocodingLocationType!]
 }
 
-input LatLngBounds {
+input LatLngBoundsInput {
+    northeast: LatLngInput!
+    southwest: LatLngInput!
+}
+
+type LatLngBounds {
     northeast: LatLng!
     southwest: LatLng!
 }
-input GeocodeComponents {
-postal_code: String
+
+input GeocodeComponentsInput {
+    postal_code: String
     country: String
     route: String
     administrative_area: String
 }
+
 type GeocodeResponse {
   status: Boolean!
     message: String!
-    data:JSONObject
+    data:GeocodeResponseData
 }
+
+type GeocodeResponseData {
+    results:[GeocodeResult]
+}
+
+type ReverseGeocodeResponseData {
+     results:[GeocodeResult]
+}
+type GeocodeResult {
+    types: [AddressType]
+    formatted_address: String
+    address_components: [AddressComponent]
+    postcode_localities: [String]
+    geometry: AddressGeometry
+    plus_code: PlusCode
+    partial_match: Boolean
+    place_id: ID
+}
+type AddressComponent {
+    types: [AddressType]
+    long_name: String
+    short_name: String
+}
+type PlusCode {
+    global_code: String
+    compound__code: String
+}
+type AddressGeometry {
+    location: LatLng
+    location_type: LocationType 
+    viewport: LatLngBounds 
+    bounds: LatLngBounds
+}
+
 type ReverseGeocodeResponse {
     status: Boolean!
     message: String!
-    data:JSONObject
+    data: ReverseGeocodeResponseData
 }
+# input PlaceAutocompleteInput {
+#     input: String!
+#     sessiontoken:String
+#     offset: Int
+#     origin: LatLngInput
+#     location: LatLngInput 
+#     radius: Float
+#     language: String
+#     types: PlaceAutocompleteType
+#     components: [String]
+#     strictbounds: Boolean
+# }
+
+
 extend type Query{
     route(data:RouteQueryInput!):RouteResponse!
     geocode(data:GeocodeInput!):GeocodeResponse!
     reverseGeocode(data:ReverseGeocodeInput!):ReverseGeocodeResponse!
+   # placesAutocomplete(data:PlaceAutocompleteInput):PlaceAutocompleteResponse!
 }
 
 enum AddressType {
@@ -135,7 +326,25 @@ enum AddressType {
   park
   point_of_interest
   establishment
+  #address component types
+  
+    floor
+    post_box 
+    postal_town 
+    room
+    street_number 
+    bus_station
+    train_station
+    transit_station
+  #unknown from
+    food
+    store
+    lodging
+    church
+    place_of_worship
+    plus_code
 }
+
 enum ReverseGeocodingLocationType {
     ROOFTOP
     RANGE_INTERPOLATED
@@ -205,4 +414,109 @@ uk
 vi
 zh_CN
 zh_TW
+}
+
+enum LocationType {   
+    ROOFTOP 
+    RANGE_INTERPOLATED 
+    GEOMETRIC_CENTER 
+    APPROXIMATE
+}
+
+enum VehicleType {
+    
+    RAIL 
+    
+    METRO_RAIL 
+    
+    SUBWAY 
+    
+    TRAM 
+    
+    MONORAIL 
+    
+    HEAVY_RAIL 
+    
+    COMMUTER_TRAIN 
+    
+    HIGH_SPEED_TRAIN 
+    
+    BUS 
+    
+    INTERCITY_BUS 
+    
+    TROLLEYBUS 
+    
+    SHARE_TAXI 
+    
+    FERRY 
+    
+    CABLE_CAR 
+    
+    GONDOLA_LIFT 
+    
+    FUNICULAR 
+    
+    OTHER
+}
+
+enum Maneuver {
+    turn_slight_left 
+    turn_sharp_left
+    uturn_left 
+    turn_left
+    turn_slight_right
+    turn_sharp_right
+    uturn_right
+    turn_right
+    straight
+    ramp_left
+    ramp_right
+    merge
+    fork_left
+    fork_right
+    ferry
+    ferry_train
+    roundabout_left
+    roundabout_right
+}
+
+enum TravelMode {
+driving
+walking
+bicycling
+transit
+}
+
+enum UnitSystem {
+    METRIC
+    IMPERIAL
+}
+
+enum TravelRestriction {
+    tolls
+    highways
+    ferries
+    traffic
+    indoor
+    }
+
+
+enum TrafficModel {
+    best_guess
+    pessimistic
+    optimistic
+}
+
+enum TransitMode {
+    bus 
+    subway
+    train 
+    tram 
+    rail
+}
+
+enum TransitRoutingPreference {
+    less_walking 
+    fewer_transfers
 }

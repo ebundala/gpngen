@@ -17,9 +17,11 @@ export enum AddressType {
     administrative_area_level_4 = "administrative_area_level_4",
     administrative_area_level_5 = "administrative_area_level_5",
     airport = "airport",
+    bus_station = "bus_station",
     colloquial_area = "colloquial_area",
     country = "country",
     establishment = "establishment",
+    floor = "floor",
     intersection = "intersection",
     locality = "locality",
     natural_feature = "natural_feature",
@@ -27,10 +29,14 @@ export enum AddressType {
     park = "park",
     point_of_interest = "point_of_interest",
     political = "political",
+    post_box = "post_box",
     postal_code = "postal_code",
+    postal_town = "postal_town",
     premise = "premise",
+    room = "room",
     route = "route",
     street_address = "street_address",
+    street_number = "street_number",
     sublocality = "sublocality",
     sublocality_level_1 = "sublocality_level_1",
     sublocality_level_2 = "sublocality_level_2",
@@ -38,6 +44,8 @@ export enum AddressType {
     sublocality_level_4 = "sublocality_level_4",
     sublocality_level_5 = "sublocality_level_5",
     subpremise = "subpremise",
+    train_station = "train_station",
+    transit_station = "transit_station",
     ward = "ward"
 }
 
@@ -96,10 +104,36 @@ export enum DeviceScalarFieldEnum {
     userId = "userId"
 }
 
+export enum DirectionsReponseStatus {
+    INVALID_REQUEST = "INVALID_REQUEST",
+    MAX_ROUTE_LENGTH_EXCEEDED = "MAX_ROUTE_LENGTH_EXCEEDED",
+    MAX_WAYPOINTS_EXCEEDED = "MAX_WAYPOINTS_EXCEEDED",
+    NOT_FOUND = "NOT_FOUND",
+    OK = "OK",
+    OVER_DAILY_LIMIT = "OVER_DAILY_LIMIT",
+    OVER_QUERY_LIMIT = "OVER_QUERY_LIMIT",
+    REQUEST_DENIED = "REQUEST_DENIED",
+    UNKNOWN_ERROR = "UNKNOWN_ERROR",
+    ZERO_RESULTS = "ZERO_RESULTS"
+}
+
 export enum Gender {
     FEMALE = "FEMALE",
     MALE = "MALE",
     UNSPECIFIED = "UNSPECIFIED"
+}
+
+export enum GeocodedWaypointStatus {
+    OK = "OK",
+    ZERO_RESULTS = "ZERO_RESULTS"
+}
+
+export enum ImageSize {
+    biggest = "biggest",
+    large = "large",
+    medium = "medium",
+    small = "small",
+    smallest = "smallest"
 }
 
 export enum InviteScalarFieldEnum {
@@ -192,6 +226,34 @@ export enum LocationScalarFieldEnum {
     name = "name",
     state = "state",
     updatedAt = "updatedAt"
+}
+
+export enum LocationType {
+    APPROXIMATE = "APPROXIMATE",
+    GEOMETRIC_CENTER = "GEOMETRIC_CENTER",
+    RANGE_INTERPOLATED = "RANGE_INTERPOLATED",
+    ROOFTOP = "ROOFTOP"
+}
+
+export enum Maneuver {
+    ferry = "ferry",
+    ferry_train = "ferry_train",
+    fork_left = "fork_left",
+    fork_right = "fork_right",
+    merge = "merge",
+    ramp_left = "ramp_left",
+    ramp_right = "ramp_right",
+    roundabout_left = "roundabout_left",
+    roundabout_right = "roundabout_right",
+    straight = "straight",
+    turn_left = "turn_left",
+    turn_right = "turn_right",
+    turn_sharp_left = "turn_sharp_left",
+    turn_sharp_right = "turn_sharp_right",
+    turn_slight_left = "turn_slight_left",
+    turn_slight_right = "turn_slight_right",
+    uturn_left = "uturn_left",
+    uturn_right = "uturn_right"
 }
 
 export enum MpesaPaymentScalarFieldEnum {
@@ -442,6 +504,26 @@ export enum UserScalarFieldEnum {
     role = "role",
     state = "state",
     updatedAt = "updatedAt"
+}
+
+export enum VehicleType {
+    BUS = "BUS",
+    CABLE_CAR = "CABLE_CAR",
+    COMMUTER_TRAIN = "COMMUTER_TRAIN",
+    FERRY = "FERRY",
+    FUNICULAR = "FUNICULAR",
+    GONDOLA_LIFT = "GONDOLA_LIFT",
+    HEAVY_RAIL = "HEAVY_RAIL",
+    HIGH_SPEED_TRAIN = "HIGH_SPEED_TRAIN",
+    INTERCITY_BUS = "INTERCITY_BUS",
+    METRO_RAIL = "METRO_RAIL",
+    MONORAIL = "MONORAIL",
+    OTHER = "OTHER",
+    RAIL = "RAIL",
+    SHARE_TAXI = "SHARE_TAXI",
+    SUBWAY = "SUBWAY",
+    TRAM = "TRAM",
+    TROLLEYBUS = "TROLLEYBUS"
 }
 
 export class AttachmentAvgOrderByAggregateInput {
@@ -2070,13 +2152,6 @@ export class FloatWithAggregatesFilter {
     sum?: Nullable<NestedFloatFilter>;
 }
 
-export class GeocodeComponents {
-    administrative_area?: Nullable<string>;
-    country?: Nullable<string>;
-    postal_code?: Nullable<string>;
-    route?: Nullable<string>;
-}
-
 export class GeocodeInput {
     address?: Nullable<string>;
     bounds?: Nullable<LatLngBounds>;
@@ -2749,16 +2824,6 @@ export class InviteWhereInput {
 
 export class InviteWhereUniqueInput {
     id?: Nullable<string>;
-}
-
-export class LatLng {
-    lat: number;
-    lng: number;
-}
-
-export class LatLngBounds {
-    northeast: LatLng;
-    southwest: LatLng;
 }
 
 export class LatLon {
@@ -12311,6 +12376,19 @@ export class UserWhereUniqueInput {
     id?: Nullable<string>;
 }
 
+export class AddressComponent {
+    long_name?: Nullable<string>;
+    short_name?: Nullable<string>;
+    types?: Nullable<Nullable<AddressType>[]>;
+}
+
+export class AddressGeometry {
+    bounds?: Nullable<LatLngBounds>;
+    location?: Nullable<LatLng>;
+    location_type?: Nullable<LocationType>;
+    viewport?: Nullable<LatLngBounds>;
+}
+
 export class AggregateAttachment {
     _avg?: Nullable<AttachmentAvgAggregateOutputType>;
     _count?: Nullable<AttachmentCountAggregateOutputType>;
@@ -12846,10 +12924,69 @@ export class DeviceResponse {
     status: boolean;
 }
 
+export class DirectionsResponseData {
+    available_travel_modes?: Nullable<Nullable<string>[]>;
+    geocoded_waypoints?: Nullable<Nullable<GeocodedWaypoint>[]>;
+    routes?: Nullable<Nullable<DirectionsRoute>[]>;
+}
+
+export class DirectionsRoute {
+    bounds?: Nullable<LatLngBounds>;
+    copyrights?: Nullable<string>;
+    fare?: Nullable<TransitFare>;
+    legs?: Nullable<Nullable<RouteLeg>[]>;
+    overview_path?: Nullable<Nullable<LatLng>[]>;
+    overview_polyline?: Nullable<Polyline>;
+    summary?: Nullable<string>;
+    warnings?: Nullable<Nullable<string>[]>;
+    waypoint_order?: Nullable<Nullable<number>[]>;
+}
+
+export class DirectionsStep {
+    distance?: Nullable<MapDistance>;
+    duration?: Nullable<MapDuration>;
+    end_location?: Nullable<LatLng>;
+    html_instructions?: Nullable<string>;
+    maneuver?: Nullable<Maneuver>;
+    polyline?: Nullable<Polyline>;
+    start_location?: Nullable<LatLng>;
+    steps?: Nullable<DirectionsStep>;
+    transit_details?: Nullable<TransitDetails>;
+}
+
+export class GeocodeComponents {
+    administrative_area?: Nullable<string>;
+    country?: Nullable<string>;
+    postal_code?: Nullable<string>;
+    route?: Nullable<string>;
+}
+
 export class GeocodeResponse {
-    data?: Nullable<JSONObject>;
+    data?: Nullable<GeocodeResponseData>;
     message: string;
     status: boolean;
+}
+
+export class GeocodeResponseData {
+    results?: Nullable<Nullable<GeocodeResult>[]>;
+}
+
+export class GeocodeResult {
+    address_components?: Nullable<Nullable<AddressComponent>[]>;
+    formatted_address?: Nullable<string>;
+    geometry?: Nullable<AddressGeometry>;
+    partial_match?: Nullable<boolean>;
+    place_id?: Nullable<string>;
+    plus_code?: Nullable<PlusCode>;
+    postcode_localities?: Nullable<Nullable<string>[]>;
+    types?: Nullable<Nullable<AddressType>[]>;
+}
+
+export class GeocodedWaypoint {
+    geocoder_status?: Nullable<GeocodedWaypointStatus>;
+    partial_match?: Nullable<boolean>;
+    place_id?: Nullable<string>;
+    types?: Nullable<Nullable<AddressType>[]>;
 }
 
 export class Invite {
@@ -12930,6 +13067,16 @@ export class InviteResponse {
     data?: Nullable<Invite>;
     message: string;
     status: boolean;
+}
+
+export class LatLng {
+    lat: number;
+    lng: number;
+}
+
+export class LatLngBounds {
+    northeast: LatLng;
+    southwest: LatLng;
 }
 
 export class Location {
@@ -13014,6 +13161,22 @@ export class LocationResponse {
 export class LocationSumAggregateOutputType {
     lat?: Nullable<number>;
     lon?: Nullable<number>;
+}
+
+export class MapDistance {
+    text?: Nullable<string>;
+    value?: Nullable<number>;
+}
+
+export class MapDuration {
+    text?: Nullable<string>;
+    value?: Nullable<number>;
+}
+
+export class MapTime {
+    text?: Nullable<string>;
+    time_zone?: Nullable<string>;
+    value?: Nullable<DateTime>;
 }
 
 export class MpesaPayment {
@@ -13442,6 +13605,15 @@ export class PaymentMethodResponse {
     status: boolean;
 }
 
+export class PlusCode {
+    compound__code?: Nullable<string>;
+    global_code?: Nullable<string>;
+}
+
+export class Polyline {
+    points?: Nullable<string>;
+}
+
 export abstract class IQuery {
     abstract findFirstOrder(cursor?: Nullable<OrderWhereUniqueInput>, distinct?: Nullable<OrderScalarFieldEnum[]>, orderBy?: Nullable<OrderOrderByInput[]>, skip?: Nullable<number>, take?: Nullable<number>, where?: Nullable<OrderWhereInput>): OrderResponse | Promise<OrderResponse>;
 
@@ -13579,13 +13751,30 @@ export class RatingSumAggregateOutputType {
 }
 
 export class ReverseGeocodeResponse {
-    data?: Nullable<JSONObject>;
+    data?: Nullable<ReverseGeocodeResponseData>;
     message: string;
     status: boolean;
 }
 
+export class ReverseGeocodeResponseData {
+    results?: Nullable<Nullable<GeocodeResult>[]>;
+}
+
+export class RouteLeg {
+    arrival_time?: Nullable<MapTime>;
+    departure_time?: Nullable<MapTime>;
+    distance?: Nullable<MapDistance>;
+    duration?: Nullable<MapDuration>;
+    duration_in_traffic?: Nullable<MapDuration>;
+    end_address?: Nullable<string>;
+    end_location?: Nullable<LatLng>;
+    start_address?: Nullable<string>;
+    start_location?: Nullable<LatLng>;
+    steps?: Nullable<Nullable<DirectionsStep>[]>;
+}
+
 export class RouteResponse {
-    data?: Nullable<JSONObject>;
+    data?: Nullable<DirectionsResponseData>;
     message: string;
     status: boolean;
 }
@@ -14053,6 +14242,52 @@ export class TransactionResponse {
     data?: Nullable<Transaction>;
     message: string;
     status: boolean;
+}
+
+export class TransitAgency {
+    name?: Nullable<string>;
+    phone?: Nullable<string>;
+    url?: Nullable<string>;
+}
+
+export class TransitDetails {
+    arrival_stop?: Nullable<TransitStop>;
+    arrival_time?: Nullable<MapTime>;
+    departure_stop?: Nullable<TransitStop>;
+    departure_time?: Nullable<MapTime>;
+    headsign?: Nullable<string>;
+    headway?: Nullable<number>;
+    line?: Nullable<TransitLine>;
+    num_stops?: Nullable<number>;
+}
+
+export class TransitFare {
+    currency?: Nullable<string>;
+    text?: Nullable<string>;
+    value?: Nullable<number>;
+}
+
+export class TransitLine {
+    agencies?: Nullable<Nullable<TransitAgency>[]>;
+    color?: Nullable<string>;
+    icon?: Nullable<string>;
+    name?: Nullable<string>;
+    short_name?: Nullable<string>;
+    text_color?: Nullable<string>;
+    url?: Nullable<string>;
+    vehicle?: Nullable<TransitVehicle>;
+}
+
+export class TransitStop {
+    location?: Nullable<LatLng>;
+    name?: Nullable<string>;
+}
+
+export class TransitVehicle {
+    icon?: Nullable<string>;
+    local_icon?: Nullable<string>;
+    name?: Nullable<string>;
+    type?: Nullable<VehicleType>;
 }
 
 export class User {

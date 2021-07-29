@@ -18,6 +18,8 @@ input PolicyOperation {
 
 directive @file(path: PERMISSION) on INPUT_FIELD_DEFINITION
 
+directive @thumbnail(size: PERMISSION) on FIELD
+
 input AuthInput {
   email: PERMISSION
   password: PERMISSION
@@ -110,6 +112,14 @@ type Mutation {
 }
 
 scalar Upload
+
+enum ImageSize {
+  smallest
+  small
+  medium
+  large
+  biggest
+}
 
 input AttachmentCreateInput {
   path: PERMISSION
@@ -331,9 +341,9 @@ input AttachmentUncheckedCreateWithoutOrdersInput {
 """The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)."""
 scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
-input LatLng {
-  lat: PERMISSION
-  lng: PERMISSION
+type LatLng {
+  lat(action: PERMISSION): PERMISSION
+  lng(action: PERMISSION): PERMISSION
 }
 
 enum TravelMode {
@@ -396,7 +406,182 @@ input RouteQueryInput {
 type RouteResponse {
   status(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
-  data(action: PERMISSION): PERMISSION
+  data: DirectionsResponseData
+}
+
+type DirectionsResponseData {
+  geocoded_waypoints: GeocodedWaypoint
+  routes: DirectionsRoute
+  available_travel_modes(action: PERMISSION): PERMISSION
+}
+
+type GeocodedWaypoint {
+  geocoder_status(action: PERMISSION): PERMISSION
+  partial_match(action: PERMISSION): PERMISSION
+  place_id(action: PERMISSION): PERMISSION
+  types(action: PERMISSION): PERMISSION
+}
+
+enum GeocodedWaypointStatus {
+  OK
+  ZERO_RESULTS
+}
+
+enum DirectionsReponseStatus {
+  OK
+  NOT_FOUND
+  ZERO_RESULTS
+  MAX_WAYPOINTS_EXCEEDED
+  MAX_ROUTE_LENGTH_EXCEEDED
+  INVALID_REQUEST
+  OVER_DAILY_LIMIT
+  OVER_QUERY_LIMIT
+  REQUEST_DENIED
+  UNKNOWN_ERROR
+}
+
+type DirectionsRoute {
+  summary(action: PERMISSION): PERMISSION
+  legs: RouteLeg
+  waypoint_order(action: PERMISSION): PERMISSION
+  overview_polyline: Polyline
+  bounds: LatLngBounds
+  copyrights(action: PERMISSION): PERMISSION
+  warnings(action: PERMISSION): PERMISSION
+  fare: TransitFare
+  overview_path: LatLng
+}
+
+type Polyline {
+  points(action: PERMISSION): PERMISSION
+}
+
+type TransitFare {
+  currency(action: PERMISSION): PERMISSION
+  value(action: PERMISSION): PERMISSION
+  text(action: PERMISSION): PERMISSION
+}
+
+type RouteLeg {
+  steps: DirectionsStep
+  distance: MapDistance
+  duration: MapDuration
+  duration_in_traffic: MapDuration
+  arrival_time: MapTime
+  departure_time: MapTime
+  start_location: LatLng
+  end_location: LatLng
+  start_address(action: PERMISSION): PERMISSION
+  end_address(action: PERMISSION): PERMISSION
+}
+
+type DirectionsStep {
+  html_instructions(action: PERMISSION): PERMISSION
+  distance: MapDistance
+  duration: MapDuration
+  start_location: LatLng
+  end_location: LatLng
+  maneuver(action: PERMISSION): PERMISSION
+  polyline: Polyline
+  steps: DirectionsStep
+  transit_details: TransitDetails
+}
+
+type TransitDetails {
+  arrival_stop: TransitStop
+  departure_stop: TransitStop
+  arrival_time: MapTime
+  departure_time: MapTime
+  headsign(action: PERMISSION): PERMISSION
+  headway(action: PERMISSION): PERMISSION
+  num_stops(action: PERMISSION): PERMISSION
+  line: TransitLine
+}
+
+type TransitStop {
+  name(action: PERMISSION): PERMISSION
+  location: LatLng
+}
+
+type TransitLine {
+  name(action: PERMISSION): PERMISSION
+  short_name(action: PERMISSION): PERMISSION
+  color(action: PERMISSION): PERMISSION
+  agencies: TransitAgency
+  url(action: PERMISSION): PERMISSION
+  icon(action: PERMISSION): PERMISSION
+  text_color(action: PERMISSION): PERMISSION
+  vehicle: TransitVehicle
+}
+
+type TransitAgency {
+  name(action: PERMISSION): PERMISSION
+  phone(action: PERMISSION): PERMISSION
+  url(action: PERMISSION): PERMISSION
+}
+
+type TransitVehicle {
+  name(action: PERMISSION): PERMISSION
+  type(action: PERMISSION): PERMISSION
+  icon(action: PERMISSION): PERMISSION
+  local_icon(action: PERMISSION): PERMISSION
+}
+
+enum VehicleType {
+  RAIL
+  METRO_RAIL
+  SUBWAY
+  TRAM
+  MONORAIL
+  HEAVY_RAIL
+  COMMUTER_TRAIN
+  HIGH_SPEED_TRAIN
+  BUS
+  INTERCITY_BUS
+  TROLLEYBUS
+  SHARE_TAXI
+  FERRY
+  CABLE_CAR
+  GONDOLA_LIFT
+  FUNICULAR
+  OTHER
+}
+
+enum Maneuver {
+  turn_slight_left
+  turn_sharp_left
+  uturn_left
+  turn_left
+  turn_slight_right
+  turn_sharp_right
+  uturn_right
+  turn_right
+  straight
+  ramp_left
+  ramp_right
+  merge
+  fork_left
+  fork_right
+  ferry
+  ferry_train
+  roundabout_left
+  roundabout_right
+}
+
+type MapDistance {
+  value(action: PERMISSION): PERMISSION
+  text(action: PERMISSION): PERMISSION
+}
+
+type MapDuration {
+  value(action: PERMISSION): PERMISSION
+  text(action: PERMISSION): PERMISSION
+}
+
+type MapTime {
+  value(action: PERMISSION): PERMISSION
+  text(action: PERMISSION): PERMISSION
+  time_zone(action: PERMISSION): PERMISSION
 }
 
 input GeocodeInput {
@@ -416,28 +601,65 @@ input ReverseGeocodeInput {
   location_type: PERMISSION
 }
 
-input LatLngBounds {
-  northeast: LatLng!
-  southwest: LatLng!
+type LatLngBounds {
+  northeast: LatLng
+  southwest: LatLng
 }
 
-input GeocodeComponents {
-  postal_code: PERMISSION
-  country: PERMISSION
-  route: PERMISSION
-  administrative_area: PERMISSION
+type GeocodeComponents {
+  postal_code(action: PERMISSION): PERMISSION
+  country(action: PERMISSION): PERMISSION
+  route(action: PERMISSION): PERMISSION
+  administrative_area(action: PERMISSION): PERMISSION
 }
 
 type GeocodeResponse {
   status(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
-  data(action: PERMISSION): PERMISSION
+  data: GeocodeResponseData
+}
+
+type GeocodeResponseData {
+  results: GeocodeResult
+}
+
+type ReverseGeocodeResponseData {
+  results: GeocodeResult
+}
+
+type GeocodeResult {
+  types(action: PERMISSION): PERMISSION
+  formatted_address(action: PERMISSION): PERMISSION
+  address_components: AddressComponent
+  postcode_localities(action: PERMISSION): PERMISSION
+  geometry: AddressGeometry
+  plus_code: PlusCode
+  partial_match(action: PERMISSION): PERMISSION
+  place_id(action: PERMISSION): PERMISSION
+}
+
+type AddressComponent {
+  types(action: PERMISSION): PERMISSION
+  long_name(action: PERMISSION): PERMISSION
+  short_name(action: PERMISSION): PERMISSION
+}
+
+type PlusCode {
+  global_code(action: PERMISSION): PERMISSION
+  compound__code(action: PERMISSION): PERMISSION
+}
+
+type AddressGeometry {
+  location: LatLng
+  location_type(action: PERMISSION): PERMISSION
+  viewport: LatLngBounds
+  bounds: LatLngBounds
 }
 
 type ReverseGeocodeResponse {
   status(action: PERMISSION): PERMISSION
   message(action: PERMISSION): PERMISSION
-  data(action: PERMISSION): PERMISSION
+  data: ReverseGeocodeResponseData
 }
 
 type Query {
@@ -499,6 +721,14 @@ enum AddressType {
   park
   point_of_interest
   establishment
+  floor
+  post_box
+  postal_town
+  room
+  street_number
+  bus_station
+  train_station
+  transit_station
 }
 
 enum ReverseGeocodingLocationType {
@@ -570,6 +800,13 @@ enum Language {
   vi
   zh_CN
   zh_TW
+}
+
+enum LocationType {
+  ROOFTOP
+  RANGE_INTERPOLATED
+  GEOMETRIC_CENTER
+  APPROXIMATE
 }
 
 input LocationWhereInput {

@@ -17,12 +17,11 @@ export class GoogleMapGeolocationResolver {
     private _key: string;
     constructor(private readonly service: GoogleMapService,
         private readonly configService: ConfigService) {
-        this._key = configService.get<string>("GOOGLE_MAPS_API_KEY")
+        this._key = this.configService.get<string>("GOOGLE_MAPS_API_KEY")
     }
 
     @Query((returns)=>GeocodeResponse)
     async geocode(@Parent() _, @Args("data") args: GeocodeInput, @Context() ctx: TenantContext, @Info() info) {
-        //todo: geocode here
         
         try{
          const params = { ...args, key: this._key };
