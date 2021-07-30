@@ -177,7 +177,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
             const auth = await app.app.auth().verifySessionCookie(token).catch((e)=>({uid:null}));
              if(auth?.uid){
               logger.debug(await redisCache.get(`last-seen-${auth.uid}`),"Presence");
-              await redisCache.set(`last-seen-${auth.uid}`,(new Date()).toISOString(),"EX",60*3);
+              await redisCache.set(`last-seen-${auth.uid}`,(new Date()).toISOString(),"EX",60*60*24*7);
              }
             //TODO: remove this after test/dev
             enforcer.enableEnforce(false);
@@ -204,8 +204,8 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
             }
             ,
             onDisconnect: async (webSocket,context)=>{
-              logger.debug(await redisCache.get("lastseen-xxx"),"Presence");
-              await redisCache.set("lastseen-xxx",Date.now());
+             // logger.debug(await redisCache.get("lastseen-xxx"),"Presence");
+             // await redisCache.set("lastseen-xxx",Date.now());
             }
           },
           
