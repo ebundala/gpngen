@@ -44,7 +44,7 @@ type GeocodedWaypoint {
     geocoder_status: GeocodedWaypointStatus
     partial_match: Boolean
     place_id: String
-    types: [AddressType]
+    types: [String]
 
 }
 enum GeocodedWaypointStatus {
@@ -111,7 +111,7 @@ type DirectionsStep {
     start_location: LatLng
     end_location: LatLng
     
-    maneuver: Maneuver
+    maneuver: String
    
     polyline: Polyline
     
@@ -211,7 +211,7 @@ input ReverseGeocodeInput {
     place_id: String
     latlng: LatLngInput
     language: Language
-    result_type: [AddressType!]
+    result_type: [String!]
     location_type: [ReverseGeocodingLocationType!]
 }
 
@@ -246,7 +246,7 @@ type ReverseGeocodeResponseData {
      results:[GeocodeResult]
 }
 type GeocodeResult {
-    types: [AddressType]
+    types: [String]
     formatted_address: String
     address_components: [AddressComponent]
     postcode_localities: [String]
@@ -256,7 +256,7 @@ type GeocodeResult {
     place_id: ID
 }
 type AddressComponent {
-    types: [AddressType]
+    types: [String]
     long_name: String
     short_name: String
 }
@@ -479,6 +479,7 @@ enum Maneuver {
     ferry_train
     roundabout_left
     roundabout_right
+    
 }
 
 enum TravelMode {

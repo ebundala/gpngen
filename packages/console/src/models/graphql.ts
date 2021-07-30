@@ -18,15 +18,20 @@ export enum AddressType {
     administrative_area_level_5 = "administrative_area_level_5",
     airport = "airport",
     bus_station = "bus_station",
+    church = "church",
     colloquial_area = "colloquial_area",
     country = "country",
     establishment = "establishment",
     floor = "floor",
+    food = "food",
     intersection = "intersection",
     locality = "locality",
+    lodging = "lodging",
     natural_feature = "natural_feature",
     neighborhood = "neighborhood",
     park = "park",
+    place_of_worship = "place_of_worship",
+    plus_code = "plus_code",
     point_of_interest = "point_of_interest",
     political = "political",
     post_box = "post_box",
@@ -35,6 +40,7 @@ export enum AddressType {
     premise = "premise",
     room = "room",
     route = "route",
+    store = "store",
     street_address = "street_address",
     street_number = "street_number",
     sublocality = "sublocality",
@@ -2152,10 +2158,17 @@ export class FloatWithAggregatesFilter {
     sum?: Nullable<NestedFloatFilter>;
 }
 
+export class GeocodeComponentsInput {
+    administrative_area?: Nullable<string>;
+    country?: Nullable<string>;
+    postal_code?: Nullable<string>;
+    route?: Nullable<string>;
+}
+
 export class GeocodeInput {
     address?: Nullable<string>;
-    bounds?: Nullable<LatLngBounds>;
-    components?: Nullable<GeocodeComponents>;
+    bounds?: Nullable<LatLngBoundsInput>;
+    components?: Nullable<GeocodeComponentsInput>;
     language?: Nullable<string>;
     place_id?: Nullable<string>;
     region?: Nullable<string>;
@@ -2824,6 +2837,16 @@ export class InviteWhereInput {
 
 export class InviteWhereUniqueInput {
     id?: Nullable<string>;
+}
+
+export class LatLngBoundsInput {
+    northeast: LatLngInput;
+    southwest: LatLngInput;
+}
+
+export class LatLngInput {
+    lat: number;
+    lng: number;
 }
 
 export class LatLon {
@@ -7600,10 +7623,10 @@ export class RatingWhereUniqueInput {
 
 export class ReverseGeocodeInput {
     language?: Nullable<Language>;
-    latlng?: Nullable<LatLng>;
+    latlng?: Nullable<LatLngInput>;
     location_type?: Nullable<ReverseGeocodingLocationType[]>;
     place_id?: Nullable<string>;
-    result_type?: Nullable<AddressType[]>;
+    result_type?: Nullable<string[]>;
 }
 
 export class RouteQueryInput {
@@ -7611,17 +7634,17 @@ export class RouteQueryInput {
     arrival_time?: Nullable<DateTime>;
     avoid?: Nullable<TravelRestriction[]>;
     departure_time?: Nullable<DateTime>;
-    destination: LatLng;
+    destination: LatLngInput;
     language?: Nullable<Language>;
     mode?: Nullable<TravelMode>;
     optimize?: Nullable<boolean>;
-    origin: LatLng;
+    origin: LatLngInput;
     region?: Nullable<string>;
     traffic_model?: Nullable<TrafficModel>;
     transit_mode?: Nullable<TransitMode[]>;
     transit_routing_preference?: Nullable<TransitRoutingPreference>;
     units?: Nullable<UnitSystem>;
-    waypoints?: Nullable<LatLng[]>;
+    waypoints?: Nullable<LatLngInput[]>;
 }
 
 export class SelcomDisbursementAvgOrderByAggregateInput {
@@ -12379,7 +12402,7 @@ export class UserWhereUniqueInput {
 export class AddressComponent {
     long_name?: Nullable<string>;
     short_name?: Nullable<string>;
-    types?: Nullable<Nullable<AddressType>[]>;
+    types?: Nullable<Nullable<string>[]>;
 }
 
 export class AddressGeometry {
@@ -12947,18 +12970,11 @@ export class DirectionsStep {
     duration?: Nullable<MapDuration>;
     end_location?: Nullable<LatLng>;
     html_instructions?: Nullable<string>;
-    maneuver?: Nullable<Maneuver>;
+    maneuver?: Nullable<string>;
     polyline?: Nullable<Polyline>;
     start_location?: Nullable<LatLng>;
     steps?: Nullable<DirectionsStep>;
     transit_details?: Nullable<TransitDetails>;
-}
-
-export class GeocodeComponents {
-    administrative_area?: Nullable<string>;
-    country?: Nullable<string>;
-    postal_code?: Nullable<string>;
-    route?: Nullable<string>;
 }
 
 export class GeocodeResponse {
@@ -12979,14 +12995,14 @@ export class GeocodeResult {
     place_id?: Nullable<string>;
     plus_code?: Nullable<PlusCode>;
     postcode_localities?: Nullable<Nullable<string>[]>;
-    types?: Nullable<Nullable<AddressType>[]>;
+    types?: Nullable<Nullable<string>[]>;
 }
 
 export class GeocodedWaypoint {
     geocoder_status?: Nullable<GeocodedWaypointStatus>;
     partial_match?: Nullable<boolean>;
     place_id?: Nullable<string>;
-    types?: Nullable<Nullable<AddressType>[]>;
+    types?: Nullable<Nullable<string>[]>;
 }
 
 export class Invite {
