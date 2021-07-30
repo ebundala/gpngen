@@ -35,6 +35,14 @@ reverseGeocode(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @I
 
 @Query()
 @UseGuards(AuthorizerGuard)
+placesAutocomplete(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
+    return this.service.handle(parent, args, ctx, info);
+  }
+
+
+
+@Query()
+@UseGuards(AuthorizerGuard)
 findUniqueInvite(@Parent() parent, @Args() args, @Context() ctx: TenantContext, @Info() info) {
     return this.service.handle(parent, args, ctx, info);
   }

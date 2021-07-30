@@ -592,10 +592,60 @@ type ReverseGeocodeResponse {
   data: ReverseGeocodeResponseData
 }
 
+input PlaceAutocompleteInput {
+  input: PERMISSION
+  sessiontoken: PERMISSION
+  offset: PERMISSION
+  origin: LatLngInput
+  location: LatLngInput
+  radius: PERMISSION
+  language: PERMISSION
+  types: PERMISSION
+  components: PERMISSION
+  strictbounds: PERMISSION
+}
+
+type PlaceAutocompleteResponseData {
+  predictions: PlaceAutocompleteResult
+}
+
+type PlaceAutocompleteResult {
+  description(action: PERMISSION): PERMISSION
+  distance_meters(action: PERMISSION): PERMISSION
+  place_id(action: PERMISSION): PERMISSION
+  terms: PredictionTerm
+  types(action: PERMISSION): PERMISSION
+  matched_substrings: PredictionSubstring
+  structured_formatting: StructuredFormatting
+}
+
+type PredictionTerm {
+  value(action: PERMISSION): PERMISSION
+  offset(action: PERMISSION): PERMISSION
+}
+
+type PredictionSubstring {
+  value(action: PERMISSION): PERMISSION
+  offset(action: PERMISSION): PERMISSION
+}
+
+type StructuredFormatting {
+  main_text(action: PERMISSION): PERMISSION
+  main_text_matched_substrings: PredictionSubstring
+  secondary_text(action: PERMISSION): PERMISSION
+}
+
+type PlaceAutocompleteResponse {
+  status(action: PERMISSION): PERMISSION
+  message(action: PERMISSION): PERMISSION
+  data: PlaceAutocompleteResponseData
+}
+
 type Query {
   route(role: Role!, parent: [Role!], action: OPERATION!, data: RouteQueryInput!): RouteResponse
   geocode(role: Role!, parent: [Role!], action: OPERATION!, data: GeocodeInput!): GeocodeResponse
   reverseGeocode(role: Role!, parent: [Role!], action: OPERATION!, data: ReverseGeocodeInput!): ReverseGeocodeResponse
+  placesAutocomplete(role: Role!, parent: [Role!], action: OPERATION!, data: PlaceAutocompleteInput): PlaceAutocompleteResponse
   findUniqueInvite(role: Role!, parent: [Role!], action: OPERATION!, where: InviteWhereUniqueInput!): InviteResponse
   findManyInvite(role: Role!, parent: [Role!], action: OPERATION!, where: InviteWhereInput, orderBy: [InviteOrderByInput!], cursor: InviteWhereUniqueInput, distinct: PERMISSION, skip: PERMISSION, take: PERMISSION): InviteListResponse
   findUniqueOrder(role: Role!, parent: [Role!], action: OPERATION!, where: OrderWhereUniqueInput!): OrderResponse

@@ -7050,6 +7050,19 @@ export class PaymentMethodWhereUniqueInput {
     id?: Nullable<string>;
 }
 
+export class PlaceAutocompleteInput {
+    components?: Nullable<Nullable<string>[]>;
+    input: string;
+    language?: Nullable<string>;
+    location?: Nullable<LatLngInput>;
+    offset?: Nullable<number>;
+    origin?: Nullable<LatLngInput>;
+    radius?: Nullable<number>;
+    sessiontoken?: Nullable<string>;
+    strictbounds?: Nullable<boolean>;
+    types?: Nullable<string>;
+}
+
 export class RatingAvgOrderByAggregateInput {
     value?: Nullable<SortOrder>;
 }
@@ -13621,6 +13634,26 @@ export class PaymentMethodResponse {
     status: boolean;
 }
 
+export class PlaceAutocompleteResponse {
+    data?: Nullable<PlaceAutocompleteResponseData>;
+    message: string;
+    status: boolean;
+}
+
+export class PlaceAutocompleteResponseData {
+    predictions?: Nullable<Nullable<PlaceAutocompleteResult>[]>;
+}
+
+export class PlaceAutocompleteResult {
+    description?: Nullable<string>;
+    distance_meters?: Nullable<number>;
+    matched_substrings?: Nullable<Nullable<PredictionSubstring>[]>;
+    place_id?: Nullable<string>;
+    structured_formatting?: Nullable<StructuredFormatting>;
+    terms?: Nullable<Nullable<PredictionTerm>[]>;
+    types?: Nullable<Nullable<string>[]>;
+}
+
 export class PlusCode {
     compound__code?: Nullable<string>;
     global_code?: Nullable<string>;
@@ -13628,6 +13661,16 @@ export class PlusCode {
 
 export class Polyline {
     points?: Nullable<string>;
+}
+
+export class PredictionSubstring {
+    offset?: Nullable<number>;
+    value?: Nullable<string>;
+}
+
+export class PredictionTerm {
+    offset?: Nullable<number>;
+    value?: Nullable<string>;
 }
 
 export abstract class IQuery {
@@ -13678,6 +13721,8 @@ export abstract class IQuery {
     abstract findUniqueUser(where: UserWhereUniqueInput): UserResponse | Promise<UserResponse>;
 
     abstract geocode(data: GeocodeInput): GeocodeResponse | Promise<GeocodeResponse>;
+
+    abstract placesAutocomplete(data?: Nullable<PlaceAutocompleteInput>): PlaceAutocompleteResponse | Promise<PlaceAutocompleteResponse>;
 
     abstract reverseGeocode(data: ReverseGeocodeInput): ReverseGeocodeResponse | Promise<ReverseGeocodeResponse>;
 
@@ -14167,6 +14212,12 @@ export class ServiceSumAggregateOutputType {
 export class SignOutResult {
     message?: Nullable<string>;
     status?: Nullable<boolean>;
+}
+
+export class StructuredFormatting {
+    main_text?: Nullable<string>;
+    main_text_matched_substrings?: Nullable<Nullable<PredictionSubstring>[]>;
+    secondary_text?: Nullable<string>;
 }
 
 export abstract class ISubscription {

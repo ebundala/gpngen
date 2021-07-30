@@ -107,4 +107,33 @@ export class GoogleMapGeolocationResolver {
      }
     }
   }
+  @Query((returns)=>RouteResponse)
+  async placesAutocomplete(@Parent() _, @Args("data") args, @Context() ctx: TenantContext, @Info() info) {
+      
+      try{
+          const params = { ...args as any, key: this._key };
+      const res = await this.service.placeAutocomplete({ params});
+      if (res.status <= 300) {
+          return {
+              status: true,
+              message: res.statusText,
+              data: res.data
+          }
+      }
+      return {
+          status: false,
+          message: res.statusText,
+          data: res.data
+
+      }
+    
+    }catch(e){
+      
+   return {
+       status: false,
+       message: e.message??"Unknown error",
+       data:e.response.data
+   }
+  }
+}
 }

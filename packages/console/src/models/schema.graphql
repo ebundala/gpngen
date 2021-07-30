@@ -576,10 +576,60 @@ type ReverseGeocodeResponse {
   data: ReverseGeocodeResponseData
 }
 
+input PlaceAutocompleteInput {
+  input: String!
+  sessiontoken: String
+  offset: Int
+  origin: LatLngInput
+  location: LatLngInput
+  radius: Float
+  language: String
+  types: String
+  components: [String]
+  strictbounds: Boolean
+}
+
+type PlaceAutocompleteResponseData {
+  predictions: [PlaceAutocompleteResult]
+}
+
+type PlaceAutocompleteResult {
+  description: String
+  distance_meters: Float
+  place_id: String
+  terms: [PredictionTerm]
+  types: [String]
+  matched_substrings: [PredictionSubstring]
+  structured_formatting: StructuredFormatting
+}
+
+type PredictionTerm {
+  value: String
+  offset: Int
+}
+
+type PredictionSubstring {
+  value: String
+  offset: Int
+}
+
+type StructuredFormatting {
+  main_text: String
+  main_text_matched_substrings: [PredictionSubstring]
+  secondary_text: String
+}
+
+type PlaceAutocompleteResponse {
+  status: Boolean!
+  message: String!
+  data: PlaceAutocompleteResponseData
+}
+
 type Query {
   route(data: RouteQueryInput!): RouteResponse!
   geocode(data: GeocodeInput!): GeocodeResponse!
   reverseGeocode(data: ReverseGeocodeInput!): ReverseGeocodeResponse!
+  placesAutocomplete(data: PlaceAutocompleteInput): PlaceAutocompleteResponse!
   findUniqueInvite(where: InviteWhereUniqueInput!): InviteResponse!
   findManyInvite(where: InviteWhereInput, orderBy: [InviteOrderByInput!], cursor: InviteWhereUniqueInput, distinct: [InviteScalarFieldEnum!], skip: Int, take: Int): InviteListResponse!
   findUniqueOrder(where: OrderWhereUniqueInput!): OrderResponse!
