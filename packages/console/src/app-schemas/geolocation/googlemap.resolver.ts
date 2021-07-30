@@ -6,7 +6,7 @@ import { TenantContext } from "@mechsoft/common";
 import { GeocodeComponents } from "@googlemaps/google-maps-services-js/dist/geocode/geocode";
 import { ConfigService } from "@nestjs/config";
 import { RouteResponse,GeocodeResponse,
-     GeocodeInput, ReverseGeocodeResponse, ReverseGeocodeInput, RouteQueryInput} from "src/models/graphql";
+     GeocodeInput, ReverseGeocodeResponse, ReverseGeocodeInput, RouteQueryInput, PlaceAutocompleteResponse, PlaceAutocompleteInput} from "src/models/graphql";
 import { UseGuards } from "@nestjs/common";
 import { AuthorizerGuard } from "@mechsoft/enforcer";
 
@@ -107,8 +107,8 @@ export class GoogleMapGeolocationResolver {
      }
     }
   }
-  @Query((returns)=>RouteResponse)
-  async placesAutocomplete(@Parent() _, @Args("data") args, @Context() ctx: TenantContext, @Info() info) {
+  @Query((returns)=>PlaceAutocompleteResponse)
+  async placesAutocomplete(@Parent() _, @Args("data") args:PlaceAutocompleteInput, @Context() ctx: TenantContext, @Info() info) {
       
       try{
           const params = { ...args as any, key: this._key };
