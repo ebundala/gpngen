@@ -10,16 +10,10 @@ name: CI Prod
 #   pull_request:
 #     branches: [ master ]
 on:
-  push:
-    branches:
-      - 'master'
-    # tags:
-    #   - 'v*'
-  pull_request:
-    branches:
-      - 'master'
+  release:
+    types: [published]
   # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  # workflow_dispatch:
 env:
   REGISTRY: ghcr.io
   SERVER_IMAGE_NAME: itahuduma
@@ -45,8 +39,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      # - name: create oci dir
-      #   run: mkdir oci
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1  
       - name: Extract server metadata (tags, labels) for Docker
