@@ -22,7 +22,8 @@ services:
       restart_policy:
         condition: on-failure
   studio:
-    image: studio:${IMAGE_TAG}    
+    image: ghcr.io/ebundala/gpngen/itahuduma/studio:master
+      # studio:${IMAGE_TAG}    
     networks:
       webnet:
     environment:
@@ -35,7 +36,8 @@ services:
       restart_policy:
         condition: on-failure
   app:
-    image: itahuduma:${IMAGE_TAG}    
+    image: ghcr.io/ebundala/gpngen/itahuduma/server:master
+      #itahuduma:${IMAGE_TAG}    
     environment:
      # google credentials
        GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
