@@ -16,8 +16,8 @@ on:
   # workflow_dispatch:
 env:
   REGISTRY: ghcr.io
-  SERVER_IMAGE_NAME: itahuduma-server
-  STUDIO_IMAGE_NAME: itahuduma-studio
+  SERVER_IMAGE_NAME: itahuduma
+  STUDIO_IMAGE_NAME: studio
   REPO_NAME: ${{ github.repository }}
 jobs:
   build:
@@ -41,12 +41,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ SERVER_IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.SERVER_IMAGE_NAME }}
       - name: Extract studio metadata (tags, labels) for Docker
         id: meta1
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/${{ STUDIO_IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.STUDIO_IMAGE_NAME }}
       - name: Build app Server image        
         uses: docker/build-push-action@v2.4.0
         with:
