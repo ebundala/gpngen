@@ -579,9 +579,16 @@ export class BusinessLogicService {
       const [parent,_,ctx,info] = args;
       const distances = new Map();
       let cachedDistances= JSON.parse((await this.redisCache.get(`distances-${ctx.auth.uid}`))??"[]");
+    
      debugger
       if(cachedDistances?.length==0&&ctx.auth?.uid){
         //calculate distance here
+        let location;
+        const cachedLoc = await this.redisCache.get(`location/${ctx.auth.uid}`);
+        if(cachedLoc){
+          location = JSON.parse(cachedLoc);
+        }
+        if(!location){
         const user = await ctx.prisma.user.findUnique({where:{id:ctx.auth.uid},select:{
           location:{
             select:{
@@ -590,10 +597,12 @@ export class BusinessLogicService {
             }
           }
         }});
-        if(user?.location?.lon&&user?.location?.lat){
+        location = user?.location;
+      }
+        if(location?.lon&&location?.lat){
         cachedDistances= await ctx.prisma.$queryRaw`
         SELECT "Organization".id as id,
-        ST_Distance( ST_SetSRID(ST_MakePoint(${user.location.lon},${user.location.lat} ), 4326), "Location".geom) as distance
+        ST_Distance( ST_SetSRID(ST_MakePoint(${location.lon},${location.lat} ), 4326), "Location".geom) as distance
         FROM "Organization"
         INNER JOIN "Location" ON "Organization"."locationId"="Location".id
         WHERE "Organization".id IN (${Prisma.join(keys)});
@@ -612,13 +621,13 @@ export class BusinessLogicService {
 
 // @BlocFieldResolver("User","location",function(this:BusinessLogicService,...args){
 //   return new DataLoader((async function (keys){      
-//     const lastseen= await this.redisCache.mget(keys);
-//     return lastseen;
+//     const locations= await this.redisCache.mget(keys);
+//     return locations;
 //   }).bind(this))
 // })
 //   async userLocation(user:User,args,ctx:TenantContext,info:any,dataloader:DataLoader<string,any>){
     
-//     return dataloader.load(user.id);
+//     return dataloader.load(`location/${user.id}`);
 //   }
 
   @BlocFieldResolver("User","lastSeen",function(this:BusinessLogicService,...args){

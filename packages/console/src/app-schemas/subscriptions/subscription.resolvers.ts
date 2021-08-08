@@ -234,7 +234,25 @@ export class SubscriptionResolver {
     async locationFeed(@Args('location') location: LatLon, @Context() context: TenantContext, @Info() info): Promise<LocationResponse | {}> {
         
         if (context.auth?.uid && location) {
-            await this.bloc.updateUserLocation(context.auth.uid, location);
+            const user = await context.prisma.user.update({where:{id:context.auth.uid},
+                data:{
+                    location:{
+                        
+                        upsert:{
+                            update:{
+                                lat:location.lat,
+                                lon:location.lon
+                            },
+                            create:{
+                                lat:location.lat,
+                                lon:location.lon
+                            }
+                        }
+                    }
+                },
+                include:{location:true}});
+            
+            await this.bloc.updateUserLocation(context.auth.uid, user.location as any);
             return {
                 message: 'ok',
                 status: true,

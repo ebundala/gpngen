@@ -41,7 +41,7 @@ export class SubscriptionService {
     return n(args);
   }
 
-  async updateUserLocation(uid: string,location:LatLon ){
+  async updateUserLocation(uid: string,location:Location ){
     if(uid&&location&&location.lat&&location.lon){
       const key = `location/${uid}`;
      await this.redisCache.set(key,JSON.stringify(location));
