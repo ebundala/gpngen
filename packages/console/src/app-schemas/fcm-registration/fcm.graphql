@@ -23,7 +23,12 @@ enum NotificationType {
      
 }
 
-
+input RegisterDeviceInput {
+    fcm_id: String
+    device_id: String!
+    userId: String
+    type: String
+}
 extend type Mutation {
-    registerDevice(data:DeviceUpdateWithoutUserInput!):DeviceResponse!
+    registerDevice(data:RegisterDeviceInput!):DeviceResponse!
 }

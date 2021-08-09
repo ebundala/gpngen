@@ -1,10 +1,9 @@
 type Device {
-          id: String!
-          fcm_id: String!
           device_id: String!
+          fcm_id: String
           type: String!
-          user: User!
-          userId: String!
+          user: User
+          userId: String
     }
 
       type DeviceListResponse {

@@ -39,9 +39,8 @@ enum UserScalarFieldEnum {
 }
 
 enum DeviceScalarFieldEnum {
-  id
-  fcm_id
   device_id
+  fcm_id
   type
   userId
 }
@@ -463,31 +462,28 @@ input DeviceWhereInput {
   AND: [DeviceWhereInput!]
   OR: [DeviceWhereInput!]
   NOT: [DeviceWhereInput!]
-  id: StringFilter
-  fcm_id: StringFilter
   device_id: StringFilter
+  fcm_id: StringNullableFilter
   type: StringFilter
   user: UserWhereInput
-  userId: StringFilter
+  userId: StringNullableFilter
 }
 
 input DeviceOrderByInput {
-  id: SortOrder
-  fcm_id: SortOrder
   device_id: SortOrder
+  fcm_id: SortOrder
   type: SortOrder
   userId: SortOrder
 }
 
 input DeviceWhereUniqueInput {
-  id: String
   device_id: String
+  fcm_id: String
 }
 
 input DeviceOrderByWithAggregationInput {
-  id: SortOrder
-  fcm_id: SortOrder
   device_id: SortOrder
+  fcm_id: SortOrder
   type: SortOrder
   userId: SortOrder
   _count: DeviceCountOrderByAggregateInput
@@ -499,11 +495,10 @@ input DeviceScalarWhereWithAggregatesInput {
   AND: [DeviceScalarWhereWithAggregatesInput!]
   OR: [DeviceScalarWhereWithAggregatesInput!]
   NOT: [DeviceScalarWhereWithAggregatesInput!]
-  id: StringWithAggregatesFilter
-  fcm_id: StringWithAggregatesFilter
   device_id: StringWithAggregatesFilter
+  fcm_id: StringNullableWithAggregatesFilter
   type: StringWithAggregatesFilter
-  userId: StringWithAggregatesFilter
+  userId: StringNullableWithAggregatesFilter
 }
 
 input AttachmentWhereInput {
@@ -1690,58 +1685,51 @@ input UserUncheckedUpdateManyInput {
 }
 
 input DeviceCreateInput {
-  id: String
-  fcm_id: String!
   device_id: String!
+  fcm_id: String
   type: String
-  user: UserCreateNestedOneWithoutDeviceInput!
+  user: UserCreateNestedOneWithoutDeviceInput
 }
 
 input DeviceUncheckedCreateInput {
-  id: String
-  fcm_id: String!
   device_id: String!
+  fcm_id: String
   type: String
-  userId: String!
+  userId: String
 }
 
 input DeviceUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  user: UserUpdateOneRequiredWithoutDeviceInput
+  user: UserUpdateOneWithoutDeviceInput
 }
 
 input DeviceUncheckedUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  userId: StringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input DeviceCreateManyInput {
-  id: String
-  fcm_id: String!
   device_id: String!
+  fcm_id: String
   type: String
-  userId: String!
+  userId: String
 }
 
 input DeviceUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
 input DeviceUncheckedUpdateManyInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  userId: StringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input AttachmentCreateInput {
@@ -3417,25 +3405,22 @@ input UserRelationFilter {
 }
 
 input DeviceCountOrderByAggregateInput {
-  id: SortOrder
-  fcm_id: SortOrder
   device_id: SortOrder
+  fcm_id: SortOrder
   type: SortOrder
   userId: SortOrder
 }
 
 input DeviceMaxOrderByAggregateInput {
-  id: SortOrder
-  fcm_id: SortOrder
   device_id: SortOrder
+  fcm_id: SortOrder
   type: SortOrder
   userId: SortOrder
 }
 
 input DeviceMinOrderByAggregateInput {
-  id: SortOrder
-  fcm_id: SortOrder
   device_id: SortOrder
+  fcm_id: SortOrder
   type: SortOrder
   userId: SortOrder
 }
@@ -4695,11 +4680,13 @@ input UserCreateNestedOneWithoutDeviceInput {
   connect: UserWhereUniqueInput
 }
 
-input UserUpdateOneRequiredWithoutDeviceInput {
+input UserUpdateOneWithoutDeviceInput {
   create: UserUncheckedCreateWithoutDeviceInput
   connectOrCreate: UserCreateOrConnectWithoutDeviceInput
   upsert: UserUpsertWithoutDeviceInput
   connect: UserWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
   update: UserUncheckedUpdateWithoutDeviceInput
 }
 
@@ -6689,16 +6676,14 @@ input InviteCreateManyInviteeInputEnvelope {
 }
 
 input DeviceCreateWithoutUserInput {
-  id: String
-  fcm_id: String!
   device_id: String!
+  fcm_id: String
   type: String
 }
 
 input DeviceUncheckedCreateWithoutUserInput {
-  id: String
-  fcm_id: String!
   device_id: String!
+  fcm_id: String
   type: String
 }
 
@@ -7013,16 +6998,14 @@ input DeviceUpsertWithoutUserInput {
 }
 
 input DeviceUpdateWithoutUserInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
 input DeviceUncheckedUpdateWithoutUserInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
@@ -12370,26 +12353,23 @@ type UserMaxAggregateOutputType {
 }
 
 type DeviceCountAggregateOutputType {
-  id: Int!
-  fcm_id: Int!
   device_id: Int!
+  fcm_id: Int!
   type: Int!
   userId: Int!
   _all: Int!
 }
 
 type DeviceMinAggregateOutputType {
-  id: String
-  fcm_id: String
   device_id: String
+  fcm_id: String
   type: String
   userId: String
 }
 
 type DeviceMaxAggregateOutputType {
-  id: String
-  fcm_id: String
   device_id: String
+  fcm_id: String
   type: String
   userId: String
 }

@@ -90,7 +90,7 @@ type Mutation {
   signin(role: Role!, parent: [Role!], action: OPERATION!, credentials: AuthInput!): AuthResult
   recoverAccount(role: Role!, parent: [Role!], action: OPERATION!, email: PERMISSION): AuthResult
   signout(role: Role!, parent: [Role!], action: OPERATION!): SignOutResult
-  registerDevice(role: Role!, parent: [Role!], action: OPERATION!, data: DeviceUpdateWithoutUserInput!): DeviceResponse
+  registerDevice(role: Role!, parent: [Role!], action: OPERATION!, data: RegisterDeviceInput!): DeviceResponse
   paybill(role: Role!, parent: [Role!], action: OPERATION!, data: PaybillRequest): PaybillResponse
   locationFeed(role: Role!, parent: [Role!], action: OPERATION!, location: LatLon!): LocationResponse
   createOneInvite(role: Role!, parent: [Role!], action: OPERATION!, data: InviteCreateInput!): InviteResponse
@@ -357,6 +357,13 @@ enum NotificationType {
   INVITE_ACCEPTED
   REVIEW_RECIEVED
   REVIEW_UPDATED
+}
+
+input RegisterDeviceInput {
+  fcm_id: PERMISSION
+  device_id: PERMISSION
+  userId: PERMISSION
+  type: PERMISSION
 }
 
 """The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)."""
@@ -1063,9 +1070,8 @@ type CasbinRuleCountResponse {
 }
 
 type Device {
-  id(action: PERMISSION): PERMISSION
-  fcm_id(action: PERMISSION): PERMISSION
   device_id(action: PERMISSION): PERMISSION
+  fcm_id(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   user: User
   userId(action: PERMISSION): PERMISSION
@@ -1714,9 +1720,8 @@ enum UserScalarFieldEnum {
 }
 
 enum DeviceScalarFieldEnum {
-  id
-  fcm_id
   device_id
+  fcm_id
   type
   userId
 }
@@ -2138,31 +2143,28 @@ input DeviceWhereInput {
   AND: [DeviceWhereInput!]
   OR: [DeviceWhereInput!]
   NOT: [DeviceWhereInput!]
-  id: StringFilter
-  fcm_id: StringFilter
   device_id: StringFilter
+  fcm_id: StringNullableFilter
   type: StringFilter
   user: UserWhereInput
-  userId: StringFilter
+  userId: StringNullableFilter
 }
 
 input DeviceOrderByInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
 
 input DeviceWhereUniqueInput {
-  id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
 }
 
 input DeviceOrderByWithAggregationInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
   _count: DeviceCountOrderByAggregateInput
@@ -2174,11 +2176,10 @@ input DeviceScalarWhereWithAggregatesInput {
   AND: [DeviceScalarWhereWithAggregatesInput!]
   OR: [DeviceScalarWhereWithAggregatesInput!]
   NOT: [DeviceScalarWhereWithAggregatesInput!]
-  id: StringWithAggregatesFilter
-  fcm_id: StringWithAggregatesFilter
   device_id: StringWithAggregatesFilter
+  fcm_id: StringNullableWithAggregatesFilter
   type: StringWithAggregatesFilter
-  userId: StringWithAggregatesFilter
+  userId: StringNullableWithAggregatesFilter
 }
 
 input AttachmentWhereInput {
@@ -3349,58 +3350,51 @@ input UserUncheckedUpdateManyInput {
 }
 
 input DeviceCreateInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
-  user: UserCreateNestedOneWithoutDeviceInput!
+  user: UserCreateNestedOneWithoutDeviceInput
 }
 
 input DeviceUncheckedCreateInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
 
 input DeviceUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  user: UserUpdateOneRequiredWithoutDeviceInput
+  user: UserUpdateOneWithoutDeviceInput
 }
 
 input DeviceUncheckedUpdateInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  userId: StringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input DeviceCreateManyInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
 
 input DeviceUpdateManyMutationInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
 input DeviceUncheckedUpdateManyInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
-  userId: StringFieldUpdateOperationsInput
+  userId: NullableStringFieldUpdateOperationsInput
 }
 
 input AttachmentUpdateInput {
@@ -5019,25 +5013,22 @@ input UserRelationFilter {
 }
 
 input DeviceCountOrderByAggregateInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
 
 input DeviceMaxOrderByAggregateInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
 
 input DeviceMinOrderByAggregateInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
 }
@@ -6297,11 +6288,13 @@ input UserCreateNestedOneWithoutDeviceInput {
   connect: UserWhereUniqueInput
 }
 
-input UserUpdateOneRequiredWithoutDeviceInput {
+input UserUpdateOneWithoutDeviceInput {
   create: UserUncheckedCreateWithoutDeviceInput
   connectOrCreate: UserCreateOrConnectWithoutDeviceInput
   upsert: UserUpsertWithoutDeviceInput
   connect: UserWhereUniqueInput
+  disconnect: PERMISSION
+  delete: PERMISSION
   update: UserUncheckedUpdateWithoutDeviceInput
 }
 
@@ -8251,16 +8244,14 @@ input InviteCreateManyInviteeInputEnvelope {
 }
 
 input DeviceCreateWithoutUserInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
 }
 
 input DeviceUncheckedCreateWithoutUserInput {
-  id: PERMISSION
-  fcm_id: PERMISSION
   device_id: PERMISSION
+  fcm_id: PERMISSION
   type: PERMISSION
 }
 
@@ -8575,16 +8566,14 @@ input DeviceUpsertWithoutUserInput {
 }
 
 input DeviceUpdateWithoutUserInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
 input DeviceUncheckedUpdateWithoutUserInput {
-  id: StringFieldUpdateOperationsInput
-  fcm_id: StringFieldUpdateOperationsInput
   device_id: StringFieldUpdateOperationsInput
+  fcm_id: NullableStringFieldUpdateOperationsInput
   type: StringFieldUpdateOperationsInput
 }
 
@@ -13812,26 +13801,23 @@ type UserMaxAggregateOutputType {
 }
 
 type DeviceCountAggregateOutputType {
-  id(action: PERMISSION): PERMISSION
-  fcm_id(action: PERMISSION): PERMISSION
   device_id(action: PERMISSION): PERMISSION
+  fcm_id(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
 
 type DeviceMinAggregateOutputType {
-  id(action: PERMISSION): PERMISSION
-  fcm_id(action: PERMISSION): PERMISSION
   device_id(action: PERMISSION): PERMISSION
+  fcm_id(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
 }
 
 type DeviceMaxAggregateOutputType {
-  id(action: PERMISSION): PERMISSION
-  fcm_id(action: PERMISSION): PERMISSION
   device_id(action: PERMISSION): PERMISSION
+  fcm_id(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
 }

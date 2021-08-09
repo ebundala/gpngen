@@ -105,7 +105,6 @@ export enum DeliveryMode {
 export enum DeviceScalarFieldEnum {
     device_id = "device_id",
     fcm_id = "fcm_id",
-    id = "id",
     type = "type",
     userId = "userId"
 }
@@ -1735,25 +1734,22 @@ export class DateTimeWithAggregatesFilter {
 export class DeviceCountOrderByAggregateInput {
     device_id?: Nullable<SortOrder>;
     fcm_id?: Nullable<SortOrder>;
-    id?: Nullable<SortOrder>;
     type?: Nullable<SortOrder>;
     userId?: Nullable<SortOrder>;
 }
 
 export class DeviceCreateInput {
     device_id: string;
-    fcm_id: string;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
     type?: Nullable<string>;
-    user: UserCreateNestedOneWithoutDeviceInput;
+    user?: Nullable<UserCreateNestedOneWithoutDeviceInput>;
 }
 
 export class DeviceCreateManyInput {
     device_id: string;
-    fcm_id: string;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
     type?: Nullable<string>;
-    userId: string;
+    userId?: Nullable<string>;
 }
 
 export class DeviceCreateNestedOneWithoutUserInput {
@@ -1769,15 +1765,13 @@ export class DeviceCreateOrConnectWithoutUserInput {
 
 export class DeviceCreateWithoutUserInput {
     device_id: string;
-    fcm_id: string;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
     type?: Nullable<string>;
 }
 
 export class DeviceMaxOrderByAggregateInput {
     device_id?: Nullable<SortOrder>;
     fcm_id?: Nullable<SortOrder>;
-    id?: Nullable<SortOrder>;
     type?: Nullable<SortOrder>;
     userId?: Nullable<SortOrder>;
 }
@@ -1785,7 +1779,6 @@ export class DeviceMaxOrderByAggregateInput {
 export class DeviceMinOrderByAggregateInput {
     device_id?: Nullable<SortOrder>;
     fcm_id?: Nullable<SortOrder>;
-    id?: Nullable<SortOrder>;
     type?: Nullable<SortOrder>;
     userId?: Nullable<SortOrder>;
 }
@@ -1793,7 +1786,6 @@ export class DeviceMinOrderByAggregateInput {
 export class DeviceOrderByInput {
     device_id?: Nullable<SortOrder>;
     fcm_id?: Nullable<SortOrder>;
-    id?: Nullable<SortOrder>;
     type?: Nullable<SortOrder>;
     userId?: Nullable<SortOrder>;
 }
@@ -1804,7 +1796,6 @@ export class DeviceOrderByWithAggregationInput {
     _min?: Nullable<DeviceMinOrderByAggregateInput>;
     device_id?: Nullable<SortOrder>;
     fcm_id?: Nullable<SortOrder>;
-    id?: Nullable<SortOrder>;
     type?: Nullable<SortOrder>;
     userId?: Nullable<SortOrder>;
 }
@@ -1819,18 +1810,16 @@ export class DeviceScalarWhereWithAggregatesInput {
     NOT?: Nullable<DeviceScalarWhereWithAggregatesInput[]>;
     OR?: Nullable<DeviceScalarWhereWithAggregatesInput[]>;
     device_id?: Nullable<StringWithAggregatesFilter>;
-    fcm_id?: Nullable<StringWithAggregatesFilter>;
-    id?: Nullable<StringWithAggregatesFilter>;
+    fcm_id?: Nullable<StringNullableWithAggregatesFilter>;
     type?: Nullable<StringWithAggregatesFilter>;
-    userId?: Nullable<StringWithAggregatesFilter>;
+    userId?: Nullable<StringNullableWithAggregatesFilter>;
 }
 
 export class DeviceUncheckedCreateInput {
     device_id: string;
-    fcm_id: string;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
     type?: Nullable<string>;
-    userId: string;
+    userId?: Nullable<string>;
 }
 
 export class DeviceUncheckedCreateNestedOneWithoutUserInput {
@@ -1841,25 +1830,22 @@ export class DeviceUncheckedCreateNestedOneWithoutUserInput {
 
 export class DeviceUncheckedCreateWithoutUserInput {
     device_id: string;
-    fcm_id: string;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
     type?: Nullable<string>;
 }
 
 export class DeviceUncheckedUpdateInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
-    userId?: Nullable<StringFieldUpdateOperationsInput>;
+    userId?: Nullable<NullableStringFieldUpdateOperationsInput>;
 }
 
 export class DeviceUncheckedUpdateManyInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
-    userId?: Nullable<StringFieldUpdateOperationsInput>;
+    userId?: Nullable<NullableStringFieldUpdateOperationsInput>;
 }
 
 export class DeviceUncheckedUpdateOneWithoutUserInput {
@@ -1874,23 +1860,20 @@ export class DeviceUncheckedUpdateOneWithoutUserInput {
 
 export class DeviceUncheckedUpdateWithoutUserInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
 }
 
 export class DeviceUpdateInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
-    user?: Nullable<UserUpdateOneRequiredWithoutDeviceInput>;
+    user?: Nullable<UserUpdateOneWithoutDeviceInput>;
 }
 
 export class DeviceUpdateManyMutationInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
 }
 
@@ -1906,8 +1889,7 @@ export class DeviceUpdateOneWithoutUserInput {
 
 export class DeviceUpdateWithoutUserInput {
     device_id?: Nullable<StringFieldUpdateOperationsInput>;
-    fcm_id?: Nullable<StringFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
+    fcm_id?: Nullable<NullableStringFieldUpdateOperationsInput>;
     type?: Nullable<StringFieldUpdateOperationsInput>;
 }
 
@@ -1921,16 +1903,15 @@ export class DeviceWhereInput {
     NOT?: Nullable<DeviceWhereInput[]>;
     OR?: Nullable<DeviceWhereInput[]>;
     device_id?: Nullable<StringFilter>;
-    fcm_id?: Nullable<StringFilter>;
-    id?: Nullable<StringFilter>;
+    fcm_id?: Nullable<StringNullableFilter>;
     type?: Nullable<StringFilter>;
     user?: Nullable<UserWhereInput>;
-    userId?: Nullable<StringFilter>;
+    userId?: Nullable<StringNullableFilter>;
 }
 
 export class DeviceWhereUniqueInput {
     device_id?: Nullable<string>;
-    id?: Nullable<string>;
+    fcm_id?: Nullable<string>;
 }
 
 export class EnumAttachmentTypeFieldUpdateOperationsInput {
@@ -7649,6 +7630,13 @@ export class RatingWhereUniqueInput {
     id?: Nullable<string>;
 }
 
+export class RegisterDeviceInput {
+    device_id: string;
+    fcm_id?: Nullable<string>;
+    type?: Nullable<string>;
+    userId?: Nullable<string>;
+}
+
 export class ReverseGeocodeInput {
     language?: Nullable<Language>;
     latlng?: Nullable<LatLngInput>;
@@ -11911,14 +11899,6 @@ export class UserUpdateManyWithoutStaffOfInput {
     upsert?: Nullable<UserUpsertWithWhereUniqueWithoutStaffOfInput[]>;
 }
 
-export class UserUpdateOneRequiredWithoutDeviceInput {
-    connect?: Nullable<UserWhereUniqueInput>;
-    connectOrCreate?: Nullable<UserCreateOrConnectWithoutDeviceInput>;
-    create?: Nullable<UserUncheckedCreateWithoutDeviceInput>;
-    update?: Nullable<UserUncheckedUpdateWithoutDeviceInput>;
-    upsert?: Nullable<UserUpsertWithoutDeviceInput>;
-}
-
 export class UserUpdateOneRequiredWithoutInvitedInput {
     connect?: Nullable<UserWhereUniqueInput>;
     connectOrCreate?: Nullable<UserCreateOrConnectWithoutInvitedInput>;
@@ -11965,6 +11945,16 @@ export class UserUpdateOneRequiredWithoutTransactionsInput {
     create?: Nullable<UserUncheckedCreateWithoutTransactionsInput>;
     update?: Nullable<UserUncheckedUpdateWithoutTransactionsInput>;
     upsert?: Nullable<UserUpsertWithoutTransactionsInput>;
+}
+
+export class UserUpdateOneWithoutDeviceInput {
+    connect?: Nullable<UserWhereUniqueInput>;
+    connectOrCreate?: Nullable<UserCreateOrConnectWithoutDeviceInput>;
+    create?: Nullable<UserUncheckedCreateWithoutDeviceInput>;
+    delete?: Nullable<boolean>;
+    disconnect?: Nullable<boolean>;
+    update?: Nullable<UserUncheckedUpdateWithoutDeviceInput>;
+    upsert?: Nullable<UserUpsertWithoutDeviceInput>;
 }
 
 export class UserUpdateOneWithoutProvidesInput {
@@ -12919,11 +12909,10 @@ export class CasbinRuleSumAggregateOutputType {
 
 export class Device {
     device_id: string;
-    fcm_id: string;
-    id: string;
+    fcm_id?: Nullable<string>;
     type: string;
-    user: User;
-    userId: string;
+    user?: Nullable<User>;
+    userId?: Nullable<string>;
 }
 
 export class DeviceBatchResponse {
@@ -12936,7 +12925,6 @@ export class DeviceCountAggregateOutputType {
     _all: number;
     device_id: number;
     fcm_id: number;
-    id: number;
     type: number;
     userId: number;
 }
@@ -12956,7 +12944,6 @@ export class DeviceListResponse {
 export class DeviceMaxAggregateOutputType {
     device_id?: Nullable<string>;
     fcm_id?: Nullable<string>;
-    id?: Nullable<string>;
     type?: Nullable<string>;
     userId?: Nullable<string>;
 }
@@ -12964,7 +12951,6 @@ export class DeviceMaxAggregateOutputType {
 export class DeviceMinAggregateOutputType {
     device_id?: Nullable<string>;
     fcm_id?: Nullable<string>;
-    id?: Nullable<string>;
     type?: Nullable<string>;
     userId?: Nullable<string>;
 }
@@ -13351,7 +13337,7 @@ export abstract class IMutation {
 
     abstract recoverAccount(email: string): AuthResult | Promise<AuthResult>;
 
-    abstract registerDevice(data: DeviceUpdateWithoutUserInput): DeviceResponse | Promise<DeviceResponse>;
+    abstract registerDevice(data: RegisterDeviceInput): DeviceResponse | Promise<DeviceResponse>;
 
     abstract signin(credentials: AuthInput): AuthResult | Promise<AuthResult>;
 
