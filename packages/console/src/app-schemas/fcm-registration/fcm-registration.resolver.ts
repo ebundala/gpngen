@@ -12,7 +12,7 @@ export class FcmRegistrationResolver {
 
 @Mutation((returns)=>DeviceResponse)
 async registerDevice(
-    @Args('Data') data:RegisterDeviceInput,@Context() ctx:TenantContext,@Info() info){
+    @Args('data') data:RegisterDeviceInput,@Context() ctx:TenantContext,@Info() info){
        return this.service.registerDevice(data,ctx,info);
     }
 }
