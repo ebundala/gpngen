@@ -111,14 +111,16 @@ export class SubscriptionService {
         }
 
       //todo send to fcm
-      if(devices.length)
-      await this.app.sendNotification(devices,{
+      if(devices.length){
+    let result =  await this.app.sendNotification(devices,{
         data: {
           payload:JSON.stringify(message)
         }
       },{
         priority:"high"
-      })
+      });
+      console.table(result);
+    }
     }
   async inviteNotifications(data:{result:Invite}){
     const {result} = data;
