@@ -196,7 +196,7 @@ const RequestLogger: GraphQLRequestListener<TenantContext> = {
           },
           subscriptions: {
             onConnect: async (connectionParams,socket,context) => {
-              
+              debugger
              //TODO make sure authorization is passed according to ws
               const headers =   {authorization:connectionParams["authorization"]};
               return { connectionParams, headers};   
