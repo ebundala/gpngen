@@ -34,7 +34,7 @@ export class SubscriptionService {
       const owner = await order.owner().device({select:{fcm_id:true}});
       const provider = await order.provider().device({select:{fcm_id:true}});
       const manager = await order.organization().owner().device({select:{fcm_id:true}});
-
+      console.log(owner,provider,manager);
       let message:Notification;
       const devices = [];
       if(original.state!==changed.state){
@@ -49,27 +49,33 @@ export class SubscriptionService {
         // approved => user
         if(changed.state == State.REVIEW || changed.state == State.APPROVED ){
           message.notificationType=NotificationType.ORDER_ACCEPTED
+          if(owner?.fcm_id)
           devices.push(owner.fcm_id)
         }
         if(changed.state == State.APPROVED ){
           message.notificationType=NotificationType.ORDER_DISPATCHED
+          if(owner?.fcm_id)
           devices.push(owner.fcm_id)
         }
         // completed => user/owner
         if(changed.state == State.COMPLETED){
           message.notificationType=NotificationType.ORDER_DELIVERED
-          devices.push(owner.fcm_id,manager.fcm_id);
+          if(owner?.fcm_id)
+          devices.push(owner.fcm_id);
+          if(manager?.fcm_id)
+          devices.push(manager.fcm_id);
         }
 
         // archived  => user/provider/owner
         // cancelled => all
         if(changed.state == State.REJECTED){
           message.notificationType=NotificationType.ORDER_CANCELLED
-          devices.push(owner.fcm_id,manager.fcm_id,provider.fcm_id);
+
+          devices.push([owner.fcm_id,manager.fcm_id,provider.fcm_id].filter((e)=>e));
         } 
         if(changed.state == State.ARCHIVED){
           message.notificationType=NotificationType.ORDER_PAYED
-          devices.push(owner.fcm_id,manager.fcm_id,provider.fcm_id);
+          devices.push([owner.fcm_id,manager.fcm_id,provider.fcm_id].filter((e)=>e));
         } 
       }
       else if(original.quantity!==changed.quantity 
@@ -90,6 +96,7 @@ export class SubscriptionService {
             message: "Order state changed",
             payload: changed
           };
+          if(manager?.fcm_id)
           devices.push(manager.fcm_id)
         }
        //Review => manager/provider
@@ -99,12 +106,12 @@ export class SubscriptionService {
           message: "Order state changed",
           payload: changed
         };
-        devices.push(provider.fcm_id,manager.fcm_id)
+        devices.push([provider.fcm_id,manager.fcm_id].filter((e)=>e))
       }
         }
 
       //todo send to fcm
-      
+      if(devices.length)
       await this.app.sendNotification(devices,{
         data: {
           payload:JSON.stringify(message)
@@ -123,6 +130,7 @@ export class SubscriptionService {
         message: "You have been invited to join an organization",
         payload: result
       };
+      if(invitee?.fcm_id)
       await this.app.sendNotification(invitee.fcm_id,{
         data: {
           payload:JSON.stringify(message)
@@ -136,13 +144,14 @@ export class SubscriptionService {
     const {result} = data;
       const order= this.client.rating.findUnique({where:{id:result.id}})  
 
-      const invitee = await order.owner().device({select:{fcm_id:true}});
+      const reviewee = await order.owner().device({select:{fcm_id:true}});
      const message:Notification = {
         notificationType:NotificationType.REVIEW_RECIEVED,
         message: "You have new review",
         payload: result
       };
-      await this.app.sendNotification(invitee.fcm_id,{
+      if(reviewee?.fcm_id)
+      await this.app.sendNotification(reviewee.fcm_id,{
         data: {
           payload:JSON.stringify(message)
         }
