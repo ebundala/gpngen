@@ -17,7 +17,7 @@ export interface PrismaHookRequest<T>{
     result:T,
     rules: string[]
     prisma:PrismaClient
-    context?:TenantContext
+    context?:any
 }
 export declare type BusinessRuleHandler = (args: BusinessRequest<TContext>) => Promise<EngineConfig>
 export declare type BusinessRuleHookHandler = (args: BusinessRequest<TContext>, next?: BusinessRuleHookHandler) => Promise<BusinessRequest<TContext>>

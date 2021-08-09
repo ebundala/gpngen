@@ -1,6 +1,6 @@
 import { BusinessRulesManager } from './business-rules-manager.service';
 import { BUSINESS_LOGIC_HOOK, PRISMA_LOGIC_HOOK } from './constants';
-
+//todo renam before to a more meaningful name like (before authorization)
 export function BlocAttach(hook: string, before: boolean = false): MethodDecorator {
     return (target: any, propertyKey: string, propertyDescriptor: PropertyDescriptor) => {
         const key = `${BUSINESS_LOGIC_HOOK}/${propertyKey}`

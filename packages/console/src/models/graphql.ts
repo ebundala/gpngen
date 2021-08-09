@@ -282,6 +282,21 @@ export enum MpesaPaymentScalarFieldEnum {
     updatedAt = "updatedAt"
 }
 
+export enum NotificationType {
+    INVITE_ACCEPTED = "INVITE_ACCEPTED",
+    INVITE_RECIEVED = "INVITE_RECIEVED",
+    INVITE_REJECTED = "INVITE_REJECTED",
+    ORDER_ACCEPTED = "ORDER_ACCEPTED",
+    ORDER_CANCELLED = "ORDER_CANCELLED",
+    ORDER_DELIVERED = "ORDER_DELIVERED",
+    ORDER_DISPATCHED = "ORDER_DISPATCHED",
+    ORDER_PAYED = "ORDER_PAYED",
+    ORDER_RECIEVED = "ORDER_RECIEVED",
+    ORDER_UPDATED = "ORDER_UPDATED",
+    REVIEW_RECIEVED = "REVIEW_RECIEVED",
+    REVIEW_UPDATED = "REVIEW_UPDATED"
+}
+
 export enum OrderScalarFieldEnum {
     createdAt = "createdAt",
     deliveryMode = "deliveryMode",
@@ -13361,6 +13376,12 @@ export abstract class IMutation {
     abstract updateOneUser(data: UserUpdateInput, where: UserWhereUniqueInput): UserResponse | Promise<UserResponse>;
 
     abstract version(): Nullable<string> | Promise<Nullable<string>>;
+}
+
+export class Notification {
+    message?: Nullable<string>;
+    notificationType: NotificationType;
+    payload?: Nullable<JSONObject>;
 }
 
 export class Order {

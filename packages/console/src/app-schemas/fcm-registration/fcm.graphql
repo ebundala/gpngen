@@ -1,4 +1,29 @@
+
+type Notification {
+    notificationType: NotificationType!
+    message: String
+    payload: JSONObject
+}
+
+enum NotificationType {
+     ORDER_RECIEVED
+     ORDER_CANCELLED
+     ORDER_DISPATCHED
+     ORDER_ACCEPTED
+     ORDER_PAYED
+     ORDER_DELIVERED
+     ORDER_UPDATED
+
+     INVITE_RECIEVED
+     INVITE_REJECTED
+     INVITE_ACCEPTED
+
+     REVIEW_RECIEVED
+     REVIEW_UPDATED
+     
+}
+
+
 extend type Mutation {
-    
     registerDevice(data:DeviceUpdateWithoutUserInput!):DeviceResponse!
 }
