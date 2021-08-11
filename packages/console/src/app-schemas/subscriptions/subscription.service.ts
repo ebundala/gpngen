@@ -60,10 +60,8 @@ export class SubscriptionService {
         // completed => user/owner
         if(changed.state == State.COMPLETED){
           message.notificationType=NotificationType.ORDER_DELIVERED
-          if(owner?.fcm_id)
-          devices.push(owner.fcm_id);
-          if(manager?.fcm_id)
-          devices.push(manager.fcm_id);
+         
+          devices.push([manager?.fcm_id,owner?.fcm_id].filter(e=>e));
         }
 
         // archived  => user/provider/owner
@@ -71,11 +69,11 @@ export class SubscriptionService {
         if(changed.state == State.REJECTED){
           message.notificationType=NotificationType.ORDER_CANCELLED
 
-          devices.push([owner.fcm_id,manager.fcm_id,provider.fcm_id].filter((e)=>e));
+          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].filter((e)=>e));
         } 
         if(changed.state == State.ARCHIVED){
           message.notificationType=NotificationType.ORDER_PAYED
-          devices.push([owner.fcm_id,manager.fcm_id,provider.fcm_id].filter((e)=>e));
+          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].filter((e)=>e));
         } 
       }
       else if(original.quantity!==changed.quantity 
@@ -106,7 +104,7 @@ export class SubscriptionService {
           message: "Order state changed",
           payload: changed
         };
-        devices.push([provider.fcm_id,manager.fcm_id].filter((e)=>e))
+        devices.push([provider?.fcm_id,manager?.fcm_id].filter((e)=>e))
       }
         }
 
