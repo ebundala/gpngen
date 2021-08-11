@@ -8,7 +8,7 @@ export class FcmRegistrationService {
     
     async registerDevice(data:RegisterDeviceInput,ctx:TenantContext,info){
         const {auth,prisma} = ctx;
-       
+       debugger
         const select = ctx.prisma.getSelection(info).valueOf('data', 'Device', { select: {  } });
          
         let args:Prisma.DeviceUpsertArgs={
@@ -32,8 +32,8 @@ export class FcmRegistrationService {
             args.update.fcm_id={set:data.fcm_id};
         }
         if(data.userId){
-            args.create.userId=data.userId;
-            args.update.userId={set:data.userId};
+            args.create.user={connect:{id:data.userId}};
+            args.update.user={connect:{id:data.userId}};
         }
        
         return prisma.device.upsert({...args,
