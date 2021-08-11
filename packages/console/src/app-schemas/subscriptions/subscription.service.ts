@@ -61,19 +61,21 @@ export class SubscriptionService {
         if(changed.state == State.COMPLETED){
           message.notificationType=NotificationType.ORDER_DELIVERED
          
-          devices.push([manager?.fcm_id,owner?.fcm_id].filter(e=>e));
+          devices.push([manager?.fcm_id,owner?.fcm_id]);
         }
 
         // archived  => user/provider/owner
         // cancelled => all
         if(changed.state == State.REJECTED){
+          
           message.notificationType=NotificationType.ORDER_CANCELLED
 
-          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].filter((e)=>e));
+          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id]);
         } 
         if(changed.state == State.ARCHIVED){
           message.notificationType=NotificationType.ORDER_PAYED
-          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].filter((e)=>e));
+
+          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id]);
         } 
       }
       else if(original.quantity!==changed.quantity 
@@ -104,13 +106,14 @@ export class SubscriptionService {
           message: "Order state changed",
           payload: changed
         };
-        devices.push([provider?.fcm_id,manager?.fcm_id].filter((e)=>e))
+        devices.push([provider?.fcm_id,manager?.fcm_id])
       }
         }
 
       //todo send to fcm
-      if(devices.length){
-    let result =  await this.app.sendNotification(devices,{
+      const filtered = devices?.filter((e)=>e);
+      if(filtered?.length>0){
+    let result =  await this.app.sendNotification(filtered,{
       // notification:{
       //   title:"change notification",
       //   body:"body text"
