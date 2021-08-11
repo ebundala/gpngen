@@ -113,16 +113,16 @@ export class SubscriptionService {
       //todo send to fcm
       if(devices.length){
     let result =  await this.app.sendNotification(devices,{
-      notification:{
-        title:"change notification",
-        body:"body text"
-      },
+      // notification:{
+      //   title:"change notification",
+      //   body:"body text"
+      // },
         data: {
           payload:JSON.stringify(message)
         }
       },{
         priority:"high"
-      });
+      }).catch(e=>e);
       console.log(result);
     }
     }
@@ -143,7 +143,7 @@ export class SubscriptionService {
         }
       },{
         priority:"high"
-      })
+      }).catch(e=>e);
   }
 
   async reviewNotifications(data:{result:Rating}){
@@ -163,7 +163,7 @@ export class SubscriptionService {
         }
       },{
         priority:"normal"
-      })
+      }).catch(e=>e);
   }
 
 

@@ -18,9 +18,7 @@ export class FcmRegistrationService {
                 
             },
             update:{
-                device_id:{
-                    set:data.device_id
-                }
+               
             }
         }
         if(data.type){
