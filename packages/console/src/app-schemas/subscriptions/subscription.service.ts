@@ -36,7 +36,7 @@ export class SubscriptionService {
       const manager = await order.organization().owner().device({select:{fcm_id:true}});
       console.log(owner,provider,manager);
       let message:Notification;
-      const devices = [];
+      const devices = new Set<string>();
       if(original.state!==changed.state){
         //order changed state
         message = {
@@ -47,21 +47,21 @@ export class SubscriptionService {
         //audience depends on new state
         // review => user
         // approved => user
-        if(changed.state == State.REVIEW || changed.state == State.APPROVED ){
+        if(changed.state == State.REVIEW){
           message.notificationType=NotificationType.ORDER_ACCEPTED
           if(owner?.fcm_id)
-          devices.push(owner.fcm_id)
+          devices.add(owner.fcm_id)
         }
         if(changed.state == State.APPROVED ){
           message.notificationType=NotificationType.ORDER_DISPATCHED
           if(owner?.fcm_id)
-          devices.push(owner.fcm_id)
+          devices.add(owner.fcm_id)
         }
         // completed => user/owner
         if(changed.state == State.COMPLETED){
           message.notificationType=NotificationType.ORDER_DELIVERED
          
-          devices.push([manager?.fcm_id,owner?.fcm_id]);
+        [manager?.fcm_id,owner?.fcm_id].forEach(fcm_id=>{devices.add(fcm_id)});
         }
 
         // archived  => user/provider/owner
@@ -70,12 +70,12 @@ export class SubscriptionService {
           
           message.notificationType=NotificationType.ORDER_CANCELLED
 
-          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id]);
+          [owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].forEach(fcm_id=>{devices.add(fcm_id)});
         } 
         if(changed.state == State.ARCHIVED){
           message.notificationType=NotificationType.ORDER_PAYED
 
-          devices.push([owner?.fcm_id,manager?.fcm_id,provider?.fcm_id]);
+          [owner?.fcm_id,manager?.fcm_id,provider?.fcm_id].forEach(fcm_id=>{devices.add(fcm_id)});
         } 
       }
       else if(original.quantity!==changed.quantity 
@@ -97,7 +97,7 @@ export class SubscriptionService {
             payload: changed
           };
           if(manager?.fcm_id)
-          devices.push(manager.fcm_id)
+          devices.add(manager.fcm_id)
         }
        //Review => manager/provider
        if(changed.state == State.REVIEW || changed.state == State.APPROVED ){
@@ -106,18 +106,20 @@ export class SubscriptionService {
           message: "Order state changed",
           payload: changed
         };
-        devices.push([provider?.fcm_id,manager?.fcm_id])
+        [provider?.fcm_id,manager?.fcm_id].forEach(fcm_id=>{devices.add(fcm_id)});
       }
         }
 
       //todo send to fcm
-      const filtered = devices?.filter((e)=>e);
-      if(filtered?.length>0){
+      
+      if(devices.size>0){
+        const filtered = [];
+        devices.forEach(fcm_id=>{
+          if(fcm_id)filtered.push(fcm_id);});
     let result =  await this.app.sendNotification(filtered,{
-      // notification:{
-      //   title:"change notification",
-      //   body:"body text"
-      // },
+       notification:{
+         title:message.notificationType.replace("_", " "),     
+       },
         data: {
           payload:JSON.stringify(message)
         }
@@ -139,6 +141,9 @@ export class SubscriptionService {
       };
       if(invitee?.fcm_id)
       await this.app.sendNotification(invitee.fcm_id,{
+        notification:{
+          title:message.notificationType.replace("_", " "),     
+        },
         data: {
           payload:JSON.stringify(message)
         }
@@ -159,11 +164,14 @@ export class SubscriptionService {
       };
       if(reviewee?.fcm_id)
       await this.app.sendNotification(reviewee.fcm_id,{
+        notification:{
+          title:message.notificationType.replace("_", " "),     
+        },
         data: {
           payload:JSON.stringify(message)
         }
       },{
-        priority:"normal"
+        priority:"high"
       }).catch(e=>e);
   }
 
