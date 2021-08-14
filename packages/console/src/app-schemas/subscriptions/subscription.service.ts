@@ -8,6 +8,7 @@ import { PrismaClient} from '@mechsoft/prisma-client';
 import { State } from "@prisma/client";
 
 export const ORDER_CHANGED = "ORDER_CHANGED";
+export const ORDER_RECEIVED = "ORDER_RECEIVED";
 export const INVITE_RECEIVED = "INVITE_RECEIVED";
 export const FEEDBACK_RECEIVED = "FEEDBACK_RECEIVED";
 export const LOCATION_CHANGED = "LOCATION_CHANGED";
@@ -22,11 +23,35 @@ export class SubscriptionService {
     private readonly client: PrismaClient,
     private readonly app: FirebaseService) {
     //register handlers for fcm here
-    this.pubSub.subscribe(ORDER_CHANGED,this.orderNotifications.bind(this));
+    this.pubSub.subscribe(ORDER_RECEIVED,this.orderNotifications.bind(this));
+    this.pubSub.subscribe(ORDER_CHANGED,this.orderChangeNotifications.bind(this));
     this.pubSub.subscribe(INVITE_RECEIVED,this.inviteNotifications.bind(this));
     this.pubSub.subscribe(FEEDBACK_RECEIVED,this.reviewNotifications.bind(this));
   }
-   async orderNotifications(data:{original:Order,changed:Order}){
+
+  async orderNotifications(data:Order){
+    
+      const order= this.client.rating.findUnique({where:{id:data.id}})  
+
+      const manager = await order.organization().owner().device({select:{fcm_id:true}});
+     const message:Notification = {
+        notificationType:NotificationType.ORDER_RECIEVED,
+        message: "You have new order",
+        payload: data
+      };
+      if(manager?.fcm_id)
+      await this.app.sendNotification(manager.fcm_id,{
+        notification:{
+          title:message.notificationType.replace("_", " "),     
+        },
+        data: {
+          payload:JSON.stringify(message)
+        }
+      },{
+        priority:"high"
+      }).catch(e=>e);
+  }
+   async orderChangeNotifications(data:{original:Order,changed:Order}){
       debugger
       const {original,changed,} = data;
       const order= this.client.order.findUnique({where:{id:changed.id}})  
@@ -129,6 +154,7 @@ export class SubscriptionService {
       console.log(result);
     }
     }
+
   async inviteNotifications(data:{result:Invite}){
     const {result} = data;
       const order= this.client.invite.findUnique({where:{id:result.id}})  
@@ -174,13 +200,20 @@ export class SubscriptionService {
         priority:"high"
       }).catch(e=>e);
   }
-
+@PrismaAttach("Order", "create")
+  async orderCreated(req: PrismaHookRequest<Order>, n: PrismaHookHandler) {
+    const { result ,prisma,params} = req;
+   // const {action,args} = params;
+    
+    await this.pubSub.publish(`${ORDER_RECEIVED}`, result )
+    return n(req);
+  }
 
   @PrismaAttach("Order", "update",true)
   async orderPreUpdated(req: PrismaHookRequest<Order>, n: PrismaHookHandler) {
     const { result ,prisma,params} = req;
     const {action,args} = params;
-    debugger
+    
     //record its state before updating
     req.context= await prisma.order.findUnique({where:args.where,select:args.select});
     //await this.pubSub.publish(`${ORDER_CHANGED}`, { id: result.id })
@@ -189,7 +222,6 @@ export class SubscriptionService {
   @PrismaAttach("Order", "update")
   async orderHasbeenUpdated(args: PrismaHookRequest<Order>, n: PrismaHookHandler) {
     const { result,context } = args;
-    debugger;
     //construct messages and publish to notifications pubsub
     this.pubSub.publish(`${ORDER_CHANGED}`, { id: result.id ,original:context,changed:result });
     return n(args);
