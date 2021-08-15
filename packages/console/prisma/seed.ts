@@ -194,6 +194,64 @@ const categories: Prisma.ServiceCategoryCreateInput[] = [
         }
     }}
 ]
+
+const paymentMethods: Prisma.PaymentMethodCreateInput [] = [
+    {
+        name: "Vodacom M-Pesa",
+        code: "VMCASHIN",
+        logo:{
+            create:{
+                path:"icons/mpesa.png"
+            }
+        }
+    },
+    {
+        name: "Tigo Pesa",
+        code: "TPCASHIN",
+        logo:{
+            create:{
+                path:"icons/tigo.png"
+            }
+        }
+    },
+    {
+        name: "Airtel money",
+        code: "AMCASHIN",
+        logo:{
+            create:{
+                path:"icons/airtel.png"
+            }
+        }
+    },
+    {
+        name: "T-Pesa",
+        code: "TTCASHIN",
+        logo:{
+            create:{
+                path:"icons/ttcl.png"
+            }
+        }
+    },
+    {
+        name: "Hallo pesa",
+        code: "HPCASHIN",
+        logo:{
+            create:{
+                path:"icons/halopesa.png"
+            }
+        }
+    },
+    {
+        name: "Selcom Pay",
+        code: "SPCASHIN",
+        logo:{
+            create:{
+                path:"icons/selcom.png"
+            }
+        }
+    }
+];
+
 const getDefaultPolicies = async () => {
    const su = new SUPERUSER();
    const mn= new MANAGER();
@@ -263,6 +321,22 @@ const createRoles = async () => {
     if (tr.length)
         await cl.prisma.$transaction(tr);
 
+
+
+
+        const exists1 = (await cl.prisma.paymentMethod.findMany({
+            where: {
+                name: {
+                    mode: 'insensitive',
+                    in: paymentMethods.map((v) => v.name)
+                }
+            }, select: { name: true }
+        }))?.map((v) => v.name) ?? [];
+
+        const tr1 = paymentMethods.filter((v) => !exists.includes(v.name)
+        ).map((v) => cl.prisma.paymentMethod.create({ data: v }));
+        if (tr1.length)
+            await cl.prisma.$transaction(tr1);
 
     return cl.close();
 }

@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from "@nestjs/common";
-import { State, TransactionType } from "@prisma/client";
-import { PaybillRequest } from "src/models/graphql";
+import { SelcomUtilityCode, State, TransactionType } from "@prisma/client";
+import { MpesaPaymentCreateNestedOneWithoutOrderInput, MpesaPaymentCreateNestedOneWithoutTransactionInput, PaybillRequest, SelcomPaymentCreateNestedOneWithoutTransactionInput } from "src/models/graphql";
 import { MpesaTzService } from "src/mpesa-tz/mpesa-tz.service";
 import { TenantContext } from "@mechsoft/common";
 
@@ -8,6 +8,7 @@ import { TenantContext } from "@mechsoft/common";
 export class PaymentService{
     constructor(private readonly mpesa: MpesaTzService){}
     async paybill(data:PaybillRequest,ctx: TenantContext,info){
+        debugger
         const {auth,prisma}=ctx;
         const {orderId,msisdn,currency,method} = data;
         if(!auth.uid){
@@ -18,12 +19,58 @@ export class PaymentService{
            service:true,
            organization:true
        }});
-       if(!order||order.state==State.DELETED||order.state!=State.REJECTED){
+       if(!order||order.state==State.DELETED||order.state==State.REJECTED||order.state == State.PENDING){
         throw new HttpException({status:false,message:"Invalid order"},400)
      }
+     const methodItem = await prisma.paymentMethod.findUnique({where:{id:method}});
+     if(methodItem==null){
+        throw new HttpException({status:false,message:"Invalid payment method"},400)  
+     }
+   let  mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
+    let selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
+    const amount = `${Math.ceil(order.service.price*order.quantity)}`;
+      switch(methodItem.code){
+          case SelcomUtilityCode.VMCASHIN:
+              //mpesa transaction
+              mpesaPayment={
+                create:{
+                //  order:{
+                //      connect:{
+                //          id:order.id
+                //      }
+                //  },
+                    input_PurchasedItemsDesc:`${order.quantity}x${order.service.name}`,
+                    input_Amount:amount,
+                    input_CustomerMSISDN:msisdn,
+                    input_ServiceProviderCode:this.mpesa.MPESA_ORG_SHORTCODE,
+                    input_TransactionReference:order.id,
+                    input_ThirdPartyConversationID:order.id,
+                    
+                    
+                }
+            };
+        
+              break;
+          default:
+              //selcom transaction
+          selcomPayment={
+              create:{
+                  amount: parseInt(amount),
+                  msisdn: msisdn,
+                  transId: "",
+                  utilityref: 123,
+                  orderId:orderId,
+                  operator:methodItem.code
+              }
+          }
+
+
+      }
+
    const transaction =  await prisma.transaction.create({
            include:{
                mpesaPayment:true,
+               selcomPayment:true,
                initiator:true,
            },
            data:{
@@ -34,25 +81,11 @@ export class PaymentService{
                },
                type: TransactionType.PAYMENT,
                paymentMethod:{ connect:{ id: method}},
-               mpesaPayment:{
-                   create:{
-                    // order:{
-                    //     connect:{
-                    //         id:order.id
-                    //     }
-                    // },
-                       input_PurchasedItemsDesc:`${order.quantity}x${order.service.name}`,
-                       input_Amount:`${Math.ceil(order.service.price*order.quantity)}`,
-                       input_CustomerMSISDN:msisdn,
-                       input_ServiceProviderCode:this.mpesa.MPESA_ORG_SHORTCODE,
-                       input_TransactionReference:order.id,
-                       input_ThirdPartyConversationID:order.id,
-                       
-                       
-                   }
-               }
+               mpesaPayment:mpesaPayment,
+               selcomPayment: selcomPayment
            }
        });
+       if(methodItem.code == SelcomUtilityCode.VMCASHIN){
      const result = await this.mpesa.paybill(transaction.mpesaPayment);
      const select = prisma.getSelection(info).valueOf('data', 'Transaction', { select: {  } });
      let tx;
@@ -121,4 +154,11 @@ export class PaymentService{
         };
        }
     }
+    else{
+        //todo selcom payment here
+        throw new HttpException({status:false,message:"Payment method not supported"},400)  
+
+    }
+    }
+    
 }
