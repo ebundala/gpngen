@@ -4,9 +4,17 @@ type PaymentMethod {
           description: String
           logo: Attachment!
           attachmentId: String!
+          transactions(where: TransactionWhereInput
+              orderBy: [TransactionOrderByInput!]
+              cursor: TransactionWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [TransactionScalarFieldEnum!]
+              ): [Transaction!]!
           state: State!
           createdAt: DateTime!
           updatedAt: DateTime!
+          _count: PaymentMethodCountOutputType
     }
 
       type PaymentMethodListResponse {

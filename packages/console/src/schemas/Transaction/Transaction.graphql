@@ -1,6 +1,7 @@
 type Transaction {
           id: String!
-          paymentMethode: String!
+          paymentMethod: PaymentMethod!
+          paymentMethodId: String!
           type: TransactionType!
           initiator: User!
           userId: String!

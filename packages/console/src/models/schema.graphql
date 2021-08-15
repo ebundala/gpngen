@@ -1323,9 +1323,11 @@ type PaymentMethod {
   description: String
   logo: Attachment!
   attachmentId: String!
+  transactions(where: TransactionWhereInput, orderBy: [TransactionOrderByInput!], cursor: TransactionWhereUniqueInput, take: Int, skip: Int, distinct: [TransactionScalarFieldEnum!]): [Transaction!]!
   state: State!
   createdAt: DateTime!
   updatedAt: DateTime!
+  _count: PaymentMethodCountOutputType
 }
 
 type PaymentMethodListResponse {
@@ -1591,7 +1593,8 @@ type ServiceCategoryCountResponse {
 
 type Transaction {
   id: String!
-  paymentMethode: String!
+  paymentMethod: PaymentMethod!
+  paymentMethodId: String!
   type: TransactionType!
   initiator: User!
   userId: String!
@@ -1821,7 +1824,7 @@ enum PaymentMethodScalarFieldEnum {
 
 enum TransactionScalarFieldEnum {
   id
-  paymentMethode
+  paymentMethodId
   type
   userId
   mpesaPaymentId
@@ -2143,7 +2146,6 @@ input DeviceOrderByInput {
 
 input DeviceWhereUniqueInput {
   device_id: String
-  fcm_id: String
 }
 
 input DeviceOrderByWithAggregationInput {
@@ -2709,6 +2711,7 @@ input PaymentMethodWhereInput {
   description: StringNullableFilter
   logo: AttachmentWhereInput
   attachmentId: StringFilter
+  transactions: TransactionListRelationFilter
   state: EnumStateFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
@@ -2759,7 +2762,8 @@ input TransactionWhereInput {
   OR: [TransactionWhereInput!]
   NOT: [TransactionWhereInput!]
   id: StringFilter
-  paymentMethode: StringFilter
+  paymentMethod: PaymentMethodWhereInput
+  paymentMethodId: StringFilter
   type: EnumTransactionTypeFilter
   initiator: UserWhereInput
   userId: StringFilter
@@ -2776,7 +2780,7 @@ input TransactionWhereInput {
 
 input TransactionOrderByInput {
   id: SortOrder
-  paymentMethode: SortOrder
+  paymentMethodId: SortOrder
   type: SortOrder
   userId: SortOrder
   mpesaPaymentId: SortOrder
@@ -2793,7 +2797,7 @@ input TransactionWhereUniqueInput {
 
 input TransactionOrderByWithAggregationInput {
   id: SortOrder
-  paymentMethode: SortOrder
+  paymentMethodId: SortOrder
   type: SortOrder
   userId: SortOrder
   mpesaPaymentId: SortOrder
@@ -2812,7 +2816,7 @@ input TransactionScalarWhereWithAggregatesInput {
   OR: [TransactionScalarWhereWithAggregatesInput!]
   NOT: [TransactionScalarWhereWithAggregatesInput!]
   id: StringWithAggregatesFilter
-  paymentMethode: StringWithAggregatesFilter
+  paymentMethodId: StringWithAggregatesFilter
   type: EnumTransactionTypeWithAggregatesFilter
   userId: StringWithAggregatesFilter
   mpesaPaymentId: StringNullableWithAggregatesFilter
@@ -4080,6 +4084,7 @@ input PaymentMethodCreateInput {
   createdAt: DateTime
   updatedAt: DateTime
   logo: AttachmentCreateNestedOneWithoutPaymentMethodsInput!
+  transactions: TransactionCreateNestedManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodUncheckedCreateInput {
@@ -4090,6 +4095,7 @@ input PaymentMethodUncheckedCreateInput {
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  transactions: TransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodUpdateInput {
@@ -4100,6 +4106,7 @@ input PaymentMethodUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   logo: AttachmentUpdateOneRequiredWithoutPaymentMethodsInput
+  transactions: TransactionUpdateManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodUncheckedUpdateInput {
@@ -4110,6 +4117,7 @@ input PaymentMethodUncheckedUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  transactions: TransactionUncheckedUpdateManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodCreateManyInput {
@@ -4143,11 +4151,11 @@ input PaymentMethodUncheckedUpdateManyInput {
 
 input TransactionCreateInput {
   id: String
-  paymentMethode: String!
   type: TransactionType!
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
@@ -4156,7 +4164,7 @@ input TransactionCreateInput {
 
 input TransactionUncheckedCreateInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   userId: String!
   mpesaPaymentId: String
@@ -4169,11 +4177,11 @@ input TransactionUncheckedCreateInput {
 
 input TransactionUpdateInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
@@ -4182,7 +4190,7 @@ input TransactionUpdateInput {
 
 input TransactionUncheckedUpdateInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
@@ -4195,7 +4203,7 @@ input TransactionUncheckedUpdateInput {
 
 input TransactionCreateManyInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   userId: String!
   mpesaPaymentId: String
@@ -4208,7 +4216,6 @@ input TransactionCreateManyInput {
 
 input TransactionUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
@@ -4217,7 +4224,7 @@ input TransactionUpdateManyMutationInput {
 
 input TransactionUncheckedUpdateManyInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
@@ -5533,7 +5540,7 @@ input SelcomDisbursementRelationFilter {
 
 input TransactionCountOrderByAggregateInput {
   id: SortOrder
-  paymentMethode: SortOrder
+  paymentMethodId: SortOrder
   type: SortOrder
   userId: SortOrder
   mpesaPaymentId: SortOrder
@@ -5546,7 +5553,7 @@ input TransactionCountOrderByAggregateInput {
 
 input TransactionMaxOrderByAggregateInput {
   id: SortOrder
-  paymentMethode: SortOrder
+  paymentMethodId: SortOrder
   type: SortOrder
   userId: SortOrder
   mpesaPaymentId: SortOrder
@@ -5559,7 +5566,7 @@ input TransactionMaxOrderByAggregateInput {
 
 input TransactionMinOrderByAggregateInput {
   id: SortOrder
-  paymentMethode: SortOrder
+  paymentMethodId: SortOrder
   type: SortOrder
   userId: SortOrder
   mpesaPaymentId: SortOrder
@@ -7316,12 +7323,60 @@ input AttachmentCreateNestedOneWithoutPaymentMethodsInput {
   connect: AttachmentWhereUniqueInput
 }
 
+input TransactionCreateNestedManyWithoutPaymentMethodInput {
+  create: [TransactionCreateWithoutPaymentMethodInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutPaymentMethodInput!]
+  createMany: TransactionCreateManyPaymentMethodInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+}
+
+input TransactionUncheckedCreateNestedManyWithoutPaymentMethodInput {
+  create: [TransactionCreateWithoutPaymentMethodInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutPaymentMethodInput!]
+  createMany: TransactionCreateManyPaymentMethodInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+}
+
 input AttachmentUpdateOneRequiredWithoutPaymentMethodsInput {
   create: AttachmentUncheckedCreateWithoutPaymentMethodsInput
   connectOrCreate: AttachmentCreateOrConnectWithoutPaymentMethodsInput
   upsert: AttachmentUpsertWithoutPaymentMethodsInput
   connect: AttachmentWhereUniqueInput
   update: AttachmentUncheckedUpdateWithoutPaymentMethodsInput
+}
+
+input TransactionUpdateManyWithoutPaymentMethodInput {
+  create: [TransactionCreateWithoutPaymentMethodInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutPaymentMethodInput!]
+  upsert: [TransactionUpsertWithWhereUniqueWithoutPaymentMethodInput!]
+  createMany: TransactionCreateManyPaymentMethodInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+  set: [TransactionWhereUniqueInput!]
+  disconnect: [TransactionWhereUniqueInput!]
+  delete: [TransactionWhereUniqueInput!]
+  update: [TransactionUpdateWithWhereUniqueWithoutPaymentMethodInput!]
+  updateMany: [TransactionUpdateManyWithWhereWithoutPaymentMethodInput!]
+  deleteMany: [TransactionScalarWhereInput!]
+}
+
+input TransactionUncheckedUpdateManyWithoutPaymentMethodInput {
+  create: [TransactionCreateWithoutPaymentMethodInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutPaymentMethodInput!]
+  upsert: [TransactionUpsertWithWhereUniqueWithoutPaymentMethodInput!]
+  createMany: TransactionCreateManyPaymentMethodInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+  set: [TransactionWhereUniqueInput!]
+  disconnect: [TransactionWhereUniqueInput!]
+  delete: [TransactionWhereUniqueInput!]
+  update: [TransactionUpdateWithWhereUniqueWithoutPaymentMethodInput!]
+  updateMany: [TransactionUpdateManyWithWhereWithoutPaymentMethodInput!]
+  deleteMany: [TransactionScalarWhereInput!]
+}
+
+input PaymentMethodCreateNestedOneWithoutTransactionsInput {
+  create: PaymentMethodUncheckedCreateWithoutTransactionsInput
+  connectOrCreate: PaymentMethodCreateOrConnectWithoutTransactionsInput
+  connect: PaymentMethodWhereUniqueInput
 }
 
 input UserCreateNestedOneWithoutTransactionsInput {
@@ -7350,6 +7405,14 @@ input SelcomDisbursementCreateNestedOneWithoutTransactionInput {
 
 input EnumTransactionTypeFieldUpdateOperationsInput {
   set: TransactionType
+}
+
+input PaymentMethodUpdateOneRequiredWithoutTransactionsInput {
+  create: PaymentMethodUncheckedCreateWithoutTransactionsInput
+  connectOrCreate: PaymentMethodCreateOrConnectWithoutTransactionsInput
+  upsert: PaymentMethodUpsertWithoutTransactionsInput
+  connect: PaymentMethodWhereUniqueInput
+  update: PaymentMethodUncheckedUpdateWithoutTransactionsInput
 }
 
 input UserUpdateOneRequiredWithoutTransactionsInput {
@@ -8246,11 +8309,11 @@ input DeviceCreateOrConnectWithoutUserInput {
 
 input TransactionCreateWithoutInitiatorInput {
   id: String
-  paymentMethode: String!
   type: TransactionType!
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -8258,7 +8321,7 @@ input TransactionCreateWithoutInitiatorInput {
 
 input TransactionUncheckedCreateWithoutInitiatorInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   mpesaPaymentId: String
   selcomPaymentId: String
@@ -8582,7 +8645,7 @@ input TransactionScalarWhereInput {
   OR: [TransactionScalarWhereInput!]
   NOT: [TransactionScalarWhereInput!]
   id: StringFilter
-  paymentMethode: StringFilter
+  paymentMethodId: StringFilter
   type: EnumTransactionTypeFilter
   userId: StringFilter
   mpesaPaymentId: StringNullableFilter
@@ -8925,6 +8988,7 @@ input PaymentMethodCreateWithoutLogoInput {
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  transactions: TransactionCreateNestedManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodUncheckedCreateWithoutLogoInput {
@@ -8934,6 +8998,7 @@ input PaymentMethodUncheckedCreateWithoutLogoInput {
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  transactions: TransactionUncheckedCreateNestedManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodCreateOrConnectWithoutLogoInput {
@@ -9078,6 +9143,7 @@ input PaymentMethodUpdateWithoutLogoInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  transactions: TransactionUpdateManyWithoutPaymentMethodInput
 }
 
 input PaymentMethodUncheckedUpdateWithoutLogoInput {
@@ -9087,6 +9153,7 @@ input PaymentMethodUncheckedUpdateWithoutLogoInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  transactions: TransactionUncheckedUpdateManyWithoutPaymentMethodInput
 }
 
 input LocationCreateWithoutOrganizationsInput {
@@ -11593,6 +11660,40 @@ input AttachmentCreateOrConnectWithoutPaymentMethodsInput {
   create: AttachmentUncheckedCreateWithoutPaymentMethodsInput!
 }
 
+input TransactionCreateWithoutPaymentMethodInput {
+  id: String
+  type: TransactionType!
+  state: State
+  createdAt: DateTime
+  updatedAt: DateTime
+  initiator: UserCreateNestedOneWithoutTransactionsInput!
+  mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
+  selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
+  selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
+}
+
+input TransactionUncheckedCreateWithoutPaymentMethodInput {
+  id: String
+  type: TransactionType!
+  userId: String!
+  mpesaPaymentId: String
+  selcomPaymentId: String
+  selcomDisbursementId: String
+  state: State
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input TransactionCreateOrConnectWithoutPaymentMethodInput {
+  where: TransactionWhereUniqueInput!
+  create: TransactionUncheckedCreateWithoutPaymentMethodInput!
+}
+
+input TransactionCreateManyPaymentMethodInputEnvelope {
+  data: [TransactionCreateManyPaymentMethodInput!]!
+  skipDuplicates: Boolean
+}
+
 input AttachmentUpsertWithoutPaymentMethodsInput {
   update: AttachmentUncheckedUpdateWithoutPaymentMethodsInput!
   create: AttachmentUncheckedCreateWithoutPaymentMethodsInput!
@@ -11636,6 +11737,47 @@ input AttachmentUncheckedUpdateWithoutPaymentMethodsInput {
   services: ServiceUncheckedUpdateManyWithoutImageInput
   serviceCategory: ServiceCategoryUncheckedUpdateOneWithoutImageInput
   users: UserUncheckedUpdateManyWithoutAvatorInput
+}
+
+input TransactionUpsertWithWhereUniqueWithoutPaymentMethodInput {
+  where: TransactionWhereUniqueInput!
+  update: TransactionUncheckedUpdateWithoutPaymentMethodInput!
+  create: TransactionUncheckedCreateWithoutPaymentMethodInput!
+}
+
+input TransactionUpdateWithWhereUniqueWithoutPaymentMethodInput {
+  where: TransactionWhereUniqueInput!
+  data: TransactionUncheckedUpdateWithoutPaymentMethodInput!
+}
+
+input TransactionUpdateManyWithWhereWithoutPaymentMethodInput {
+  where: TransactionScalarWhereInput!
+  data: TransactionUncheckedUpdateManyWithoutTransactionsInput!
+}
+
+input PaymentMethodCreateWithoutTransactionsInput {
+  id: String
+  name: String!
+  description: String
+  state: State
+  createdAt: DateTime
+  updatedAt: DateTime
+  logo: AttachmentCreateNestedOneWithoutPaymentMethodsInput!
+}
+
+input PaymentMethodUncheckedCreateWithoutTransactionsInput {
+  id: String
+  name: String!
+  description: String
+  attachmentId: String!
+  state: State
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input PaymentMethodCreateOrConnectWithoutTransactionsInput {
+  where: PaymentMethodWhereUniqueInput!
+  create: PaymentMethodUncheckedCreateWithoutTransactionsInput!
 }
 
 input UserCreateWithoutTransactionsInput {
@@ -11815,6 +11957,31 @@ input SelcomDisbursementUncheckedCreateWithoutTransactionInput {
 input SelcomDisbursementCreateOrConnectWithoutTransactionInput {
   where: SelcomDisbursementWhereUniqueInput!
   create: SelcomDisbursementUncheckedCreateWithoutTransactionInput!
+}
+
+input PaymentMethodUpsertWithoutTransactionsInput {
+  update: PaymentMethodUncheckedUpdateWithoutTransactionsInput!
+  create: PaymentMethodUncheckedCreateWithoutTransactionsInput!
+}
+
+input PaymentMethodUpdateWithoutTransactionsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  logo: AttachmentUpdateOneRequiredWithoutPaymentMethodsInput
+}
+
+input PaymentMethodUncheckedUpdateWithoutTransactionsInput {
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  description: NullableStringFieldUpdateOperationsInput
+  attachmentId: StringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
 input UserUpsertWithoutTransactionsInput {
@@ -12037,11 +12204,11 @@ input OrderCreateOrConnectWithoutMpesa_paymentInput {
 
 input TransactionCreateWithoutMpesaPaymentInput {
   id: String
-  paymentMethode: String!
   type: TransactionType!
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -12049,7 +12216,7 @@ input TransactionCreateWithoutMpesaPaymentInput {
 
 input TransactionUncheckedCreateWithoutMpesaPaymentInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   userId: String!
   selcomPaymentId: String
@@ -12110,11 +12277,11 @@ input TransactionUpsertWithoutMpesaPaymentInput {
 
 input TransactionUpdateWithoutMpesaPaymentInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -12122,7 +12289,7 @@ input TransactionUpdateWithoutMpesaPaymentInput {
 
 input TransactionUncheckedUpdateWithoutMpesaPaymentInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
@@ -12134,11 +12301,11 @@ input TransactionUncheckedUpdateWithoutMpesaPaymentInput {
 
 input TransactionCreateWithoutSelcomDisbursementInput {
   id: String
-  paymentMethode: String!
   type: TransactionType!
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
@@ -12146,7 +12313,7 @@ input TransactionCreateWithoutSelcomDisbursementInput {
 
 input TransactionUncheckedCreateWithoutSelcomDisbursementInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   userId: String!
   mpesaPaymentId: String
@@ -12168,11 +12335,11 @@ input TransactionUpsertWithoutSelcomDisbursementInput {
 
 input TransactionUpdateWithoutSelcomDisbursementInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
@@ -12180,7 +12347,7 @@ input TransactionUpdateWithoutSelcomDisbursementInput {
 
 input TransactionUncheckedUpdateWithoutSelcomDisbursementInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
@@ -12231,11 +12398,11 @@ input OrderCreateOrConnectWithoutSelcom_paymentInput {
 
 input TransactionCreateWithoutSelcomPaymentInput {
   id: String
-  paymentMethode: String!
   type: TransactionType!
   state: State
   createdAt: DateTime
   updatedAt: DateTime
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -12243,7 +12410,7 @@ input TransactionCreateWithoutSelcomPaymentInput {
 
 input TransactionUncheckedCreateWithoutSelcomPaymentInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   userId: String!
   mpesaPaymentId: String
@@ -12304,11 +12471,11 @@ input TransactionUpsertWithoutSelcomPaymentInput {
 
 input TransactionUpdateWithoutSelcomPaymentInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -12316,7 +12483,7 @@ input TransactionUpdateWithoutSelcomPaymentInput {
 
 input TransactionUncheckedUpdateWithoutSelcomPaymentInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
@@ -12413,7 +12580,7 @@ input InviteCreateManyInviteeInput {
 
 input TransactionCreateManyInitiatorInput {
   id: String
-  paymentMethode: String!
+  paymentMethodId: String!
   type: TransactionType!
   mpesaPaymentId: String
   selcomPaymentId: String
@@ -12743,11 +12910,11 @@ input InviteUncheckedUpdateManyWithoutInvitedInput {
 
 input TransactionUpdateWithoutInitiatorInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -12755,7 +12922,7 @@ input TransactionUpdateWithoutInitiatorInput {
 
 input TransactionUncheckedUpdateWithoutInitiatorInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
@@ -12767,7 +12934,7 @@ input TransactionUncheckedUpdateWithoutInitiatorInput {
 
 input TransactionUncheckedUpdateManyWithoutTransactionsInput {
   id: StringFieldUpdateOperationsInput
-  paymentMethode: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
@@ -13493,6 +13660,42 @@ input UserUncheckedUpdateWithoutLocationInput {
   transactions: TransactionUncheckedUpdateManyWithoutInitiatorInput
 }
 
+input TransactionCreateManyPaymentMethodInput {
+  id: String
+  type: TransactionType!
+  userId: String!
+  mpesaPaymentId: String
+  selcomPaymentId: String
+  selcomDisbursementId: String
+  state: State
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+input TransactionUpdateWithoutPaymentMethodInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumTransactionTypeFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
+  selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
+  selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
+}
+
+input TransactionUncheckedUpdateWithoutPaymentMethodInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumTransactionTypeFieldUpdateOperationsInput
+  userId: StringFieldUpdateOperationsInput
+  mpesaPaymentId: NullableStringFieldUpdateOperationsInput
+  selcomPaymentId: NullableStringFieldUpdateOperationsInput
+  selcomDisbursementId: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
 type AggregateCasbinRule {
   _count: CasbinRuleCountAggregateOutputType
   count: CasbinRuleCountAggregateOutputType
@@ -14183,6 +14386,10 @@ type InviteMaxAggregateOutputType {
   updatedAt: DateTime
 }
 
+type PaymentMethodCountOutputType {
+  transactions: Int!
+}
+
 type PaymentMethodCountAggregateOutputType {
   id: Int!
   name: Int!
@@ -14216,7 +14423,7 @@ type PaymentMethodMaxAggregateOutputType {
 
 type TransactionCountAggregateOutputType {
   id: Int!
-  paymentMethode: Int!
+  paymentMethodId: Int!
   type: Int!
   userId: Int!
   mpesaPaymentId: Int!
@@ -14230,7 +14437,7 @@ type TransactionCountAggregateOutputType {
 
 type TransactionMinAggregateOutputType {
   id: String
-  paymentMethode: String
+  paymentMethodId: String
   type: TransactionType
   userId: String
   mpesaPaymentId: String
@@ -14243,7 +14450,7 @@ type TransactionMinAggregateOutputType {
 
 type TransactionMaxAggregateOutputType {
   id: String
-  paymentMethode: String
+  paymentMethodId: String
   type: TransactionType
   userId: String
   mpesaPaymentId: String

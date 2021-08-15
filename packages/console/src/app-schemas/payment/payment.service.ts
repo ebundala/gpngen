@@ -33,7 +33,7 @@ export class PaymentService{
                    }
                },
                type: TransactionType.PAYMENT,
-               paymentMethode: method,
+               paymentMethod:{ connect:{ id: method}},
                mpesaPayment:{
                    create:{
                     // order:{
