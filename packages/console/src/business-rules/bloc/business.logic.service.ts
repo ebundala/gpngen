@@ -50,18 +50,34 @@ export class BusinessLogicService {
     const { every,some } = args.where.offers ?? {}
     let categories = [], notCategories = [];
     if (some?.id?.equals) {
-      categories.push(every.id.equals)
+      categories.push(some.id.equals)
     }
     if (some?.id?.in) {
-      categories.push(...every.id.in)
+      categories.push(...some.id.in)
     }
     if (some?.id?.notEqual) {
-      notCategories.push(every.id.notEqual)
+      notCategories.push(some.id.notEqual)
     }
     if (some?.id?.notIn) {
-      notCategories.push(...every.id.notIn)
+      notCategories.push(...some.id.notIn)
     }
 
+
+
+
+    if (every?.id?.equals) {
+      categories.push(every.id.equals)
+    }
+    if (every?.id?.in) {
+      categories.push(...every.id.in)
+    }
+    if (every?.id?.notEqual) {
+      notCategories.push(every.id.notEqual)
+    }
+    if (every?.id?.notIn) {
+      notCategories.push(...every.id.notIn)
+    }
+    
     const gisQuery = (prisma,
       categories: string[],
       notCategories: string[],
