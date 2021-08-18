@@ -69,7 +69,6 @@ type User {
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
-  organizationId(action: PERMISSION): PERMISSION
   avator: Attachment
   location: Location
   orders(where: OrderWhereInput, orderBy: [OrderOrderByInput!], cursor: OrderWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Order
@@ -1339,6 +1338,7 @@ type PaymentMethod {
   description(action: PERMISSION): PERMISSION
   logo: Attachment
   attachmentId(action: PERMISSION): PERMISSION
+  code(action: PERMISSION): PERMISSION
   transactions(where: TransactionWhereInput, orderBy: [TransactionOrderByInput!], cursor: TransactionWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Transaction
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
@@ -1719,7 +1719,6 @@ enum UserScalarFieldEnum {
   updatedAt
   avatorId
   locationId
-  organizationId
 }
 
 enum DeviceScalarFieldEnum {
@@ -1833,6 +1832,7 @@ enum PaymentMethodScalarFieldEnum {
   name
   description
   attachmentId
+  code
   state
   createdAt
   updatedAt
@@ -1956,6 +1956,16 @@ enum InviteType {
   ORGANIZATION
 }
 
+enum SelcomUtilityCode {
+  VMCASHIN
+  AMCASHIN
+  TPCASHIN
+  EZCASHIN
+  SPCASHIN
+  HPCASHIN
+  TTCASHIN
+}
+
 enum TransactionType {
   PAYMENT
   DISBURSEMENT
@@ -1965,16 +1975,6 @@ enum SelcomPaymentStatus {
   PENDING
   SUCCESS
   FAILED
-}
-
-enum SelcomUtilityCode {
-  VMCASHIN
-  AMCASHIN
-  TPCASHIN
-  EZCASHIN
-  SPCASHIN
-  HPCASHIN
-  TTCASHIN
 }
 
 input CasbinRuleWhereInput {
@@ -2062,7 +2062,6 @@ input UserWhereInput {
   updatedAt: DateTimeFilter
   avatorId: StringNullableFilter
   locationId: StringNullableFilter
-  organizationId: StringNullableFilter
   avator: AttachmentWhereInput
   location: LocationWhereInput
   orders: OrderListRelationFilter
@@ -2092,7 +2091,6 @@ input UserOrderByInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input UserWhereUniqueInput {
@@ -2115,7 +2113,6 @@ input UserOrderByWithAggregationInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   _count: UserCountOrderByAggregateInput
   _max: UserMaxOrderByAggregateInput
   _min: UserMinOrderByAggregateInput
@@ -2139,7 +2136,6 @@ input UserScalarWhereWithAggregatesInput {
   updatedAt: DateTimeWithAggregatesFilter
   avatorId: StringNullableWithAggregatesFilter
   locationId: StringNullableWithAggregatesFilter
-  organizationId: StringNullableWithAggregatesFilter
 }
 
 input DeviceWhereInput {
@@ -2727,6 +2723,7 @@ input PaymentMethodWhereInput {
   description: StringNullableFilter
   logo: AttachmentWhereInput
   attachmentId: StringFilter
+  code: EnumSelcomUtilityCodeFilter
   transactions: TransactionListRelationFilter
   state: EnumStateFilter
   createdAt: DateTimeFilter
@@ -2738,6 +2735,7 @@ input PaymentMethodOrderByInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -2752,6 +2750,7 @@ input PaymentMethodOrderByWithAggregationInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -2768,6 +2767,7 @@ input PaymentMethodScalarWhereWithAggregatesInput {
   name: StringWithAggregatesFilter
   description: StringNullableWithAggregatesFilter
   attachmentId: StringWithAggregatesFilter
+  code: EnumSelcomUtilityCodeWithAggregatesFilter
   state: EnumStateWithAggregatesFilter
   createdAt: DateTimeWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
@@ -3204,7 +3204,6 @@ input UserCreateInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -3234,7 +3233,6 @@ input UserUncheckedCreateInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -3259,7 +3257,6 @@ input UserUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -3289,7 +3286,6 @@ input UserUncheckedUpdateInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -3316,7 +3312,6 @@ input UserCreateManyInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input UserUpdateManyMutationInput {
@@ -3332,7 +3327,6 @@ input UserUpdateManyMutationInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input UserUncheckedUpdateManyInput {
@@ -3350,7 +3344,6 @@ input UserUncheckedUpdateManyInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input DeviceCreateInput {
@@ -4096,6 +4089,7 @@ input PaymentMethodCreateInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -4108,6 +4102,7 @@ input PaymentMethodUncheckedCreateInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -4118,6 +4113,7 @@ input PaymentMethodUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -4130,6 +4126,7 @@ input PaymentMethodUncheckedUpdateInput {
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
   attachmentId: StringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -4141,6 +4138,7 @@ input PaymentMethodCreateManyInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -4150,6 +4148,7 @@ input PaymentMethodUpdateManyMutationInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -4160,6 +4159,7 @@ input PaymentMethodUncheckedUpdateManyInput {
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
   attachmentId: StringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -4908,7 +4908,6 @@ input UserCountOrderByAggregateInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input UserMaxOrderByAggregateInput {
@@ -4926,7 +4925,6 @@ input UserMaxOrderByAggregateInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input UserMinOrderByAggregateInput {
@@ -4944,7 +4942,6 @@ input UserMinOrderByAggregateInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input DateTimeNullableWithAggregatesFilter {
@@ -5512,11 +5509,19 @@ input EnumInviteTypeWithAggregatesFilter {
   max: NestedEnumInviteTypeFilter
 }
 
+input EnumSelcomUtilityCodeFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumSelcomUtilityCodeFilter
+}
+
 input PaymentMethodCountOrderByAggregateInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -5527,6 +5532,7 @@ input PaymentMethodMaxOrderByAggregateInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -5537,9 +5543,23 @@ input PaymentMethodMinOrderByAggregateInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
+}
+
+input EnumSelcomUtilityCodeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumSelcomUtilityCodeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumSelcomUtilityCodeFilter
+  min: NestedEnumSelcomUtilityCodeFilter
+  _max: NestedEnumSelcomUtilityCodeFilter
+  max: NestedEnumSelcomUtilityCodeFilter
 }
 
 input EnumTransactionTypeFilter {
@@ -5678,13 +5698,6 @@ input EnumSelcomPaymentStatusFilter {
   not: NestedEnumSelcomPaymentStatusFilter
 }
 
-input EnumSelcomUtilityCodeFilter {
-  equals: PERMISSION
-  in: PERMISSION
-  notIn: PERMISSION
-  not: NestedEnumSelcomUtilityCodeFilter
-}
-
 input SelcomDisbursementCountOrderByAggregateInput {
   id: PERMISSION
   amount: PERMISSION
@@ -5754,19 +5767,6 @@ input EnumSelcomPaymentStatusWithAggregatesFilter {
   min: NestedEnumSelcomPaymentStatusFilter
   _max: NestedEnumSelcomPaymentStatusFilter
   max: NestedEnumSelcomPaymentStatusFilter
-}
-
-input EnumSelcomUtilityCodeWithAggregatesFilter {
-  equals: PERMISSION
-  in: PERMISSION
-  notIn: PERMISSION
-  not: NestedEnumSelcomUtilityCodeWithAggregatesFilter
-  _count: NestedIntFilter
-  count: NestedIntFilter
-  _min: NestedEnumSelcomUtilityCodeFilter
-  min: NestedEnumSelcomUtilityCodeFilter
-  _max: NestedEnumSelcomUtilityCodeFilter
-  max: NestedEnumSelcomUtilityCodeFilter
 }
 
 input SelcomPaymentCountOrderByAggregateInput {
@@ -7353,6 +7353,10 @@ input TransactionUncheckedCreateNestedManyWithoutPaymentMethodInput {
   connect: [TransactionWhereUniqueInput!]
 }
 
+input EnumSelcomUtilityCodeFieldUpdateOperationsInput {
+  set: PERMISSION
+}
+
 input AttachmentUpdateOneRequiredWithoutPaymentMethodsInput {
   create: AttachmentUncheckedCreateWithoutPaymentMethodsInput
   connectOrCreate: AttachmentCreateOrConnectWithoutPaymentMethodsInput
@@ -7528,10 +7532,6 @@ input TransactionUncheckedCreateNestedOneWithoutSelcomDisbursementInput {
 }
 
 input EnumSelcomPaymentStatusFieldUpdateOperationsInput {
-  set: PERMISSION
-}
-
-input EnumSelcomUtilityCodeFieldUpdateOperationsInput {
   set: PERMISSION
 }
 
@@ -7916,6 +7916,26 @@ input NestedEnumInviteTypeWithAggregatesFilter {
   max: NestedEnumInviteTypeFilter
 }
 
+input NestedEnumSelcomUtilityCodeFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumSelcomUtilityCodeFilter
+}
+
+input NestedEnumSelcomUtilityCodeWithAggregatesFilter {
+  equals: PERMISSION
+  in: PERMISSION
+  notIn: PERMISSION
+  not: NestedEnumSelcomUtilityCodeWithAggregatesFilter
+  _count: NestedIntFilter
+  count: NestedIntFilter
+  _min: NestedEnumSelcomUtilityCodeFilter
+  min: NestedEnumSelcomUtilityCodeFilter
+  _max: NestedEnumSelcomUtilityCodeFilter
+  max: NestedEnumSelcomUtilityCodeFilter
+}
+
 input NestedEnumTransactionTypeFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -7943,13 +7963,6 @@ input NestedEnumSelcomPaymentStatusFilter {
   not: NestedEnumSelcomPaymentStatusFilter
 }
 
-input NestedEnumSelcomUtilityCodeFilter {
-  equals: PERMISSION
-  in: PERMISSION
-  notIn: PERMISSION
-  not: NestedEnumSelcomUtilityCodeFilter
-}
-
 input NestedEnumSelcomPaymentStatusWithAggregatesFilter {
   equals: PERMISSION
   in: PERMISSION
@@ -7961,19 +7974,6 @@ input NestedEnumSelcomPaymentStatusWithAggregatesFilter {
   min: NestedEnumSelcomPaymentStatusFilter
   _max: NestedEnumSelcomPaymentStatusFilter
   max: NestedEnumSelcomPaymentStatusFilter
-}
-
-input NestedEnumSelcomUtilityCodeWithAggregatesFilter {
-  equals: PERMISSION
-  in: PERMISSION
-  notIn: PERMISSION
-  not: NestedEnumSelcomUtilityCodeWithAggregatesFilter
-  _count: NestedIntFilter
-  count: NestedIntFilter
-  _min: NestedEnumSelcomUtilityCodeFilter
-  min: NestedEnumSelcomUtilityCodeFilter
-  _max: NestedEnumSelcomUtilityCodeFilter
-  max: NestedEnumSelcomUtilityCodeFilter
 }
 
 input AttachmentCreateOrConnectWithoutUsersInput {
@@ -8685,7 +8685,6 @@ input UserCreateWithoutDeviceInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -8714,7 +8713,6 @@ input UserUncheckedCreateWithoutDeviceInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -8748,7 +8746,6 @@ input UserUpdateWithoutDeviceInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -8777,7 +8774,6 @@ input UserUncheckedUpdateWithoutDeviceInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -8947,7 +8943,6 @@ input UserCreateWithoutAvatorInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
@@ -8975,7 +8970,6 @@ input UserUncheckedCreateWithoutAvatorInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -9001,6 +8995,7 @@ input PaymentMethodCreateWithoutLogoInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -9011,6 +9006,7 @@ input PaymentMethodUncheckedCreateWithoutLogoInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -9144,7 +9140,6 @@ input UserScalarWhereInput {
   updatedAt: DateTimeFilter
   avatorId: StringNullableFilter
   locationId: StringNullableFilter
-  organizationId: StringNullableFilter
 }
 
 input PaymentMethodUpsertWithoutLogoInput {
@@ -9156,6 +9151,7 @@ input PaymentMethodUpdateWithoutLogoInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -9166,6 +9162,7 @@ input PaymentMethodUncheckedUpdateWithoutLogoInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -9219,7 +9216,6 @@ input UserCreateWithoutOrganizationsInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -9248,7 +9244,6 @@ input UserUncheckedCreateWithoutOrganizationsInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
   rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -9412,7 +9407,6 @@ input UserCreateWithoutStaffOfInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -9441,7 +9435,6 @@ input UserUncheckedCreateWithoutStaffOfInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -9584,7 +9577,6 @@ input UserUpdateWithoutOrganizationsInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -9613,7 +9605,6 @@ input UserUncheckedUpdateWithoutOrganizationsInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
   rated: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -10014,7 +10005,6 @@ input UserCreateWithoutOrdersInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
@@ -10043,7 +10033,6 @@ input UserUncheckedCreateWithoutOrdersInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
   rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -10108,7 +10097,6 @@ input UserCreateWithoutProvidesInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -10137,7 +10125,6 @@ input UserUncheckedCreateWithoutProvidesInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -10321,7 +10308,6 @@ input UserUpdateWithoutOrdersInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
@@ -10350,7 +10336,6 @@ input UserUncheckedUpdateWithoutOrdersInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
   rated: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -10455,7 +10440,6 @@ input UserUpdateWithoutProvidesInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -10484,7 +10468,6 @@ input UserUncheckedUpdateWithoutProvidesInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -10854,7 +10837,6 @@ input UserCreateWithoutRatedInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -10883,7 +10865,6 @@ input UserUncheckedCreateWithoutRatedInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -10912,7 +10893,6 @@ input UserCreateWithoutRatingsInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -10941,7 +10921,6 @@ input UserUncheckedCreateWithoutRatingsInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   rated: RatingUncheckedCreateNestedManyWithoutOwnerInput
@@ -11012,7 +10991,6 @@ input UserUpdateWithoutRatedInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -11041,7 +11019,6 @@ input UserUncheckedUpdateWithoutRatedInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -11070,7 +11047,6 @@ input UserUpdateWithoutRatingsInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -11099,7 +11075,6 @@ input UserUncheckedUpdateWithoutRatingsInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   rated: RatingUncheckedUpdateManyWithoutOwnerInput
@@ -11165,7 +11140,6 @@ input UserCreateWithoutLocationInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
   organizations: OrganizationCreateNestedManyWithoutOwnerInput
@@ -11193,7 +11167,6 @@ input UserUncheckedCreateWithoutLocationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -11338,7 +11311,6 @@ input UserCreateWithoutInvitesInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -11367,7 +11339,6 @@ input UserUncheckedCreateWithoutInvitesInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -11396,7 +11367,6 @@ input UserCreateWithoutInvitedInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -11425,7 +11395,6 @@ input UserUncheckedCreateWithoutInvitedInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -11496,7 +11465,6 @@ input UserUpdateWithoutInvitesInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -11525,7 +11493,6 @@ input UserUncheckedUpdateWithoutInvitesInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -11554,7 +11521,6 @@ input UserUpdateWithoutInvitedInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -11583,7 +11549,6 @@ input UserUncheckedUpdateWithoutInvitedInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -11775,6 +11740,7 @@ input PaymentMethodCreateWithoutTransactionsInput {
   id: PERMISSION
   name: PERMISSION
   description: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -11786,6 +11752,7 @@ input PaymentMethodUncheckedCreateWithoutTransactionsInput {
   name: PERMISSION
   description: PERMISSION
   attachmentId: PERMISSION
+  code: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -11809,7 +11776,6 @@ input UserCreateWithoutTransactionsInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  organizationId: PERMISSION
   avator: AttachmentCreateNestedOneWithoutUsersInput
   location: LocationCreateNestedOneWithoutUsersInput
   orders: OrderCreateNestedManyWithoutOwnerInput
@@ -11838,7 +11804,6 @@ input UserUncheckedCreateWithoutTransactionsInput {
   updatedAt: PERMISSION
   avatorId: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
   orders: OrderUncheckedCreateNestedManyWithoutOwnerInput
   organizations: OrganizationUncheckedCreateNestedManyWithoutOwnerInput
   ratings: RatingUncheckedCreateNestedManyWithoutUserInput
@@ -11984,6 +11949,7 @@ input PaymentMethodUpdateWithoutTransactionsInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -11995,6 +11961,7 @@ input PaymentMethodUncheckedUpdateWithoutTransactionsInput {
   name: StringFieldUpdateOperationsInput
   description: NullableStringFieldUpdateOperationsInput
   attachmentId: StringFieldUpdateOperationsInput
+  code: EnumSelcomUtilityCodeFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -12018,7 +11985,6 @@ input UserUpdateWithoutTransactionsInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -12047,7 +12013,6 @@ input UserUncheckedUpdateWithoutTransactionsInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -13012,7 +12977,6 @@ input UserCreateManyAvatorInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   locationId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input OrderUpdateWithoutReceiptInput {
@@ -13132,7 +13096,6 @@ input UserUpdateWithoutAvatorInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
@@ -13160,7 +13123,6 @@ input UserUncheckedUpdateWithoutAvatorInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -13186,7 +13148,6 @@ input UserUncheckedUpdateManyWithoutUsersInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input OrderCreateManyOrganizationInput {
@@ -13360,7 +13321,6 @@ input UserUpdateWithoutStaffOfInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   location: LocationUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
@@ -13389,7 +13349,6 @@ input UserUncheckedUpdateWithoutStaffOfInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -13416,7 +13375,6 @@ input UserUncheckedUpdateManyWithoutStaffsInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
 }
 
 input InviteUpdateWithoutOrganizationInput {
@@ -13588,7 +13546,6 @@ input UserCreateManyLocationInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   avatorId: PERMISSION
-  organizationId: PERMISSION
 }
 
 input OrganizationUpdateWithoutLocationInput {
@@ -13636,7 +13593,6 @@ input UserUpdateWithoutLocationInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   avator: AttachmentUpdateOneWithoutUsersInput
   orders: OrderUpdateManyWithoutOwnerInput
   organizations: OrganizationUpdateManyWithoutOwnerInput
@@ -13664,7 +13620,6 @@ input UserUncheckedUpdateWithoutLocationInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   avatorId: NullableStringFieldUpdateOperationsInput
-  organizationId: NullableStringFieldUpdateOperationsInput
   orders: OrderUncheckedUpdateManyWithoutOwnerInput
   organizations: OrganizationUncheckedUpdateManyWithoutOwnerInput
   ratings: RatingUncheckedUpdateManyWithoutUserInput
@@ -13963,7 +13918,6 @@ type UserCountAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
-  organizationId(action: PERMISSION): PERMISSION
   _all(action: PERMISSION): PERMISSION
 }
 
@@ -13982,7 +13936,6 @@ type UserMinAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
-  organizationId(action: PERMISSION): PERMISSION
 }
 
 type UserMaxAggregateOutputType {
@@ -14000,7 +13953,6 @@ type UserMaxAggregateOutputType {
   updatedAt(action: PERMISSION): PERMISSION
   avatorId(action: PERMISSION): PERMISSION
   locationId(action: PERMISSION): PERMISSION
-  organizationId(action: PERMISSION): PERMISSION
 }
 
 type DeviceCountAggregateOutputType {
@@ -14411,6 +14363,7 @@ type PaymentMethodCountAggregateOutputType {
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
   attachmentId(action: PERMISSION): PERMISSION
+  code(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
@@ -14422,6 +14375,7 @@ type PaymentMethodMinAggregateOutputType {
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
   attachmentId(action: PERMISSION): PERMISSION
+  code(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
@@ -14432,6 +14386,7 @@ type PaymentMethodMaxAggregateOutputType {
   name(action: PERMISSION): PERMISSION
   description(action: PERMISSION): PERMISSION
   attachmentId(action: PERMISSION): PERMISSION
+  code(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION

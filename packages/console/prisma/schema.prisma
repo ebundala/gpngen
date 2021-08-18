@@ -42,14 +42,14 @@ model User {
   updatedAt      DateTime       @updatedAt
   avatorId       String?
   locationId     String?
-  organizationId String?
+  // organizationId String?
   avator         Attachment?    @relation(fields: [avatorId], references: [id])
   location       Location?      @relation(fields: [locationId], references: [id])
   orders         Order[]
   organizations  Organization[] @relation("ownedBy")
   ratings        Rating[]       @relation("ratingsBy")
   rated        Rating[]       @relation("ratedBy")
-  staffOf        Organization[] @relation("staffOf")
+  staffOf        Organization[] 
   provides       Order[]        @relation("providedBy")
   invites        Invite[]   @relation("invitesBy")
   invited        Invite[]   @relation("invitedBy")
@@ -102,7 +102,7 @@ model Organization {
   ratings     Rating[]
   services    Service[]
   offers      ServiceCategory[]
-  staffs      User[]            @relation("staffOf")
+  staffs      User[]            
   invites     Invite[]          
 }
 

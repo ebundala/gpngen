@@ -4,6 +4,7 @@ type PaymentMethod {
           description: String
           logo: Attachment!
           attachmentId: String!
+          code: SelcomUtilityCode!
           transactions(where: TransactionWhereInput
               orderBy: [TransactionOrderByInput!]
               cursor: TransactionWhereUniqueInput

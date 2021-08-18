@@ -326,6 +326,7 @@ export enum OrganizationScalarFieldEnum {
 
 export enum PaymentMethodScalarFieldEnum {
     attachmentId = "attachmentId",
+    code = "code",
     createdAt = "createdAt",
     description = "description",
     id = "id",
@@ -519,7 +520,6 @@ export enum UserScalarFieldEnum {
     gender = "gender",
     id = "id",
     locationId = "locationId",
-    organizationId = "organizationId",
     phoneNumber = "phoneNumber",
     role = "role",
     state = "state",
@@ -6811,6 +6811,7 @@ export class PaybillRequest {
 
 export class PaymentMethodCountOrderByAggregateInput {
     attachmentId?: Nullable<SortOrder>;
+    code?: Nullable<SortOrder>;
     createdAt?: Nullable<SortOrder>;
     description?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
@@ -6820,6 +6821,7 @@ export class PaymentMethodCountOrderByAggregateInput {
 }
 
 export class PaymentMethodCreateInput {
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6832,6 +6834,7 @@ export class PaymentMethodCreateInput {
 
 export class PaymentMethodCreateManyInput {
     attachmentId: string;
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6863,6 +6866,7 @@ export class PaymentMethodCreateOrConnectWithoutTransactionsInput {
 }
 
 export class PaymentMethodCreateWithoutLogoInput {
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6873,6 +6877,7 @@ export class PaymentMethodCreateWithoutLogoInput {
 }
 
 export class PaymentMethodCreateWithoutTransactionsInput {
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6884,6 +6889,7 @@ export class PaymentMethodCreateWithoutTransactionsInput {
 
 export class PaymentMethodMaxOrderByAggregateInput {
     attachmentId?: Nullable<SortOrder>;
+    code?: Nullable<SortOrder>;
     createdAt?: Nullable<SortOrder>;
     description?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
@@ -6894,6 +6900,7 @@ export class PaymentMethodMaxOrderByAggregateInput {
 
 export class PaymentMethodMinOrderByAggregateInput {
     attachmentId?: Nullable<SortOrder>;
+    code?: Nullable<SortOrder>;
     createdAt?: Nullable<SortOrder>;
     description?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
@@ -6904,6 +6911,7 @@ export class PaymentMethodMinOrderByAggregateInput {
 
 export class PaymentMethodOrderByInput {
     attachmentId?: Nullable<SortOrder>;
+    code?: Nullable<SortOrder>;
     createdAt?: Nullable<SortOrder>;
     description?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
@@ -6917,6 +6925,7 @@ export class PaymentMethodOrderByWithAggregationInput {
     _max?: Nullable<PaymentMethodMaxOrderByAggregateInput>;
     _min?: Nullable<PaymentMethodMinOrderByAggregateInput>;
     attachmentId?: Nullable<SortOrder>;
+    code?: Nullable<SortOrder>;
     createdAt?: Nullable<SortOrder>;
     description?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
@@ -6935,6 +6944,7 @@ export class PaymentMethodScalarWhereWithAggregatesInput {
     NOT?: Nullable<PaymentMethodScalarWhereWithAggregatesInput[]>;
     OR?: Nullable<PaymentMethodScalarWhereWithAggregatesInput[]>;
     attachmentId?: Nullable<StringWithAggregatesFilter>;
+    code?: Nullable<EnumSelcomUtilityCodeWithAggregatesFilter>;
     createdAt?: Nullable<DateTimeWithAggregatesFilter>;
     description?: Nullable<StringNullableWithAggregatesFilter>;
     id?: Nullable<StringWithAggregatesFilter>;
@@ -6945,6 +6955,7 @@ export class PaymentMethodScalarWhereWithAggregatesInput {
 
 export class PaymentMethodUncheckedCreateInput {
     attachmentId: string;
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6961,6 +6972,7 @@ export class PaymentMethodUncheckedCreateNestedOneWithoutLogoInput {
 }
 
 export class PaymentMethodUncheckedCreateWithoutLogoInput {
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6972,6 +6984,7 @@ export class PaymentMethodUncheckedCreateWithoutLogoInput {
 
 export class PaymentMethodUncheckedCreateWithoutTransactionsInput {
     attachmentId: string;
+    code: SelcomUtilityCode;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -6982,6 +6995,7 @@ export class PaymentMethodUncheckedCreateWithoutTransactionsInput {
 
 export class PaymentMethodUncheckedUpdateInput {
     attachmentId?: Nullable<StringFieldUpdateOperationsInput>;
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -6993,6 +7007,7 @@ export class PaymentMethodUncheckedUpdateInput {
 
 export class PaymentMethodUncheckedUpdateManyInput {
     attachmentId?: Nullable<StringFieldUpdateOperationsInput>;
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7012,6 +7027,7 @@ export class PaymentMethodUncheckedUpdateOneWithoutLogoInput {
 }
 
 export class PaymentMethodUncheckedUpdateWithoutLogoInput {
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7023,6 +7039,7 @@ export class PaymentMethodUncheckedUpdateWithoutLogoInput {
 
 export class PaymentMethodUncheckedUpdateWithoutTransactionsInput {
     attachmentId?: Nullable<StringFieldUpdateOperationsInput>;
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7032,6 +7049,7 @@ export class PaymentMethodUncheckedUpdateWithoutTransactionsInput {
 }
 
 export class PaymentMethodUpdateInput {
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7043,6 +7061,7 @@ export class PaymentMethodUpdateInput {
 }
 
 export class PaymentMethodUpdateManyMutationInput {
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7070,6 +7089,7 @@ export class PaymentMethodUpdateOneWithoutLogoInput {
 }
 
 export class PaymentMethodUpdateWithoutLogoInput {
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7080,6 +7100,7 @@ export class PaymentMethodUpdateWithoutLogoInput {
 }
 
 export class PaymentMethodUpdateWithoutTransactionsInput {
+    code?: Nullable<EnumSelcomUtilityCodeFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     description?: Nullable<NullableStringFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -7104,6 +7125,7 @@ export class PaymentMethodWhereInput {
     NOT?: Nullable<PaymentMethodWhereInput[]>;
     OR?: Nullable<PaymentMethodWhereInput[]>;
     attachmentId?: Nullable<StringFilter>;
+    code?: Nullable<EnumSelcomUtilityCodeFilter>;
     createdAt?: Nullable<DateTimeFilter>;
     description?: Nullable<StringNullableFilter>;
     id?: Nullable<StringFilter>;
@@ -10541,7 +10563,6 @@ export class UserCountOrderByAggregateInput {
     gender?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     locationId?: Nullable<SortOrder>;
-    organizationId?: Nullable<SortOrder>;
     phoneNumber?: Nullable<SortOrder>;
     role?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -10563,7 +10584,6 @@ export class UserCreateInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10586,7 +10606,6 @@ export class UserCreateManyAvatorInput {
     gender?: Nullable<Gender>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     role?: Nullable<Role>;
     state?: Nullable<State>;
@@ -10609,7 +10628,6 @@ export class UserCreateManyInput {
     gender?: Nullable<Gender>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     role?: Nullable<Role>;
     state?: Nullable<State>;
@@ -10626,7 +10644,6 @@ export class UserCreateManyLocationInput {
     emailVerified?: Nullable<boolean>;
     gender?: Nullable<Gender>;
     id?: Nullable<string>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     role?: Nullable<Role>;
     state?: Nullable<State>;
@@ -10786,7 +10803,6 @@ export class UserCreateWithoutAvatorInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10813,7 +10829,6 @@ export class UserCreateWithoutDeviceInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10840,7 +10855,6 @@ export class UserCreateWithoutInvitedInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10867,7 +10881,6 @@ export class UserCreateWithoutInvitesInput {
     invited?: Nullable<InviteCreateNestedManyWithoutInviteeInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10894,7 +10907,6 @@ export class UserCreateWithoutLocationInput {
     invited?: Nullable<InviteCreateNestedManyWithoutInviteeInput>;
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10921,7 +10933,6 @@ export class UserCreateWithoutOrdersInput {
     invited?: Nullable<InviteCreateNestedManyWithoutInviteeInput>;
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -10949,7 +10960,6 @@ export class UserCreateWithoutOrganizationsInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
     rated?: Nullable<RatingCreateNestedManyWithoutOwnerInput>;
@@ -10976,7 +10986,6 @@ export class UserCreateWithoutProvidesInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     rated?: Nullable<RatingCreateNestedManyWithoutOwnerInput>;
@@ -11003,7 +11012,6 @@ export class UserCreateWithoutRatedInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -11030,7 +11038,6 @@ export class UserCreateWithoutRatingsInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -11057,7 +11064,6 @@ export class UserCreateWithoutStaffOfInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -11084,7 +11090,6 @@ export class UserCreateWithoutTransactionsInput {
     invites?: Nullable<InviteCreateNestedManyWithoutInviterInput>;
     location?: Nullable<LocationCreateNestedOneWithoutUsersInput>;
     orders?: Nullable<OrderCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderCreateNestedManyWithoutProviderInput>;
@@ -11113,7 +11118,6 @@ export class UserMaxOrderByAggregateInput {
     gender?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     locationId?: Nullable<SortOrder>;
-    organizationId?: Nullable<SortOrder>;
     phoneNumber?: Nullable<SortOrder>;
     role?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -11131,7 +11135,6 @@ export class UserMinOrderByAggregateInput {
     gender?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     locationId?: Nullable<SortOrder>;
-    organizationId?: Nullable<SortOrder>;
     phoneNumber?: Nullable<SortOrder>;
     role?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -11149,7 +11152,6 @@ export class UserOrderByInput {
     gender?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     locationId?: Nullable<SortOrder>;
-    organizationId?: Nullable<SortOrder>;
     phoneNumber?: Nullable<SortOrder>;
     role?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -11170,7 +11172,6 @@ export class UserOrderByWithAggregationInput {
     gender?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     locationId?: Nullable<SortOrder>;
-    organizationId?: Nullable<SortOrder>;
     phoneNumber?: Nullable<SortOrder>;
     role?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -11196,7 +11197,6 @@ export class UserScalarWhereInput {
     gender?: Nullable<EnumGenderFilter>;
     id?: Nullable<StringFilter>;
     locationId?: Nullable<StringNullableFilter>;
-    organizationId?: Nullable<StringNullableFilter>;
     phoneNumber?: Nullable<StringNullableFilter>;
     role?: Nullable<EnumRoleFilter>;
     state?: Nullable<EnumStateFilter>;
@@ -11217,7 +11217,6 @@ export class UserScalarWhereWithAggregatesInput {
     gender?: Nullable<EnumGenderWithAggregatesFilter>;
     id?: Nullable<StringWithAggregatesFilter>;
     locationId?: Nullable<StringNullableWithAggregatesFilter>;
-    organizationId?: Nullable<StringNullableWithAggregatesFilter>;
     phoneNumber?: Nullable<StringNullableWithAggregatesFilter>;
     role?: Nullable<EnumRoleWithAggregatesFilter>;
     state?: Nullable<EnumStateWithAggregatesFilter>;
@@ -11239,7 +11238,6 @@ export class UserUncheckedCreateInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11279,7 +11277,6 @@ export class UserUncheckedCreateWithoutAvatorInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11305,7 +11302,6 @@ export class UserUncheckedCreateWithoutDeviceInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11331,7 +11327,6 @@ export class UserUncheckedCreateWithoutInvitedInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11357,7 +11352,6 @@ export class UserUncheckedCreateWithoutInvitesInput {
     invited?: Nullable<InviteUncheckedCreateNestedManyWithoutInviteeInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11383,7 +11377,6 @@ export class UserUncheckedCreateWithoutLocationInput {
     invited?: Nullable<InviteUncheckedCreateNestedManyWithoutInviteeInput>;
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11409,7 +11402,6 @@ export class UserUncheckedCreateWithoutOrdersInput {
     invited?: Nullable<InviteUncheckedCreateNestedManyWithoutInviteeInput>;
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11436,7 +11428,6 @@ export class UserUncheckedCreateWithoutOrganizationsInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
     rated?: Nullable<RatingUncheckedCreateNestedManyWithoutOwnerInput>;
@@ -11462,7 +11453,6 @@ export class UserUncheckedCreateWithoutProvidesInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     rated?: Nullable<RatingUncheckedCreateNestedManyWithoutOwnerInput>;
@@ -11488,7 +11478,6 @@ export class UserUncheckedCreateWithoutRatedInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11514,7 +11503,6 @@ export class UserUncheckedCreateWithoutRatingsInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11540,7 +11528,6 @@ export class UserUncheckedCreateWithoutStaffOfInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11567,7 +11554,6 @@ export class UserUncheckedCreateWithoutTransactionsInput {
     invites?: Nullable<InviteUncheckedCreateNestedManyWithoutInviterInput>;
     locationId?: Nullable<string>;
     orders?: Nullable<OrderUncheckedCreateNestedManyWithoutOwnerInput>;
-    organizationId?: Nullable<string>;
     organizations?: Nullable<OrganizationUncheckedCreateNestedManyWithoutOwnerInput>;
     phoneNumber?: Nullable<string>;
     provides?: Nullable<OrderUncheckedCreateNestedManyWithoutProviderInput>;
@@ -11593,7 +11579,6 @@ export class UserUncheckedUpdateInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11616,7 +11601,6 @@ export class UserUncheckedUpdateManyInput {
     gender?: Nullable<EnumGenderFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     role?: Nullable<EnumRoleFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -11662,7 +11646,6 @@ export class UserUncheckedUpdateManyWithoutStaffsInput {
     gender?: Nullable<EnumGenderFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     role?: Nullable<EnumRoleFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -11679,7 +11662,6 @@ export class UserUncheckedUpdateManyWithoutUsersInput {
     gender?: Nullable<EnumGenderFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     role?: Nullable<EnumRoleFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -11700,7 +11682,6 @@ export class UserUncheckedUpdateWithoutAvatorInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11726,7 +11707,6 @@ export class UserUncheckedUpdateWithoutDeviceInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11752,7 +11732,6 @@ export class UserUncheckedUpdateWithoutInvitedInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11778,7 +11757,6 @@ export class UserUncheckedUpdateWithoutInvitesInput {
     invited?: Nullable<InviteUncheckedUpdateManyWithoutInviteeInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11804,7 +11782,6 @@ export class UserUncheckedUpdateWithoutLocationInput {
     invited?: Nullable<InviteUncheckedUpdateManyWithoutInviteeInput>;
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11830,7 +11807,6 @@ export class UserUncheckedUpdateWithoutOrdersInput {
     invited?: Nullable<InviteUncheckedUpdateManyWithoutInviteeInput>;
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11857,7 +11833,6 @@ export class UserUncheckedUpdateWithoutOrganizationsInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
     rated?: Nullable<RatingUncheckedUpdateManyWithoutOwnerInput>;
@@ -11883,7 +11858,6 @@ export class UserUncheckedUpdateWithoutProvidesInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     rated?: Nullable<RatingUncheckedUpdateManyWithoutOwnerInput>;
@@ -11909,7 +11883,6 @@ export class UserUncheckedUpdateWithoutRatedInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11935,7 +11908,6 @@ export class UserUncheckedUpdateWithoutRatingsInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11961,7 +11933,6 @@ export class UserUncheckedUpdateWithoutStaffOfInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -11988,7 +11959,6 @@ export class UserUncheckedUpdateWithoutTransactionsInput {
     invites?: Nullable<InviteUncheckedUpdateManyWithoutInviterInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     orders?: Nullable<OrderUncheckedUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUncheckedUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUncheckedUpdateManyWithoutProviderInput>;
@@ -12014,7 +11984,6 @@ export class UserUpdateInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12036,7 +12005,6 @@ export class UserUpdateManyMutationInput {
     emailVerified?: Nullable<BoolFieldUpdateOperationsInput>;
     gender?: Nullable<EnumGenderFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     role?: Nullable<EnumRoleFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -12206,7 +12174,6 @@ export class UserUpdateWithoutAvatorInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12233,7 +12200,6 @@ export class UserUpdateWithoutDeviceInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12260,7 +12226,6 @@ export class UserUpdateWithoutInvitedInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12287,7 +12252,6 @@ export class UserUpdateWithoutInvitesInput {
     invited?: Nullable<InviteUpdateManyWithoutInviteeInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12314,7 +12278,6 @@ export class UserUpdateWithoutLocationInput {
     invited?: Nullable<InviteUpdateManyWithoutInviteeInput>;
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12341,7 +12304,6 @@ export class UserUpdateWithoutOrdersInput {
     invited?: Nullable<InviteUpdateManyWithoutInviteeInput>;
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12369,7 +12331,6 @@ export class UserUpdateWithoutOrganizationsInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
     rated?: Nullable<RatingUpdateManyWithoutOwnerInput>;
@@ -12396,7 +12357,6 @@ export class UserUpdateWithoutProvidesInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     rated?: Nullable<RatingUpdateManyWithoutOwnerInput>;
@@ -12423,7 +12383,6 @@ export class UserUpdateWithoutRatedInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12450,7 +12409,6 @@ export class UserUpdateWithoutRatingsInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12477,7 +12435,6 @@ export class UserUpdateWithoutStaffOfInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12504,7 +12461,6 @@ export class UserUpdateWithoutTransactionsInput {
     invites?: Nullable<InviteUpdateManyWithoutInviterInput>;
     location?: Nullable<LocationUpdateOneWithoutUsersInput>;
     orders?: Nullable<OrderUpdateManyWithoutOwnerInput>;
-    organizationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizations?: Nullable<OrganizationUpdateManyWithoutOwnerInput>;
     phoneNumber?: Nullable<NullableStringFieldUpdateOperationsInput>;
     provides?: Nullable<OrderUpdateManyWithoutProviderInput>;
@@ -12599,7 +12555,6 @@ export class UserWhereInput {
     location?: Nullable<LocationWhereInput>;
     locationId?: Nullable<StringNullableFilter>;
     orders?: Nullable<OrderListRelationFilter>;
-    organizationId?: Nullable<StringNullableFilter>;
     organizations?: Nullable<OrganizationListRelationFilter>;
     phoneNumber?: Nullable<StringNullableFilter>;
     provides?: Nullable<OrderListRelationFilter>;
@@ -13778,6 +13733,7 @@ export class PaybillResponse {
 export class PaymentMethod {
     _count?: Nullable<PaymentMethodCountOutputType>;
     attachmentId: string;
+    code: SelcomUtilityCode;
     createdAt: DateTime;
     description?: Nullable<string>;
     id: string;
@@ -13797,6 +13753,7 @@ export class PaymentMethodBatchResponse {
 export class PaymentMethodCountAggregateOutputType {
     _all: number;
     attachmentId: number;
+    code: number;
     createdAt: number;
     description: number;
     id: number;
@@ -13823,6 +13780,7 @@ export class PaymentMethodListResponse {
 
 export class PaymentMethodMaxAggregateOutputType {
     attachmentId?: Nullable<string>;
+    code?: Nullable<SelcomUtilityCode>;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -13833,6 +13791,7 @@ export class PaymentMethodMaxAggregateOutputType {
 
 export class PaymentMethodMinAggregateOutputType {
     attachmentId?: Nullable<string>;
+    code?: Nullable<SelcomUtilityCode>;
     createdAt?: Nullable<DateTime>;
     description?: Nullable<string>;
     id?: Nullable<string>;
@@ -14590,7 +14549,6 @@ export class User {
     location?: Nullable<Location>;
     locationId?: Nullable<string>;
     orders: Order[];
-    organizationId?: Nullable<string>;
     organizations: Organization[];
     phoneNumber?: Nullable<string>;
     provides: Order[];
@@ -14621,7 +14579,6 @@ export class UserCountAggregateOutputType {
     gender: number;
     id: number;
     locationId: number;
-    organizationId: number;
     phoneNumber: number;
     role: number;
     state: number;
@@ -14663,7 +14620,6 @@ export class UserMaxAggregateOutputType {
     gender?: Nullable<Gender>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     role?: Nullable<Role>;
     state?: Nullable<State>;
@@ -14681,7 +14637,6 @@ export class UserMinAggregateOutputType {
     gender?: Nullable<Gender>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    organizationId?: Nullable<string>;
     phoneNumber?: Nullable<string>;
     role?: Nullable<Role>;
     state?: Nullable<State>;
