@@ -1211,7 +1211,6 @@ type MpesaPayment {
   output_ResponseDesc(action: PERMISSION): PERMISSION
   output_ThirdPartyConversationID(action: PERMISSION): PERMISSION
   output_TransactionID(action: PERMISSION): PERMISSION
-  order: Order
   transaction: Transaction
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
@@ -1268,8 +1267,8 @@ type Order {
   service: Service
   provider: User
   location: Location
-  mpesa_payment: MpesaPayment
-  selcom_payment: SelcomPayment
+  transactions(where: TransactionWhereInput, orderBy: [TransactionOrderByInput!], cursor: TransactionWhereUniqueInput, take: PERMISSION, skip: PERMISSION, distinct: PERMISSION): Transaction
+  _count: OrderCountOutputType
 }
 
 type OrderListResponse {
@@ -1478,8 +1477,6 @@ type SelcomPayment {
   status(action: PERMISSION): PERMISSION
   utilityref(action: PERMISSION): PERMISSION
   validation(action: PERMISSION): PERMISSION
-  order: Order
-  orderId(action: PERMISSION): PERMISSION
   transaction: Transaction
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
@@ -1614,6 +1611,8 @@ type Transaction {
   type(action: PERMISSION): PERMISSION
   initiator: User
   userId(action: PERMISSION): PERMISSION
+  order: Order
+  orderId(action: PERMISSION): PERMISSION
   mpesaPayment: MpesaPayment
   mpesaPaymentId(action: PERMISSION): PERMISSION
   selcomPayment: SelcomPayment
@@ -1843,6 +1842,7 @@ enum TransactionScalarFieldEnum {
   paymentMethodId
   type
   userId
+  orderId
   mpesaPaymentId
   selcomPaymentId
   selcomDisbursementId
@@ -1898,7 +1898,6 @@ enum SelcomPaymentScalarFieldEnum {
   status
   utilityref
   validation
-  orderId
   state
   createdAt
   updatedAt
@@ -2425,8 +2424,7 @@ input OrderWhereInput {
   service: ServiceWhereInput
   provider: UserWhereInput
   location: LocationWhereInput
-  mpesa_payment: MpesaPaymentWhereInput
-  selcom_payment: SelcomPaymentWhereInput
+  transactions: TransactionListRelationFilter
 }
 
 input OrderOrderByInput {
@@ -2783,6 +2781,8 @@ input TransactionWhereInput {
   type: EnumTransactionTypeFilter
   initiator: UserWhereInput
   userId: StringFilter
+  order: OrderWhereInput
+  orderId: StringFilter
   mpesaPayment: MpesaPaymentWhereInput
   mpesaPaymentId: StringNullableFilter
   selcomPayment: SelcomPaymentWhereInput
@@ -2799,6 +2799,7 @@ input TransactionOrderByInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -2816,6 +2817,7 @@ input TransactionOrderByWithAggregationInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -2835,6 +2837,7 @@ input TransactionScalarWhereWithAggregatesInput {
   paymentMethodId: StringWithAggregatesFilter
   type: EnumTransactionTypeWithAggregatesFilter
   userId: StringWithAggregatesFilter
+  orderId: StringWithAggregatesFilter
   mpesaPaymentId: StringNullableWithAggregatesFilter
   selcomPaymentId: StringNullableWithAggregatesFilter
   selcomDisbursementId: StringNullableWithAggregatesFilter
@@ -2861,7 +2864,6 @@ input MpesaPaymentWhereInput {
   output_ResponseDesc: StringNullableFilter
   output_ThirdPartyConversationID: StringNullableFilter
   output_TransactionID: StringNullableFilter
-  order: OrderWhereInput
   transaction: TransactionWhereInput
   state: EnumStateFilter
   createdAt: DateTimeFilter
@@ -3032,8 +3034,6 @@ input SelcomPaymentWhereInput {
   status: EnumSelcomPaymentStatusFilter
   utilityref: IntFilter
   validation: EnumSelcomPaymentStatusFilter
-  order: OrderWhereInput
-  orderId: StringFilter
   transaction: TransactionWhereInput
   state: EnumStateFilter
   createdAt: DateTimeFilter
@@ -3051,7 +3051,6 @@ input SelcomPaymentOrderByInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -3072,7 +3071,6 @@ input SelcomPaymentOrderByWithAggregationInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -3097,7 +3095,6 @@ input SelcomPaymentScalarWhereWithAggregatesInput {
   status: EnumSelcomPaymentStatusWithAggregatesFilter
   utilityref: IntWithAggregatesFilter
   validation: EnumSelcomPaymentStatusWithAggregatesFilter
-  orderId: StringWithAggregatesFilter
   state: EnumStateWithAggregatesFilter
   createdAt: DateTimeWithAggregatesFilter
   updatedAt: DateTimeWithAggregatesFilter
@@ -3673,8 +3670,7 @@ input OrderCreateInput {
   service: ServiceCreateNestedOneWithoutOrdersInput!
   provider: UserCreateNestedOneWithoutProvidesInput
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateInput {
@@ -3691,8 +3687,7 @@ input OrderUncheckedCreateInput {
   receiptId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderUpdateInput {
@@ -3709,8 +3704,7 @@ input OrderUpdateInput {
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateInput {
@@ -3727,8 +3721,7 @@ input OrderUncheckedUpdateInput {
   receiptId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input OrderCreateManyInput {
@@ -4173,6 +4166,7 @@ input TransactionCreateInput {
   updatedAt: PERMISSION
   paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -4183,6 +4177,7 @@ input TransactionUncheckedCreateInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -4199,6 +4194,7 @@ input TransactionUpdateInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -4209,6 +4205,7 @@ input TransactionUncheckedUpdateInput {
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
@@ -4222,6 +4219,7 @@ input TransactionCreateManyInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -4243,6 +4241,7 @@ input TransactionUncheckedUpdateManyInput {
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
@@ -4258,6 +4257,7 @@ input MpesaPaymentCreateInput {
   input_Currency: PERMISSION
   input_CustomerMSISDN: PERMISSION
   input_ServiceProviderCode: PERMISSION
+  input_ThirdPartyConversationID: PERMISSION
   input_TransactionReference: PERMISSION
   input_PurchasedItemsDesc: PERMISSION
   output_ConversationID: PERMISSION
@@ -4268,7 +4268,6 @@ input MpesaPaymentCreateInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  order: OrderCreateNestedOneWithoutMpesa_paymentInput!
   transaction: TransactionCreateNestedOneWithoutMpesaPaymentInput
 }
 
@@ -4300,6 +4299,7 @@ input MpesaPaymentUpdateInput {
   input_Currency: StringFieldUpdateOperationsInput
   input_CustomerMSISDN: StringFieldUpdateOperationsInput
   input_ServiceProviderCode: StringFieldUpdateOperationsInput
+  input_ThirdPartyConversationID: StringFieldUpdateOperationsInput
   input_TransactionReference: StringFieldUpdateOperationsInput
   input_PurchasedItemsDesc: StringFieldUpdateOperationsInput
   output_ConversationID: NullableStringFieldUpdateOperationsInput
@@ -4310,7 +4310,6 @@ input MpesaPaymentUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  order: OrderUpdateOneRequiredWithoutMpesa_paymentInput
   transaction: TransactionUpdateOneWithoutMpesaPaymentInput
 }
 
@@ -4362,6 +4361,7 @@ input MpesaPaymentUpdateManyMutationInput {
   input_Currency: StringFieldUpdateOperationsInput
   input_CustomerMSISDN: StringFieldUpdateOperationsInput
   input_ServiceProviderCode: StringFieldUpdateOperationsInput
+  input_ThirdPartyConversationID: StringFieldUpdateOperationsInput
   input_TransactionReference: StringFieldUpdateOperationsInput
   input_PurchasedItemsDesc: StringFieldUpdateOperationsInput
   output_ConversationID: NullableStringFieldUpdateOperationsInput
@@ -4524,7 +4524,6 @@ input SelcomPaymentCreateInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  order: OrderCreateNestedOneWithoutSelcom_paymentInput!
   transaction: TransactionCreateNestedOneWithoutSelcomPaymentInput
 }
 
@@ -4539,7 +4538,6 @@ input SelcomPaymentUncheckedCreateInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -4560,7 +4558,6 @@ input SelcomPaymentUpdateInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  order: OrderUpdateOneRequiredWithoutSelcom_paymentInput
   transaction: TransactionUpdateOneWithoutSelcomPaymentInput
 }
 
@@ -4575,7 +4572,6 @@ input SelcomPaymentUncheckedUpdateInput {
   status: EnumSelcomPaymentStatusFieldUpdateOperationsInput
   utilityref: IntFieldUpdateOperationsInput
   validation: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  orderId: StringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -4593,7 +4589,6 @@ input SelcomPaymentCreateManyInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -4626,7 +4621,6 @@ input SelcomPaymentUncheckedUpdateManyInput {
   status: EnumSelcomPaymentStatusFieldUpdateOperationsInput
   utilityref: IntFieldUpdateOperationsInput
   validation: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  orderId: StringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -5273,16 +5267,6 @@ input ServiceRelationFilter {
   isNot: ServiceWhereInput
 }
 
-input MpesaPaymentRelationFilter {
-  is: MpesaPaymentWhereInput
-  isNot: MpesaPaymentWhereInput
-}
-
-input SelcomPaymentRelationFilter {
-  is: SelcomPaymentWhereInput
-  isNot: SelcomPaymentWhereInput
-}
-
 input OrderCountOrderByAggregateInput {
   id: PERMISSION
   quantity: PERMISSION
@@ -5569,6 +5553,16 @@ input EnumTransactionTypeFilter {
   not: NestedEnumTransactionTypeFilter
 }
 
+input MpesaPaymentRelationFilter {
+  is: MpesaPaymentWhereInput
+  isNot: MpesaPaymentWhereInput
+}
+
+input SelcomPaymentRelationFilter {
+  is: SelcomPaymentWhereInput
+  isNot: SelcomPaymentWhereInput
+}
+
 input SelcomDisbursementRelationFilter {
   is: SelcomDisbursementWhereInput
   isNot: SelcomDisbursementWhereInput
@@ -5579,6 +5573,7 @@ input TransactionCountOrderByAggregateInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -5592,6 +5587,7 @@ input TransactionMaxOrderByAggregateInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -5605,6 +5601,7 @@ input TransactionMinOrderByAggregateInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -5780,7 +5777,6 @@ input SelcomPaymentCountOrderByAggregateInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -5802,7 +5798,6 @@ input SelcomPaymentMaxOrderByAggregateInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -5819,7 +5814,6 @@ input SelcomPaymentMinOrderByAggregateInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -6921,28 +6915,18 @@ input LocationCreateNestedOneWithoutOrderInput {
   connect: LocationWhereUniqueInput
 }
 
-input MpesaPaymentCreateNestedOneWithoutOrderInput {
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: MpesaPaymentCreateOrConnectWithoutOrderInput
-  connect: MpesaPaymentWhereUniqueInput
+input TransactionCreateNestedManyWithoutOrderInput {
+  create: [TransactionCreateWithoutOrderInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutOrderInput!]
+  createMany: TransactionCreateManyOrderInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
 }
 
-input SelcomPaymentCreateNestedOneWithoutOrderInput {
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: SelcomPaymentCreateOrConnectWithoutOrderInput
-  connect: SelcomPaymentWhereUniqueInput
-}
-
-input MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput {
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: MpesaPaymentCreateOrConnectWithoutOrderInput
-  connect: MpesaPaymentWhereUniqueInput
-}
-
-input SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput {
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: SelcomPaymentCreateOrConnectWithoutOrderInput
-  connect: SelcomPaymentWhereUniqueInput
+input TransactionUncheckedCreateNestedManyWithoutOrderInput {
+  create: [TransactionCreateWithoutOrderInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutOrderInput!]
+  createMany: TransactionCreateManyOrderInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
 }
 
 input OrderUpdatedeliveryModeInput {
@@ -7004,44 +6988,32 @@ input LocationUpdateOneWithoutOrderInput {
   update: LocationUncheckedUpdateWithoutOrderInput
 }
 
-input MpesaPaymentUpdateOneWithoutOrderInput {
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: MpesaPaymentCreateOrConnectWithoutOrderInput
-  upsert: MpesaPaymentUpsertWithoutOrderInput
-  connect: MpesaPaymentWhereUniqueInput
-  disconnect: PERMISSION
-  delete: PERMISSION
-  update: MpesaPaymentUncheckedUpdateWithoutOrderInput
+input TransactionUpdateManyWithoutOrderInput {
+  create: [TransactionCreateWithoutOrderInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutOrderInput!]
+  upsert: [TransactionUpsertWithWhereUniqueWithoutOrderInput!]
+  createMany: TransactionCreateManyOrderInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+  set: [TransactionWhereUniqueInput!]
+  disconnect: [TransactionWhereUniqueInput!]
+  delete: [TransactionWhereUniqueInput!]
+  update: [TransactionUpdateWithWhereUniqueWithoutOrderInput!]
+  updateMany: [TransactionUpdateManyWithWhereWithoutOrderInput!]
+  deleteMany: [TransactionScalarWhereInput!]
 }
 
-input SelcomPaymentUpdateOneWithoutOrderInput {
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: SelcomPaymentCreateOrConnectWithoutOrderInput
-  upsert: SelcomPaymentUpsertWithoutOrderInput
-  connect: SelcomPaymentWhereUniqueInput
-  disconnect: PERMISSION
-  delete: PERMISSION
-  update: SelcomPaymentUncheckedUpdateWithoutOrderInput
-}
-
-input MpesaPaymentUncheckedUpdateOneWithoutOrderInput {
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: MpesaPaymentCreateOrConnectWithoutOrderInput
-  upsert: MpesaPaymentUpsertWithoutOrderInput
-  connect: MpesaPaymentWhereUniqueInput
-  disconnect: PERMISSION
-  delete: PERMISSION
-  update: MpesaPaymentUncheckedUpdateWithoutOrderInput
-}
-
-input SelcomPaymentUncheckedUpdateOneWithoutOrderInput {
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput
-  connectOrCreate: SelcomPaymentCreateOrConnectWithoutOrderInput
-  upsert: SelcomPaymentUpsertWithoutOrderInput
-  connect: SelcomPaymentWhereUniqueInput
-  disconnect: PERMISSION
-  delete: PERMISSION
-  update: SelcomPaymentUncheckedUpdateWithoutOrderInput
+input TransactionUncheckedUpdateManyWithoutOrderInput {
+  create: [TransactionCreateWithoutOrderInput!]
+  connectOrCreate: [TransactionCreateOrConnectWithoutOrderInput!]
+  upsert: [TransactionUpsertWithWhereUniqueWithoutOrderInput!]
+  createMany: TransactionCreateManyOrderInputEnvelope
+  connect: [TransactionWhereUniqueInput!]
+  set: [TransactionWhereUniqueInput!]
+  disconnect: [TransactionWhereUniqueInput!]
+  delete: [TransactionWhereUniqueInput!]
+  update: [TransactionUpdateWithWhereUniqueWithoutOrderInput!]
+  updateMany: [TransactionUpdateManyWithWhereWithoutOrderInput!]
+  deleteMany: [TransactionScalarWhereInput!]
 }
 
 input OrderCreateManydeliveryModeInput {
@@ -7405,6 +7377,12 @@ input UserCreateNestedOneWithoutTransactionsInput {
   connect: UserWhereUniqueInput
 }
 
+input OrderCreateNestedOneWithoutTransactionsInput {
+  create: OrderUncheckedCreateWithoutTransactionsInput
+  connectOrCreate: OrderCreateOrConnectWithoutTransactionsInput
+  connect: OrderWhereUniqueInput
+}
+
 input MpesaPaymentCreateNestedOneWithoutTransactionInput {
   create: MpesaPaymentUncheckedCreateWithoutTransactionInput
   connectOrCreate: MpesaPaymentCreateOrConnectWithoutTransactionInput
@@ -7443,6 +7421,14 @@ input UserUpdateOneRequiredWithoutTransactionsInput {
   update: UserUncheckedUpdateWithoutTransactionsInput
 }
 
+input OrderUpdateOneRequiredWithoutTransactionsInput {
+  create: OrderUncheckedCreateWithoutTransactionsInput
+  connectOrCreate: OrderCreateOrConnectWithoutTransactionsInput
+  upsert: OrderUpsertWithoutTransactionsInput
+  connect: OrderWhereUniqueInput
+  update: OrderUncheckedUpdateWithoutTransactionsInput
+}
+
 input MpesaPaymentUpdateOneWithoutTransactionInput {
   create: MpesaPaymentUncheckedCreateWithoutTransactionInput
   connectOrCreate: MpesaPaymentCreateOrConnectWithoutTransactionInput
@@ -7473,12 +7459,6 @@ input SelcomDisbursementUpdateOneWithoutTransactionInput {
   update: SelcomDisbursementUncheckedUpdateWithoutTransactionInput
 }
 
-input OrderCreateNestedOneWithoutMpesa_paymentInput {
-  create: OrderUncheckedCreateWithoutMpesa_paymentInput
-  connectOrCreate: OrderCreateOrConnectWithoutMpesa_paymentInput
-  connect: OrderWhereUniqueInput
-}
-
 input TransactionCreateNestedOneWithoutMpesaPaymentInput {
   create: TransactionUncheckedCreateWithoutMpesaPaymentInput
   connectOrCreate: TransactionCreateOrConnectWithoutMpesaPaymentInput
@@ -7489,14 +7469,6 @@ input TransactionUncheckedCreateNestedOneWithoutMpesaPaymentInput {
   create: TransactionUncheckedCreateWithoutMpesaPaymentInput
   connectOrCreate: TransactionCreateOrConnectWithoutMpesaPaymentInput
   connect: TransactionWhereUniqueInput
-}
-
-input OrderUpdateOneRequiredWithoutMpesa_paymentInput {
-  create: OrderUncheckedCreateWithoutMpesa_paymentInput
-  connectOrCreate: OrderCreateOrConnectWithoutMpesa_paymentInput
-  upsert: OrderUpsertWithoutMpesa_paymentInput
-  connect: OrderWhereUniqueInput
-  update: OrderUncheckedUpdateWithoutMpesa_paymentInput
 }
 
 input TransactionUpdateOneWithoutMpesaPaymentInput {
@@ -7555,12 +7527,6 @@ input TransactionUncheckedUpdateOneWithoutSelcomDisbursementInput {
   update: TransactionUncheckedUpdateWithoutSelcomDisbursementInput
 }
 
-input OrderCreateNestedOneWithoutSelcom_paymentInput {
-  create: OrderUncheckedCreateWithoutSelcom_paymentInput
-  connectOrCreate: OrderCreateOrConnectWithoutSelcom_paymentInput
-  connect: OrderWhereUniqueInput
-}
-
 input TransactionCreateNestedOneWithoutSelcomPaymentInput {
   create: TransactionUncheckedCreateWithoutSelcomPaymentInput
   connectOrCreate: TransactionCreateOrConnectWithoutSelcomPaymentInput
@@ -7571,14 +7537,6 @@ input TransactionUncheckedCreateNestedOneWithoutSelcomPaymentInput {
   create: TransactionUncheckedCreateWithoutSelcomPaymentInput
   connectOrCreate: TransactionCreateOrConnectWithoutSelcomPaymentInput
   connect: TransactionWhereUniqueInput
-}
-
-input OrderUpdateOneRequiredWithoutSelcom_paymentInput {
-  create: OrderUncheckedCreateWithoutSelcom_paymentInput
-  connectOrCreate: OrderCreateOrConnectWithoutSelcom_paymentInput
-  upsert: OrderUpsertWithoutSelcom_paymentInput
-  connect: OrderWhereUniqueInput
-  update: OrderUncheckedUpdateWithoutSelcom_paymentInput
 }
 
 input TransactionUpdateOneWithoutSelcomPaymentInput {
@@ -8023,8 +7981,7 @@ input OrderCreateWithoutOwnerInput {
   service: ServiceCreateNestedOneWithoutOrdersInput!
   provider: UserCreateNestedOneWithoutProvidesInput
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutOwnerInput {
@@ -8040,8 +7997,7 @@ input OrderUncheckedCreateWithoutOwnerInput {
   receiptId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutOwnerInput {
@@ -8207,8 +8163,7 @@ input OrderCreateWithoutProviderInput {
   receipt: AttachmentCreateNestedOneWithoutOrdersInput
   service: ServiceCreateNestedOneWithoutOrdersInput!
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutProviderInput {
@@ -8224,8 +8179,7 @@ input OrderUncheckedCreateWithoutProviderInput {
   receiptId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutProviderInput {
@@ -8330,6 +8284,7 @@ input TransactionCreateWithoutInitiatorInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -8339,6 +8294,7 @@ input TransactionUncheckedCreateWithoutInitiatorInput {
   id: PERMISSION
   paymentMethodId: PERMISSION
   type: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -8664,6 +8620,7 @@ input TransactionScalarWhereInput {
   paymentMethodId: StringFilter
   type: EnumTransactionTypeFilter
   userId: StringFilter
+  orderId: StringFilter
   mpesaPaymentId: StringNullableFilter
   selcomPaymentId: StringNullableFilter
   selcomDisbursementId: StringNullableFilter
@@ -8797,8 +8754,7 @@ input OrderCreateWithoutReceiptInput {
   service: ServiceCreateNestedOneWithoutOrdersInput!
   provider: UserCreateNestedOneWithoutProvidesInput
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutReceiptInput {
@@ -8814,8 +8770,7 @@ input OrderUncheckedCreateWithoutReceiptInput {
   providerId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutReceiptInput {
@@ -9272,8 +9227,7 @@ input OrderCreateWithoutOrganizationInput {
   service: ServiceCreateNestedOneWithoutOrdersInput!
   provider: UserCreateNestedOneWithoutProvidesInput
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutOrganizationInput {
@@ -9289,8 +9243,7 @@ input OrderUncheckedCreateWithoutOrganizationInput {
   receiptId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutOrganizationInput {
@@ -9802,8 +9755,7 @@ input OrderCreateWithoutServiceInput {
   receipt: AttachmentCreateNestedOneWithoutOrdersInput
   provider: UserCreateNestedOneWithoutProvidesInput
   location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutServiceInput {
@@ -9819,8 +9771,7 @@ input OrderUncheckedCreateWithoutServiceInput {
   receiptId: PERMISSION
   locationId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutServiceInput {
@@ -10169,88 +10120,40 @@ input LocationCreateOrConnectWithoutOrderInput {
   create: LocationUncheckedCreateWithoutOrderInput!
 }
 
-input MpesaPaymentCreateWithoutOrderInput {
+input TransactionCreateWithoutOrderInput {
   id: PERMISSION
-  input_Amount: PERMISSION
-  input_Country: PERMISSION
-  input_Currency: PERMISSION
-  input_CustomerMSISDN: PERMISSION
-  input_ServiceProviderCode: PERMISSION
-  input_TransactionReference: PERMISSION
-  input_PurchasedItemsDesc: PERMISSION
-  output_ConversationID: PERMISSION
-  output_ResponseCode: PERMISSION
-  output_ResponseDesc: PERMISSION
-  output_ThirdPartyConversationID: PERMISSION
-  output_TransactionID: PERMISSION
+  type: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  transaction: TransactionCreateNestedOneWithoutMpesaPaymentInput
+  paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
+  initiator: UserCreateNestedOneWithoutTransactionsInput!
+  mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
+  selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
+  selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
 }
 
-input MpesaPaymentUncheckedCreateWithoutOrderInput {
+input TransactionUncheckedCreateWithoutOrderInput {
   id: PERMISSION
-  input_Amount: PERMISSION
-  input_Country: PERMISSION
-  input_Currency: PERMISSION
-  input_CustomerMSISDN: PERMISSION
-  input_ServiceProviderCode: PERMISSION
-  input_TransactionReference: PERMISSION
-  input_PurchasedItemsDesc: PERMISSION
-  output_ConversationID: PERMISSION
-  output_ResponseCode: PERMISSION
-  output_ResponseDesc: PERMISSION
-  output_ThirdPartyConversationID: PERMISSION
-  output_TransactionID: PERMISSION
+  paymentMethodId: PERMISSION
+  type: PERMISSION
+  userId: PERMISSION
+  mpesaPaymentId: PERMISSION
+  selcomPaymentId: PERMISSION
+  selcomDisbursementId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  transaction: TransactionUncheckedCreateNestedOneWithoutMpesaPaymentInput
 }
 
-input MpesaPaymentCreateOrConnectWithoutOrderInput {
-  where: MpesaPaymentWhereUniqueInput!
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput!
+input TransactionCreateOrConnectWithoutOrderInput {
+  where: TransactionWhereUniqueInput!
+  create: TransactionUncheckedCreateWithoutOrderInput!
 }
 
-input SelcomPaymentCreateWithoutOrderInput {
-  id: PERMISSION
-  transId: PERMISSION
-  amount: PERMISSION
-  msisdn: PERMISSION
-  operator: PERMISSION
-  reference: PERMISSION
-  resultCode: PERMISSION
-  status: PERMISSION
-  utilityref: PERMISSION
-  validation: PERMISSION
-  state: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  transaction: TransactionCreateNestedOneWithoutSelcomPaymentInput
-}
-
-input SelcomPaymentUncheckedCreateWithoutOrderInput {
-  id: PERMISSION
-  transId: PERMISSION
-  amount: PERMISSION
-  msisdn: PERMISSION
-  operator: PERMISSION
-  reference: PERMISSION
-  resultCode: PERMISSION
-  status: PERMISSION
-  utilityref: PERMISSION
-  validation: PERMISSION
-  state: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  transaction: TransactionUncheckedCreateNestedOneWithoutSelcomPaymentInput
-}
-
-input SelcomPaymentCreateOrConnectWithoutOrderInput {
-  where: SelcomPaymentWhereUniqueInput!
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput!
+input TransactionCreateManyOrderInputEnvelope {
+  data: [TransactionCreateManyOrderInput!]!
+  skipDuplicates: PERMISSION
 }
 
 input OrganizationUpsertWithoutOrdersInput {
@@ -10507,88 +10410,20 @@ input LocationUncheckedUpdateWithoutOrderInput {
   users: UserUncheckedUpdateManyWithoutLocationInput
 }
 
-input MpesaPaymentUpsertWithoutOrderInput {
-  update: MpesaPaymentUncheckedUpdateWithoutOrderInput!
-  create: MpesaPaymentUncheckedCreateWithoutOrderInput!
+input TransactionUpsertWithWhereUniqueWithoutOrderInput {
+  where: TransactionWhereUniqueInput!
+  update: TransactionUncheckedUpdateWithoutOrderInput!
+  create: TransactionUncheckedCreateWithoutOrderInput!
 }
 
-input MpesaPaymentUpdateWithoutOrderInput {
-  id: StringFieldUpdateOperationsInput
-  input_Amount: StringFieldUpdateOperationsInput
-  input_Country: StringFieldUpdateOperationsInput
-  input_Currency: StringFieldUpdateOperationsInput
-  input_CustomerMSISDN: StringFieldUpdateOperationsInput
-  input_ServiceProviderCode: StringFieldUpdateOperationsInput
-  input_TransactionReference: StringFieldUpdateOperationsInput
-  input_PurchasedItemsDesc: StringFieldUpdateOperationsInput
-  output_ConversationID: NullableStringFieldUpdateOperationsInput
-  output_ResponseCode: NullableStringFieldUpdateOperationsInput
-  output_ResponseDesc: NullableStringFieldUpdateOperationsInput
-  output_ThirdPartyConversationID: NullableStringFieldUpdateOperationsInput
-  output_TransactionID: NullableStringFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  transaction: TransactionUpdateOneWithoutMpesaPaymentInput
+input TransactionUpdateWithWhereUniqueWithoutOrderInput {
+  where: TransactionWhereUniqueInput!
+  data: TransactionUncheckedUpdateWithoutOrderInput!
 }
 
-input MpesaPaymentUncheckedUpdateWithoutOrderInput {
-  id: StringFieldUpdateOperationsInput
-  input_Amount: StringFieldUpdateOperationsInput
-  input_Country: StringFieldUpdateOperationsInput
-  input_Currency: StringFieldUpdateOperationsInput
-  input_CustomerMSISDN: StringFieldUpdateOperationsInput
-  input_ServiceProviderCode: StringFieldUpdateOperationsInput
-  input_TransactionReference: StringFieldUpdateOperationsInput
-  input_PurchasedItemsDesc: StringFieldUpdateOperationsInput
-  output_ConversationID: NullableStringFieldUpdateOperationsInput
-  output_ResponseCode: NullableStringFieldUpdateOperationsInput
-  output_ResponseDesc: NullableStringFieldUpdateOperationsInput
-  output_ThirdPartyConversationID: NullableStringFieldUpdateOperationsInput
-  output_TransactionID: NullableStringFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  transaction: TransactionUncheckedUpdateOneWithoutMpesaPaymentInput
-}
-
-input SelcomPaymentUpsertWithoutOrderInput {
-  update: SelcomPaymentUncheckedUpdateWithoutOrderInput!
-  create: SelcomPaymentUncheckedCreateWithoutOrderInput!
-}
-
-input SelcomPaymentUpdateWithoutOrderInput {
-  id: StringFieldUpdateOperationsInput
-  transId: StringFieldUpdateOperationsInput
-  amount: IntFieldUpdateOperationsInput
-  msisdn: StringFieldUpdateOperationsInput
-  operator: NullableStringFieldUpdateOperationsInput
-  reference: NullableStringFieldUpdateOperationsInput
-  resultCode: NullableStringFieldUpdateOperationsInput
-  status: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  utilityref: IntFieldUpdateOperationsInput
-  validation: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  transaction: TransactionUpdateOneWithoutSelcomPaymentInput
-}
-
-input SelcomPaymentUncheckedUpdateWithoutOrderInput {
-  id: StringFieldUpdateOperationsInput
-  transId: StringFieldUpdateOperationsInput
-  amount: IntFieldUpdateOperationsInput
-  msisdn: StringFieldUpdateOperationsInput
-  operator: NullableStringFieldUpdateOperationsInput
-  reference: NullableStringFieldUpdateOperationsInput
-  resultCode: NullableStringFieldUpdateOperationsInput
-  status: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  utilityref: IntFieldUpdateOperationsInput
-  validation: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  transaction: TransactionUncheckedUpdateOneWithoutSelcomPaymentInput
+input TransactionUpdateManyWithWhereWithoutOrderInput {
+  where: TransactionScalarWhereInput!
+  data: TransactionUncheckedUpdateManyWithoutTransactionsInput!
 }
 
 input AttachmentCreateWithoutServiceCategoryInput {
@@ -11201,8 +11036,7 @@ input OrderCreateWithoutLocationInput {
   receipt: AttachmentCreateNestedOneWithoutOrdersInput
   service: ServiceCreateNestedOneWithoutOrdersInput!
   provider: UserCreateNestedOneWithoutProvidesInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
+  transactions: TransactionCreateNestedManyWithoutOrderInput
 }
 
 input OrderUncheckedCreateWithoutLocationInput {
@@ -11218,8 +11052,7 @@ input OrderUncheckedCreateWithoutLocationInput {
   providerId: PERMISSION
   receiptId: PERMISSION
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
+  transactions: TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
 input OrderCreateOrConnectWithoutLocationInput {
@@ -11277,8 +11110,7 @@ input OrderUpdateWithoutLocationInput {
   receipt: AttachmentUpdateOneWithoutOrdersInput
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutLocationInput {
@@ -11294,8 +11126,7 @@ input OrderUncheckedUpdateWithoutLocationInput {
   providerId: NullableStringFieldUpdateOperationsInput
   receiptId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input UserCreateWithoutInvitesInput {
@@ -11648,6 +11479,7 @@ input TransactionCreateWithoutPaymentMethodInput {
   createdAt: PERMISSION
   updatedAt: PERMISSION
   initiator: UserCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
@@ -11657,6 +11489,7 @@ input TransactionUncheckedCreateWithoutPaymentMethodInput {
   id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -11819,6 +11652,43 @@ input UserCreateOrConnectWithoutTransactionsInput {
   create: UserUncheckedCreateWithoutTransactionsInput!
 }
 
+input OrderCreateWithoutTransactionsInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  notes: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  deliveryMode: PERMISSION
+  organization: OrganizationCreateNestedOneWithoutOrdersInput!
+  owner: UserCreateNestedOneWithoutOrdersInput!
+  receipt: AttachmentCreateNestedOneWithoutOrdersInput
+  service: ServiceCreateNestedOneWithoutOrdersInput!
+  provider: UserCreateNestedOneWithoutProvidesInput
+  location: LocationCreateNestedOneWithoutOrderInput
+}
+
+input OrderUncheckedCreateWithoutTransactionsInput {
+  id: PERMISSION
+  quantity: PERMISSION
+  state: PERMISSION
+  notes: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+  serviceId: PERMISSION
+  organizationId: PERMISSION
+  ownerId: PERMISSION
+  providerId: PERMISSION
+  receiptId: PERMISSION
+  locationId: PERMISSION
+  deliveryMode: PERMISSION
+}
+
+input OrderCreateOrConnectWithoutTransactionsInput {
+  where: OrderWhereUniqueInput!
+  create: OrderUncheckedCreateWithoutTransactionsInput!
+}
+
 input MpesaPaymentCreateWithoutTransactionInput {
   id: PERMISSION
   input_Amount: PERMISSION
@@ -11826,6 +11696,7 @@ input MpesaPaymentCreateWithoutTransactionInput {
   input_Currency: PERMISSION
   input_CustomerMSISDN: PERMISSION
   input_ServiceProviderCode: PERMISSION
+  input_ThirdPartyConversationID: PERMISSION
   input_TransactionReference: PERMISSION
   input_PurchasedItemsDesc: PERMISSION
   output_ConversationID: PERMISSION
@@ -11836,7 +11707,6 @@ input MpesaPaymentCreateWithoutTransactionInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  order: OrderCreateNestedOneWithoutMpesa_paymentInput!
 }
 
 input MpesaPaymentUncheckedCreateWithoutTransactionInput {
@@ -11878,7 +11748,6 @@ input SelcomPaymentCreateWithoutTransactionInput {
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
-  order: OrderCreateNestedOneWithoutSelcom_paymentInput!
 }
 
 input SelcomPaymentUncheckedCreateWithoutTransactionInput {
@@ -11892,7 +11761,6 @@ input SelcomPaymentUncheckedCreateWithoutTransactionInput {
   status: PERMISSION
   utilityref: PERMISSION
   validation: PERMISSION
-  orderId: PERMISSION
   state: PERMISSION
   createdAt: PERMISSION
   updatedAt: PERMISSION
@@ -12023,6 +11891,43 @@ input UserUncheckedUpdateWithoutTransactionsInput {
   device: DeviceUncheckedUpdateOneWithoutUserInput
 }
 
+input OrderUpsertWithoutTransactionsInput {
+  update: OrderUncheckedUpdateWithoutTransactionsInput!
+  create: OrderUncheckedCreateWithoutTransactionsInput!
+}
+
+input OrderUpdateWithoutTransactionsInput {
+  id: StringFieldUpdateOperationsInput
+  quantity: IntFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  notes: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  deliveryMode: PERMISSION
+  organization: OrganizationUpdateOneRequiredWithoutOrdersInput
+  owner: UserUpdateOneRequiredWithoutOrdersInput
+  receipt: AttachmentUpdateOneWithoutOrdersInput
+  service: ServiceUpdateOneRequiredWithoutOrdersInput
+  provider: UserUpdateOneWithoutProvidesInput
+  location: LocationUpdateOneWithoutOrderInput
+}
+
+input OrderUncheckedUpdateWithoutTransactionsInput {
+  id: StringFieldUpdateOperationsInput
+  quantity: IntFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  notes: NullableStringFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  serviceId: StringFieldUpdateOperationsInput
+  organizationId: StringFieldUpdateOperationsInput
+  ownerId: StringFieldUpdateOperationsInput
+  providerId: NullableStringFieldUpdateOperationsInput
+  receiptId: NullableStringFieldUpdateOperationsInput
+  locationId: NullableStringFieldUpdateOperationsInput
+  deliveryMode: PERMISSION
+}
+
 input MpesaPaymentUpsertWithoutTransactionInput {
   update: MpesaPaymentUncheckedUpdateWithoutTransactionInput!
   create: MpesaPaymentUncheckedCreateWithoutTransactionInput!
@@ -12035,6 +11940,7 @@ input MpesaPaymentUpdateWithoutTransactionInput {
   input_Currency: StringFieldUpdateOperationsInput
   input_CustomerMSISDN: StringFieldUpdateOperationsInput
   input_ServiceProviderCode: StringFieldUpdateOperationsInput
+  input_ThirdPartyConversationID: StringFieldUpdateOperationsInput
   input_TransactionReference: StringFieldUpdateOperationsInput
   input_PurchasedItemsDesc: StringFieldUpdateOperationsInput
   output_ConversationID: NullableStringFieldUpdateOperationsInput
@@ -12045,7 +11951,6 @@ input MpesaPaymentUpdateWithoutTransactionInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  order: OrderUpdateOneRequiredWithoutMpesa_paymentInput
 }
 
 input MpesaPaymentUncheckedUpdateWithoutTransactionInput {
@@ -12087,7 +11992,6 @@ input SelcomPaymentUpdateWithoutTransactionInput {
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-  order: OrderUpdateOneRequiredWithoutSelcom_paymentInput
 }
 
 input SelcomPaymentUncheckedUpdateWithoutTransactionInput {
@@ -12101,7 +12005,6 @@ input SelcomPaymentUncheckedUpdateWithoutTransactionInput {
   status: EnumSelcomPaymentStatusFieldUpdateOperationsInput
   utilityref: IntFieldUpdateOperationsInput
   validation: EnumSelcomPaymentStatusFieldUpdateOperationsInput
-  orderId: StringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -12144,45 +12047,6 @@ input SelcomDisbursementUncheckedUpdateWithoutTransactionInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
-input OrderCreateWithoutMpesa_paymentInput {
-  id: PERMISSION
-  quantity: PERMISSION
-  state: PERMISSION
-  notes: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  deliveryMode: PERMISSION
-  organization: OrganizationCreateNestedOneWithoutOrdersInput!
-  owner: UserCreateNestedOneWithoutOrdersInput!
-  receipt: AttachmentCreateNestedOneWithoutOrdersInput
-  service: ServiceCreateNestedOneWithoutOrdersInput!
-  provider: UserCreateNestedOneWithoutProvidesInput
-  location: LocationCreateNestedOneWithoutOrderInput
-  selcom_payment: SelcomPaymentCreateNestedOneWithoutOrderInput
-}
-
-input OrderUncheckedCreateWithoutMpesa_paymentInput {
-  id: PERMISSION
-  quantity: PERMISSION
-  state: PERMISSION
-  notes: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  serviceId: PERMISSION
-  organizationId: PERMISSION
-  ownerId: PERMISSION
-  providerId: PERMISSION
-  receiptId: PERMISSION
-  locationId: PERMISSION
-  deliveryMode: PERMISSION
-  selcom_payment: SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput
-}
-
-input OrderCreateOrConnectWithoutMpesa_paymentInput {
-  where: OrderWhereUniqueInput!
-  create: OrderUncheckedCreateWithoutMpesa_paymentInput!
-}
-
 input TransactionCreateWithoutMpesaPaymentInput {
   id: PERMISSION
   type: PERMISSION
@@ -12191,6 +12055,7 @@ input TransactionCreateWithoutMpesaPaymentInput {
   updatedAt: PERMISSION
   paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
 }
@@ -12200,6 +12065,7 @@ input TransactionUncheckedCreateWithoutMpesaPaymentInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
   state: PERMISSION
@@ -12210,45 +12076,6 @@ input TransactionUncheckedCreateWithoutMpesaPaymentInput {
 input TransactionCreateOrConnectWithoutMpesaPaymentInput {
   where: TransactionWhereUniqueInput!
   create: TransactionUncheckedCreateWithoutMpesaPaymentInput!
-}
-
-input OrderUpsertWithoutMpesa_paymentInput {
-  update: OrderUncheckedUpdateWithoutMpesa_paymentInput!
-  create: OrderUncheckedCreateWithoutMpesa_paymentInput!
-}
-
-input OrderUpdateWithoutMpesa_paymentInput {
-  id: StringFieldUpdateOperationsInput
-  quantity: IntFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  notes: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deliveryMode: PERMISSION
-  organization: OrganizationUpdateOneRequiredWithoutOrdersInput
-  owner: UserUpdateOneRequiredWithoutOrdersInput
-  receipt: AttachmentUpdateOneWithoutOrdersInput
-  service: ServiceUpdateOneRequiredWithoutOrdersInput
-  provider: UserUpdateOneWithoutProvidesInput
-  location: LocationUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
-}
-
-input OrderUncheckedUpdateWithoutMpesa_paymentInput {
-  id: StringFieldUpdateOperationsInput
-  quantity: IntFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  notes: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  serviceId: StringFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
-  ownerId: StringFieldUpdateOperationsInput
-  providerId: NullableStringFieldUpdateOperationsInput
-  receiptId: NullableStringFieldUpdateOperationsInput
-  locationId: NullableStringFieldUpdateOperationsInput
-  deliveryMode: PERMISSION
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
 }
 
 input TransactionUpsertWithoutMpesaPaymentInput {
@@ -12264,6 +12091,7 @@ input TransactionUpdateWithoutMpesaPaymentInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
 }
@@ -12273,6 +12101,7 @@ input TransactionUncheckedUpdateWithoutMpesaPaymentInput {
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
@@ -12288,6 +12117,7 @@ input TransactionCreateWithoutSelcomDisbursementInput {
   updatedAt: PERMISSION
   paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomPayment: SelcomPaymentCreateNestedOneWithoutTransactionInput
 }
@@ -12297,6 +12127,7 @@ input TransactionUncheckedCreateWithoutSelcomDisbursementInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   state: PERMISSION
@@ -12322,6 +12153,7 @@ input TransactionUpdateWithoutSelcomDisbursementInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
 }
@@ -12331,50 +12163,12 @@ input TransactionUncheckedUpdateWithoutSelcomDisbursementInput {
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
-}
-
-input OrderCreateWithoutSelcom_paymentInput {
-  id: PERMISSION
-  quantity: PERMISSION
-  state: PERMISSION
-  notes: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  deliveryMode: PERMISSION
-  organization: OrganizationCreateNestedOneWithoutOrdersInput!
-  owner: UserCreateNestedOneWithoutOrdersInput!
-  receipt: AttachmentCreateNestedOneWithoutOrdersInput
-  service: ServiceCreateNestedOneWithoutOrdersInput!
-  provider: UserCreateNestedOneWithoutProvidesInput
-  location: LocationCreateNestedOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentCreateNestedOneWithoutOrderInput
-}
-
-input OrderUncheckedCreateWithoutSelcom_paymentInput {
-  id: PERMISSION
-  quantity: PERMISSION
-  state: PERMISSION
-  notes: PERMISSION
-  createdAt: PERMISSION
-  updatedAt: PERMISSION
-  serviceId: PERMISSION
-  organizationId: PERMISSION
-  ownerId: PERMISSION
-  providerId: PERMISSION
-  receiptId: PERMISSION
-  locationId: PERMISSION
-  deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput
-}
-
-input OrderCreateOrConnectWithoutSelcom_paymentInput {
-  where: OrderWhereUniqueInput!
-  create: OrderUncheckedCreateWithoutSelcom_paymentInput!
 }
 
 input TransactionCreateWithoutSelcomPaymentInput {
@@ -12385,6 +12179,7 @@ input TransactionCreateWithoutSelcomPaymentInput {
   updatedAt: PERMISSION
   paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput!
   initiator: UserCreateNestedOneWithoutTransactionsInput!
+  order: OrderCreateNestedOneWithoutTransactionsInput!
   mpesaPayment: MpesaPaymentCreateNestedOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementCreateNestedOneWithoutTransactionInput
 }
@@ -12394,6 +12189,7 @@ input TransactionUncheckedCreateWithoutSelcomPaymentInput {
   paymentMethodId: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
   state: PERMISSION
@@ -12404,45 +12200,6 @@ input TransactionUncheckedCreateWithoutSelcomPaymentInput {
 input TransactionCreateOrConnectWithoutSelcomPaymentInput {
   where: TransactionWhereUniqueInput!
   create: TransactionUncheckedCreateWithoutSelcomPaymentInput!
-}
-
-input OrderUpsertWithoutSelcom_paymentInput {
-  update: OrderUncheckedUpdateWithoutSelcom_paymentInput!
-  create: OrderUncheckedCreateWithoutSelcom_paymentInput!
-}
-
-input OrderUpdateWithoutSelcom_paymentInput {
-  id: StringFieldUpdateOperationsInput
-  quantity: IntFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  notes: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  deliveryMode: PERMISSION
-  organization: OrganizationUpdateOneRequiredWithoutOrdersInput
-  owner: UserUpdateOneRequiredWithoutOrdersInput
-  receipt: AttachmentUpdateOneWithoutOrdersInput
-  service: ServiceUpdateOneRequiredWithoutOrdersInput
-  provider: UserUpdateOneWithoutProvidesInput
-  location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-}
-
-input OrderUncheckedUpdateWithoutSelcom_paymentInput {
-  id: StringFieldUpdateOperationsInput
-  quantity: IntFieldUpdateOperationsInput
-  state: EnumStateFieldUpdateOperationsInput
-  notes: NullableStringFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  serviceId: StringFieldUpdateOperationsInput
-  organizationId: StringFieldUpdateOperationsInput
-  ownerId: StringFieldUpdateOperationsInput
-  providerId: NullableStringFieldUpdateOperationsInput
-  receiptId: NullableStringFieldUpdateOperationsInput
-  locationId: NullableStringFieldUpdateOperationsInput
-  deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
 }
 
 input TransactionUpsertWithoutSelcomPaymentInput {
@@ -12458,6 +12215,7 @@ input TransactionUpdateWithoutSelcomPaymentInput {
   updatedAt: DateTimeFieldUpdateOperationsInput
   paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
 }
@@ -12467,6 +12225,7 @@ input TransactionUncheckedUpdateWithoutSelcomPaymentInput {
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
   state: EnumStateFieldUpdateOperationsInput
@@ -12563,6 +12322,7 @@ input TransactionCreateManyInitiatorInput {
   id: PERMISSION
   paymentMethodId: PERMISSION
   type: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -12584,8 +12344,7 @@ input OrderUpdateWithoutOwnerInput {
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutOwnerInput {
@@ -12601,8 +12360,7 @@ input OrderUncheckedUpdateWithoutOwnerInput {
   receiptId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateManyWithoutOrdersInput {
@@ -12781,8 +12539,7 @@ input OrderUpdateWithoutProviderInput {
   receipt: AttachmentUpdateOneWithoutOrdersInput
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutProviderInput {
@@ -12798,8 +12555,7 @@ input OrderUncheckedUpdateWithoutProviderInput {
   receiptId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateManyWithoutProvidesInput {
@@ -12896,6 +12652,7 @@ input TransactionUpdateWithoutInitiatorInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -12905,6 +12662,7 @@ input TransactionUncheckedUpdateWithoutInitiatorInput {
   id: StringFieldUpdateOperationsInput
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
@@ -12917,6 +12675,7 @@ input TransactionUncheckedUpdateManyWithoutTransactionsInput {
   id: StringFieldUpdateOperationsInput
   paymentMethodId: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
@@ -12992,8 +12751,7 @@ input OrderUpdateWithoutReceiptInput {
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutReceiptInput {
@@ -13009,8 +12767,7 @@ input OrderUncheckedUpdateWithoutReceiptInput {
   providerId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input OrganizationUpdateWithoutLogoInput {
@@ -13212,8 +12969,7 @@ input OrderUpdateWithoutOrganizationInput {
   service: ServiceUpdateOneRequiredWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutOrganizationInput {
@@ -13229,8 +12985,7 @@ input OrderUncheckedUpdateWithoutOrganizationInput {
   receiptId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
 }
 
 input RatingUpdateWithoutOrganizationInput {
@@ -13429,8 +13184,7 @@ input OrderUpdateWithoutServiceInput {
   receipt: AttachmentUpdateOneWithoutOrdersInput
   provider: UserUpdateOneWithoutProvidesInput
   location: LocationUpdateOneWithoutOrderInput
-  mpesa_payment: MpesaPaymentUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUpdateOneWithoutOrderInput
+  transactions: TransactionUpdateManyWithoutOrderInput
 }
 
 input OrderUncheckedUpdateWithoutServiceInput {
@@ -13446,8 +13200,46 @@ input OrderUncheckedUpdateWithoutServiceInput {
   receiptId: NullableStringFieldUpdateOperationsInput
   locationId: NullableStringFieldUpdateOperationsInput
   deliveryMode: PERMISSION
-  mpesa_payment: MpesaPaymentUncheckedUpdateOneWithoutOrderInput
-  selcom_payment: SelcomPaymentUncheckedUpdateOneWithoutOrderInput
+  transactions: TransactionUncheckedUpdateManyWithoutOrderInput
+}
+
+input TransactionCreateManyOrderInput {
+  id: PERMISSION
+  paymentMethodId: PERMISSION
+  type: PERMISSION
+  userId: PERMISSION
+  mpesaPaymentId: PERMISSION
+  selcomPaymentId: PERMISSION
+  selcomDisbursementId: PERMISSION
+  state: PERMISSION
+  createdAt: PERMISSION
+  updatedAt: PERMISSION
+}
+
+input TransactionUpdateWithoutOrderInput {
+  id: StringFieldUpdateOperationsInput
+  type: EnumTransactionTypeFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  paymentMethod: PaymentMethodUpdateOneRequiredWithoutTransactionsInput
+  initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
+  selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
+  selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
+}
+
+input TransactionUncheckedUpdateWithoutOrderInput {
+  id: StringFieldUpdateOperationsInput
+  paymentMethodId: StringFieldUpdateOperationsInput
+  type: EnumTransactionTypeFieldUpdateOperationsInput
+  userId: StringFieldUpdateOperationsInput
+  mpesaPaymentId: NullableStringFieldUpdateOperationsInput
+  selcomPaymentId: NullableStringFieldUpdateOperationsInput
+  selcomDisbursementId: NullableStringFieldUpdateOperationsInput
+  state: EnumStateFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
 }
 
 input ServiceCreateManyCategoryInput {
@@ -13635,6 +13427,7 @@ input TransactionCreateManyPaymentMethodInput {
   id: PERMISSION
   type: PERMISSION
   userId: PERMISSION
+  orderId: PERMISSION
   mpesaPaymentId: PERMISSION
   selcomPaymentId: PERMISSION
   selcomDisbursementId: PERMISSION
@@ -13650,6 +13443,7 @@ input TransactionUpdateWithoutPaymentMethodInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   initiator: UserUpdateOneRequiredWithoutTransactionsInput
+  order: OrderUpdateOneRequiredWithoutTransactionsInput
   mpesaPayment: MpesaPaymentUpdateOneWithoutTransactionInput
   selcomPayment: SelcomPaymentUpdateOneWithoutTransactionInput
   selcomDisbursement: SelcomDisbursementUpdateOneWithoutTransactionInput
@@ -13659,6 +13453,7 @@ input TransactionUncheckedUpdateWithoutPaymentMethodInput {
   id: StringFieldUpdateOperationsInput
   type: EnumTransactionTypeFieldUpdateOperationsInput
   userId: StringFieldUpdateOperationsInput
+  orderId: StringFieldUpdateOperationsInput
   mpesaPaymentId: NullableStringFieldUpdateOperationsInput
   selcomPaymentId: NullableStringFieldUpdateOperationsInput
   selcomDisbursementId: NullableStringFieldUpdateOperationsInput
@@ -14138,6 +13933,10 @@ type ServiceMaxAggregateOutputType {
   serviceCategoryId(action: PERMISSION): PERMISSION
 }
 
+type OrderCountOutputType {
+  transactions(action: PERMISSION): PERMISSION
+}
+
 type OrderCountAggregateOutputType {
   id(action: PERMISSION): PERMISSION
   quantity(action: PERMISSION): PERMISSION
@@ -14397,6 +14196,7 @@ type TransactionCountAggregateOutputType {
   paymentMethodId(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
+  orderId(action: PERMISSION): PERMISSION
   mpesaPaymentId(action: PERMISSION): PERMISSION
   selcomPaymentId(action: PERMISSION): PERMISSION
   selcomDisbursementId(action: PERMISSION): PERMISSION
@@ -14411,6 +14211,7 @@ type TransactionMinAggregateOutputType {
   paymentMethodId(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
+  orderId(action: PERMISSION): PERMISSION
   mpesaPaymentId(action: PERMISSION): PERMISSION
   selcomPaymentId(action: PERMISSION): PERMISSION
   selcomDisbursementId(action: PERMISSION): PERMISSION
@@ -14424,6 +14225,7 @@ type TransactionMaxAggregateOutputType {
   paymentMethodId(action: PERMISSION): PERMISSION
   type(action: PERMISSION): PERMISSION
   userId(action: PERMISSION): PERMISSION
+  orderId(action: PERMISSION): PERMISSION
   mpesaPaymentId(action: PERMISSION): PERMISSION
   selcomPaymentId(action: PERMISSION): PERMISSION
   selcomDisbursementId(action: PERMISSION): PERMISSION
@@ -14563,7 +14365,6 @@ type SelcomPaymentCountAggregateOutputType {
   status(action: PERMISSION): PERMISSION
   utilityref(action: PERMISSION): PERMISSION
   validation(action: PERMISSION): PERMISSION
-  orderId(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
@@ -14591,7 +14392,6 @@ type SelcomPaymentMinAggregateOutputType {
   status(action: PERMISSION): PERMISSION
   utilityref(action: PERMISSION): PERMISSION
   validation(action: PERMISSION): PERMISSION
-  orderId(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION
@@ -14608,7 +14408,6 @@ type SelcomPaymentMaxAggregateOutputType {
   status(action: PERMISSION): PERMISSION
   utilityref(action: PERMISSION): PERMISSION
   validation(action: PERMISSION): PERMISSION
-  orderId(action: PERMISSION): PERMISSION
   state(action: PERMISSION): PERMISSION
   createdAt(action: PERMISSION): PERMISSION
   updatedAt(action: PERMISSION): PERMISSION

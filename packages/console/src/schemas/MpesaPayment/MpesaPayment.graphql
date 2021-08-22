@@ -13,7 +13,6 @@ type MpesaPayment {
           output_ResponseDesc: String
           output_ThirdPartyConversationID: String
           output_TransactionID: String
-          order: Order!
           transaction: Transaction
           state: State!
           createdAt: DateTime!

@@ -9,8 +9,6 @@ type SelcomPayment {
           status: SelcomPaymentStatus!
           utilityref: Int!
           validation: SelcomPaymentStatus!
-          order: Order!
-          orderId: String!
           transaction: Transaction
           state: State!
           createdAt: DateTime!

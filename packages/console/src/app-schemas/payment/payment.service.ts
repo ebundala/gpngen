@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from "@nestjs/common";
 import { SelcomUtilityCode, State, TransactionType } from "@prisma/client";
-import { MpesaPaymentCreateNestedOneWithoutOrderInput, MpesaPaymentCreateNestedOneWithoutTransactionInput, PaybillRequest, SelcomPaymentCreateNestedOneWithoutTransactionInput } from "src/models/graphql";
+import {  MpesaPaymentCreateNestedOneWithoutTransactionInput, PaybillRequest, SelcomPaymentCreateNestedOneWithoutTransactionInput } from "src/models/graphql";
 import { MpesaTzService } from "src/mpesa-tz/mpesa-tz.service";
 import { TenantContext } from "@mechsoft/common";
 
@@ -43,7 +43,7 @@ export class PaymentService{
                     input_Amount:amount,
                     input_CustomerMSISDN:msisdn,
                     input_ServiceProviderCode:this.mpesa.MPESA_ORG_SHORTCODE,
-                    input_TransactionReference:order.id,
+                    input_TransactionReference: order.id,
                     input_ThirdPartyConversationID:order.id,
                     
                     
@@ -59,7 +59,7 @@ export class PaymentService{
                   msisdn: msisdn,
                   transId: "",
                   utilityref: 123,
-                  orderId:orderId,
+                //  orderId:orderId,
                   operator:methodItem.code
               }
           }
@@ -72,6 +72,7 @@ export class PaymentService{
                mpesaPayment:true,
                selcomPayment:true,
                initiator:true,
+               order:true
            },
            data:{
                initiator:{
@@ -79,10 +80,15 @@ export class PaymentService{
                        id: auth.uid
                    }
                },
+               order:{
+                   connect:{
+                       id:order.id
+                   }
+               },
                type: TransactionType.PAYMENT,
                paymentMethod:{ connect:{ id: method}},
                mpesaPayment:mpesaPayment,
-               selcomPayment: selcomPayment
+               selcomPayment: selcomPayment as any
            }
        });
        if(methodItem.code == SelcomUtilityCode.VMCASHIN){

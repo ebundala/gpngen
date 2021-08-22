@@ -18,8 +18,14 @@ type Order {
           service: Service!
           provider: User
           location: Location
-          mpesa_payment: MpesaPayment
-          selcom_payment: SelcomPayment
+          transactions(where: TransactionWhereInput
+              orderBy: [TransactionOrderByInput!]
+              cursor: TransactionWhereUniqueInput
+              take: Int
+              skip: Int
+              distinct: [TransactionScalarFieldEnum!]
+              ): [Transaction!]!
+          _count: OrderCountOutputType
     }
 
       type OrderListResponse {

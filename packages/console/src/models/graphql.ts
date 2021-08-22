@@ -388,7 +388,6 @@ export enum SelcomPaymentScalarFieldEnum {
     id = "id",
     msisdn = "msisdn",
     operator = "operator",
-    orderId = "orderId",
     reference = "reference",
     resultCode = "resultCode",
     state = "state",
@@ -462,6 +461,7 @@ export enum TransactionScalarFieldEnum {
     createdAt = "createdAt",
     id = "id",
     mpesaPaymentId = "mpesaPaymentId",
+    orderId = "orderId",
     paymentMethodId = "paymentMethodId",
     selcomDisbursementId = "selcomDisbursementId",
     selcomPaymentId = "selcomPaymentId",
@@ -3287,8 +3287,8 @@ export class MpesaPaymentCreateInput {
     input_CustomerMSISDN: string;
     input_PurchasedItemsDesc: string;
     input_ServiceProviderCode: string;
+    input_ThirdPartyConversationID: string;
     input_TransactionReference: string;
-    order: OrderCreateNestedOneWithoutMpesa_paymentInput;
     output_ConversationID?: Nullable<string>;
     output_ResponseCode?: Nullable<string>;
     output_ResponseDesc?: Nullable<string>;
@@ -3319,46 +3319,15 @@ export class MpesaPaymentCreateManyInput {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class MpesaPaymentCreateNestedOneWithoutOrderInput {
-    connect?: Nullable<MpesaPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<MpesaPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<MpesaPaymentUncheckedCreateWithoutOrderInput>;
-}
-
 export class MpesaPaymentCreateNestedOneWithoutTransactionInput {
     connect?: Nullable<MpesaPaymentWhereUniqueInput>;
     connectOrCreate?: Nullable<MpesaPaymentCreateOrConnectWithoutTransactionInput>;
     create?: Nullable<MpesaPaymentUncheckedCreateWithoutTransactionInput>;
 }
 
-export class MpesaPaymentCreateOrConnectWithoutOrderInput {
-    create: MpesaPaymentUncheckedCreateWithoutOrderInput;
-    where: MpesaPaymentWhereUniqueInput;
-}
-
 export class MpesaPaymentCreateOrConnectWithoutTransactionInput {
     create: MpesaPaymentUncheckedCreateWithoutTransactionInput;
     where: MpesaPaymentWhereUniqueInput;
-}
-
-export class MpesaPaymentCreateWithoutOrderInput {
-    createdAt?: Nullable<DateTime>;
-    id?: Nullable<string>;
-    input_Amount: string;
-    input_Country?: Nullable<string>;
-    input_Currency?: Nullable<string>;
-    input_CustomerMSISDN: string;
-    input_PurchasedItemsDesc: string;
-    input_ServiceProviderCode: string;
-    input_TransactionReference: string;
-    output_ConversationID?: Nullable<string>;
-    output_ResponseCode?: Nullable<string>;
-    output_ResponseDesc?: Nullable<string>;
-    output_ThirdPartyConversationID?: Nullable<string>;
-    output_TransactionID?: Nullable<string>;
-    state?: Nullable<State>;
-    transaction?: Nullable<TransactionCreateNestedOneWithoutMpesaPaymentInput>;
-    updatedAt?: Nullable<DateTime>;
 }
 
 export class MpesaPaymentCreateWithoutTransactionInput {
@@ -3370,8 +3339,8 @@ export class MpesaPaymentCreateWithoutTransactionInput {
     input_CustomerMSISDN: string;
     input_PurchasedItemsDesc: string;
     input_ServiceProviderCode: string;
+    input_ThirdPartyConversationID: string;
     input_TransactionReference: string;
-    order: OrderCreateNestedOneWithoutMpesa_paymentInput;
     output_ConversationID?: Nullable<string>;
     output_ResponseCode?: Nullable<string>;
     output_ResponseDesc?: Nullable<string>;
@@ -3513,32 +3482,6 @@ export class MpesaPaymentUncheckedCreateInput {
     updatedAt?: Nullable<DateTime>;
 }
 
-export class MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput {
-    connect?: Nullable<MpesaPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<MpesaPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<MpesaPaymentUncheckedCreateWithoutOrderInput>;
-}
-
-export class MpesaPaymentUncheckedCreateWithoutOrderInput {
-    createdAt?: Nullable<DateTime>;
-    id?: Nullable<string>;
-    input_Amount: string;
-    input_Country?: Nullable<string>;
-    input_Currency?: Nullable<string>;
-    input_CustomerMSISDN: string;
-    input_PurchasedItemsDesc: string;
-    input_ServiceProviderCode: string;
-    input_TransactionReference: string;
-    output_ConversationID?: Nullable<string>;
-    output_ResponseCode?: Nullable<string>;
-    output_ResponseDesc?: Nullable<string>;
-    output_ThirdPartyConversationID?: Nullable<string>;
-    output_TransactionID?: Nullable<string>;
-    state?: Nullable<State>;
-    transaction?: Nullable<TransactionUncheckedCreateNestedOneWithoutMpesaPaymentInput>;
-    updatedAt?: Nullable<DateTime>;
-}
-
 export class MpesaPaymentUncheckedCreateWithoutTransactionInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
@@ -3600,36 +3543,6 @@ export class MpesaPaymentUncheckedUpdateManyInput {
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
-export class MpesaPaymentUncheckedUpdateOneWithoutOrderInput {
-    connect?: Nullable<MpesaPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<MpesaPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<MpesaPaymentUncheckedCreateWithoutOrderInput>;
-    delete?: Nullable<boolean>;
-    disconnect?: Nullable<boolean>;
-    update?: Nullable<MpesaPaymentUncheckedUpdateWithoutOrderInput>;
-    upsert?: Nullable<MpesaPaymentUpsertWithoutOrderInput>;
-}
-
-export class MpesaPaymentUncheckedUpdateWithoutOrderInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Amount?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Country?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Currency?: Nullable<StringFieldUpdateOperationsInput>;
-    input_CustomerMSISDN?: Nullable<StringFieldUpdateOperationsInput>;
-    input_PurchasedItemsDesc?: Nullable<StringFieldUpdateOperationsInput>;
-    input_ServiceProviderCode?: Nullable<StringFieldUpdateOperationsInput>;
-    input_TransactionReference?: Nullable<StringFieldUpdateOperationsInput>;
-    output_ConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ResponseCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ResponseDesc?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ThirdPartyConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_TransactionID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    transaction?: Nullable<TransactionUncheckedUpdateOneWithoutMpesaPaymentInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
 export class MpesaPaymentUncheckedUpdateWithoutTransactionInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -3659,8 +3572,8 @@ export class MpesaPaymentUpdateInput {
     input_CustomerMSISDN?: Nullable<StringFieldUpdateOperationsInput>;
     input_PurchasedItemsDesc?: Nullable<StringFieldUpdateOperationsInput>;
     input_ServiceProviderCode?: Nullable<StringFieldUpdateOperationsInput>;
+    input_ThirdPartyConversationID?: Nullable<StringFieldUpdateOperationsInput>;
     input_TransactionReference?: Nullable<StringFieldUpdateOperationsInput>;
-    order?: Nullable<OrderUpdateOneRequiredWithoutMpesa_paymentInput>;
     output_ConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
     output_ResponseCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     output_ResponseDesc?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -3680,6 +3593,7 @@ export class MpesaPaymentUpdateManyMutationInput {
     input_CustomerMSISDN?: Nullable<StringFieldUpdateOperationsInput>;
     input_PurchasedItemsDesc?: Nullable<StringFieldUpdateOperationsInput>;
     input_ServiceProviderCode?: Nullable<StringFieldUpdateOperationsInput>;
+    input_ThirdPartyConversationID?: Nullable<StringFieldUpdateOperationsInput>;
     input_TransactionReference?: Nullable<StringFieldUpdateOperationsInput>;
     output_ConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
     output_ResponseCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -3688,16 +3602,6 @@ export class MpesaPaymentUpdateManyMutationInput {
     output_TransactionID?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class MpesaPaymentUpdateOneWithoutOrderInput {
-    connect?: Nullable<MpesaPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<MpesaPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<MpesaPaymentUncheckedCreateWithoutOrderInput>;
-    delete?: Nullable<boolean>;
-    disconnect?: Nullable<boolean>;
-    update?: Nullable<MpesaPaymentUncheckedUpdateWithoutOrderInput>;
-    upsert?: Nullable<MpesaPaymentUpsertWithoutOrderInput>;
 }
 
 export class MpesaPaymentUpdateOneWithoutTransactionInput {
@@ -3710,26 +3614,6 @@ export class MpesaPaymentUpdateOneWithoutTransactionInput {
     upsert?: Nullable<MpesaPaymentUpsertWithoutTransactionInput>;
 }
 
-export class MpesaPaymentUpdateWithoutOrderInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Amount?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Country?: Nullable<StringFieldUpdateOperationsInput>;
-    input_Currency?: Nullable<StringFieldUpdateOperationsInput>;
-    input_CustomerMSISDN?: Nullable<StringFieldUpdateOperationsInput>;
-    input_PurchasedItemsDesc?: Nullable<StringFieldUpdateOperationsInput>;
-    input_ServiceProviderCode?: Nullable<StringFieldUpdateOperationsInput>;
-    input_TransactionReference?: Nullable<StringFieldUpdateOperationsInput>;
-    output_ConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ResponseCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ResponseDesc?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_ThirdPartyConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    output_TransactionID?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    transaction?: Nullable<TransactionUpdateOneWithoutMpesaPaymentInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
 export class MpesaPaymentUpdateWithoutTransactionInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
@@ -3739,8 +3623,8 @@ export class MpesaPaymentUpdateWithoutTransactionInput {
     input_CustomerMSISDN?: Nullable<StringFieldUpdateOperationsInput>;
     input_PurchasedItemsDesc?: Nullable<StringFieldUpdateOperationsInput>;
     input_ServiceProviderCode?: Nullable<StringFieldUpdateOperationsInput>;
+    input_ThirdPartyConversationID?: Nullable<StringFieldUpdateOperationsInput>;
     input_TransactionReference?: Nullable<StringFieldUpdateOperationsInput>;
-    order?: Nullable<OrderUpdateOneRequiredWithoutMpesa_paymentInput>;
     output_ConversationID?: Nullable<NullableStringFieldUpdateOperationsInput>;
     output_ResponseCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     output_ResponseDesc?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -3748,11 +3632,6 @@ export class MpesaPaymentUpdateWithoutTransactionInput {
     output_TransactionID?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class MpesaPaymentUpsertWithoutOrderInput {
-    create: MpesaPaymentUncheckedCreateWithoutOrderInput;
-    update: MpesaPaymentUncheckedUpdateWithoutOrderInput;
 }
 
 export class MpesaPaymentUpsertWithoutTransactionInput {
@@ -3774,7 +3653,6 @@ export class MpesaPaymentWhereInput {
     input_ServiceProviderCode?: Nullable<StringFilter>;
     input_ThirdPartyConversationID?: Nullable<StringFilter>;
     input_TransactionReference?: Nullable<StringFilter>;
-    order?: Nullable<OrderWhereInput>;
     output_ConversationID?: Nullable<StringNullableFilter>;
     output_ResponseCode?: Nullable<StringNullableFilter>;
     output_ResponseDesc?: Nullable<StringNullableFilter>;
@@ -4197,16 +4075,15 @@ export class OrderCreateInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     owner: UserCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4371,25 +4248,14 @@ export class OrderCreateNestedOneWithoutLocationInput {
     create?: Nullable<OrderUncheckedCreateWithoutLocationInput>;
 }
 
-export class OrderCreateNestedOneWithoutMpesa_paymentInput {
+export class OrderCreateNestedOneWithoutTransactionsInput {
     connect?: Nullable<OrderWhereUniqueInput>;
-    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutMpesa_paymentInput>;
-    create?: Nullable<OrderUncheckedCreateWithoutMpesa_paymentInput>;
-}
-
-export class OrderCreateNestedOneWithoutSelcom_paymentInput {
-    connect?: Nullable<OrderWhereUniqueInput>;
-    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutSelcom_paymentInput>;
-    create?: Nullable<OrderUncheckedCreateWithoutSelcom_paymentInput>;
+    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutTransactionsInput>;
+    create?: Nullable<OrderUncheckedCreateWithoutTransactionsInput>;
 }
 
 export class OrderCreateOrConnectWithoutLocationInput {
     create: OrderUncheckedCreateWithoutLocationInput;
-    where: OrderWhereUniqueInput;
-}
-
-export class OrderCreateOrConnectWithoutMpesa_paymentInput {
-    create: OrderUncheckedCreateWithoutMpesa_paymentInput;
     where: OrderWhereUniqueInput;
 }
 
@@ -4413,13 +4279,13 @@ export class OrderCreateOrConnectWithoutReceiptInput {
     where: OrderWhereUniqueInput;
 }
 
-export class OrderCreateOrConnectWithoutSelcom_paymentInput {
-    create: OrderUncheckedCreateWithoutSelcom_paymentInput;
+export class OrderCreateOrConnectWithoutServiceInput {
+    create: OrderUncheckedCreateWithoutServiceInput;
     where: OrderWhereUniqueInput;
 }
 
-export class OrderCreateOrConnectWithoutServiceInput {
-    create: OrderUncheckedCreateWithoutServiceInput;
+export class OrderCreateOrConnectWithoutTransactionsInput {
+    create: OrderUncheckedCreateWithoutTransactionsInput;
     where: OrderWhereUniqueInput;
 }
 
@@ -4427,33 +4293,15 @@ export class OrderCreateWithoutLocationInput {
     createdAt?: Nullable<DateTime>;
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     owner: UserCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
-    updatedAt?: Nullable<DateTime>;
-}
-
-export class OrderCreateWithoutMpesa_paymentInput {
-    createdAt?: Nullable<DateTime>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<string>;
-    location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    notes?: Nullable<string>;
-    organization: OrganizationCreateNestedOneWithoutOrdersInput;
-    owner: UserCreateNestedOneWithoutOrdersInput;
-    provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
-    quantity: number;
-    receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
-    service: ServiceCreateNestedOneWithoutOrdersInput;
-    state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4462,15 +4310,14 @@ export class OrderCreateWithoutOrganizationInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     owner: UserCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4479,15 +4326,14 @@ export class OrderCreateWithoutOwnerInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4496,15 +4342,14 @@ export class OrderCreateWithoutProviderInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     owner: UserCreateNestedOneWithoutOrdersInput;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4513,32 +4358,14 @@ export class OrderCreateWithoutReceiptInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     owner: UserCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
     service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
-    updatedAt?: Nullable<DateTime>;
-}
-
-export class OrderCreateWithoutSelcom_paymentInput {
-    createdAt?: Nullable<DateTime>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<string>;
-    location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
-    notes?: Nullable<string>;
-    organization: OrganizationCreateNestedOneWithoutOrdersInput;
-    owner: UserCreateNestedOneWithoutOrdersInput;
-    provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
-    quantity: number;
-    receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    service: ServiceCreateNestedOneWithoutOrdersInput;
-    state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4547,14 +4374,29 @@ export class OrderCreateWithoutServiceInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organization: OrganizationCreateNestedOneWithoutOrdersInput;
     owner: UserCreateNestedOneWithoutOrdersInput;
     provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
     quantity: number;
     receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentCreateNestedOneWithoutOrderInput>;
+    state?: Nullable<State>;
+    transactions?: Nullable<TransactionCreateNestedManyWithoutOrderInput>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export class OrderCreateWithoutTransactionsInput {
+    createdAt?: Nullable<DateTime>;
+    deliveryMode?: Nullable<DeliveryMode[]>;
+    id?: Nullable<string>;
+    location?: Nullable<LocationCreateNestedOneWithoutOrderInput>;
+    notes?: Nullable<string>;
+    organization: OrganizationCreateNestedOneWithoutOrdersInput;
+    owner: UserCreateNestedOneWithoutOrdersInput;
+    provider?: Nullable<UserCreateNestedOneWithoutProvidesInput>;
+    quantity: number;
+    receipt?: Nullable<AttachmentCreateNestedOneWithoutOrdersInput>;
+    service: ServiceCreateNestedOneWithoutOrdersInput;
     state?: Nullable<State>;
     updatedAt?: Nullable<DateTime>;
 }
@@ -4688,16 +4530,15 @@ export class OrderUncheckedCreateInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     ownerId: string;
     providerId?: Nullable<string>;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4746,33 +4587,15 @@ export class OrderUncheckedCreateWithoutLocationInput {
     createdAt?: Nullable<DateTime>;
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     ownerId: string;
     providerId?: Nullable<string>;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
-    updatedAt?: Nullable<DateTime>;
-}
-
-export class OrderUncheckedCreateWithoutMpesa_paymentInput {
-    createdAt?: Nullable<DateTime>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<string>;
-    locationId?: Nullable<string>;
-    notes?: Nullable<string>;
-    organizationId: string;
-    ownerId: string;
-    providerId?: Nullable<string>;
-    quantity: number;
-    receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
-    serviceId: string;
-    state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4781,15 +4604,14 @@ export class OrderUncheckedCreateWithoutOrganizationInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     ownerId: string;
     providerId?: Nullable<string>;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4798,15 +4620,14 @@ export class OrderUncheckedCreateWithoutOwnerInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     providerId?: Nullable<string>;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4815,15 +4636,14 @@ export class OrderUncheckedCreateWithoutProviderInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     ownerId: string;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4832,32 +4652,14 @@ export class OrderUncheckedCreateWithoutReceiptInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     ownerId: string;
     providerId?: Nullable<string>;
     quantity: number;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     serviceId: string;
     state?: Nullable<State>;
-    updatedAt?: Nullable<DateTime>;
-}
-
-export class OrderUncheckedCreateWithoutSelcom_paymentInput {
-    createdAt?: Nullable<DateTime>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<string>;
-    locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
-    notes?: Nullable<string>;
-    organizationId: string;
-    ownerId: string;
-    providerId?: Nullable<string>;
-    quantity: number;
-    receiptId?: Nullable<string>;
-    serviceId: string;
-    state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTime>;
 }
 
@@ -4866,14 +4668,29 @@ export class OrderUncheckedCreateWithoutServiceInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<string>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedCreateNestedOneWithoutOrderInput>;
     notes?: Nullable<string>;
     organizationId: string;
     ownerId: string;
     providerId?: Nullable<string>;
     quantity: number;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput>;
+    state?: Nullable<State>;
+    transactions?: Nullable<TransactionUncheckedCreateNestedManyWithoutOrderInput>;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export class OrderUncheckedCreateWithoutTransactionsInput {
+    createdAt?: Nullable<DateTime>;
+    deliveryMode?: Nullable<DeliveryMode[]>;
+    id?: Nullable<string>;
+    locationId?: Nullable<string>;
+    notes?: Nullable<string>;
+    organizationId: string;
+    ownerId: string;
+    providerId?: Nullable<string>;
+    quantity: number;
+    receiptId?: Nullable<string>;
+    serviceId: string;
     state?: Nullable<State>;
     updatedAt?: Nullable<DateTime>;
 }
@@ -4883,16 +4700,15 @@ export class OrderUncheckedUpdateInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5026,33 +4842,15 @@ export class OrderUncheckedUpdateWithoutLocationInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class OrderUncheckedUpdateWithoutMpesa_paymentInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<StringFieldUpdateOperationsInput>;
-    ownerId?: Nullable<StringFieldUpdateOperationsInput>;
-    providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
-    serviceId?: Nullable<StringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5061,15 +4859,14 @@ export class OrderUncheckedUpdateWithoutOrganizationInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5078,15 +4875,14 @@ export class OrderUncheckedUpdateWithoutOwnerInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5095,15 +4891,14 @@ export class OrderUncheckedUpdateWithoutProviderInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5112,32 +4907,14 @@ export class OrderUncheckedUpdateWithoutReceiptInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
     serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class OrderUncheckedUpdateWithoutSelcom_paymentInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
-    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organizationId?: Nullable<StringFieldUpdateOperationsInput>;
-    ownerId?: Nullable<StringFieldUpdateOperationsInput>;
-    providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    serviceId?: Nullable<StringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5146,14 +4923,29 @@ export class OrderUncheckedUpdateWithoutServiceInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUncheckedUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organizationId?: Nullable<StringFieldUpdateOperationsInput>;
     ownerId?: Nullable<StringFieldUpdateOperationsInput>;
     providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUncheckedUpdateOneWithoutOrderInput>;
+    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUncheckedUpdateManyWithoutOrderInput>;
+    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+}
+
+export class OrderUncheckedUpdateWithoutTransactionsInput {
+    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+    deliveryMode?: Nullable<DeliveryMode[]>;
+    id?: Nullable<StringFieldUpdateOperationsInput>;
+    locationId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    organizationId?: Nullable<StringFieldUpdateOperationsInput>;
+    ownerId?: Nullable<StringFieldUpdateOperationsInput>;
+    providerId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    quantity?: Nullable<IntFieldUpdateOperationsInput>;
+    receiptId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    serviceId?: Nullable<StringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
@@ -5163,16 +4955,15 @@ export class OrderUpdateInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5281,20 +5072,12 @@ export class OrderUpdateManyWithoutServiceInput {
     upsert?: Nullable<OrderUpsertWithWhereUniqueWithoutServiceInput[]>;
 }
 
-export class OrderUpdateOneRequiredWithoutMpesa_paymentInput {
+export class OrderUpdateOneRequiredWithoutTransactionsInput {
     connect?: Nullable<OrderWhereUniqueInput>;
-    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutMpesa_paymentInput>;
-    create?: Nullable<OrderUncheckedCreateWithoutMpesa_paymentInput>;
-    update?: Nullable<OrderUncheckedUpdateWithoutMpesa_paymentInput>;
-    upsert?: Nullable<OrderUpsertWithoutMpesa_paymentInput>;
-}
-
-export class OrderUpdateOneRequiredWithoutSelcom_paymentInput {
-    connect?: Nullable<OrderWhereUniqueInput>;
-    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutSelcom_paymentInput>;
-    create?: Nullable<OrderUncheckedCreateWithoutSelcom_paymentInput>;
-    update?: Nullable<OrderUncheckedUpdateWithoutSelcom_paymentInput>;
-    upsert?: Nullable<OrderUpsertWithoutSelcom_paymentInput>;
+    connectOrCreate?: Nullable<OrderCreateOrConnectWithoutTransactionsInput>;
+    create?: Nullable<OrderUncheckedCreateWithoutTransactionsInput>;
+    update?: Nullable<OrderUncheckedUpdateWithoutTransactionsInput>;
+    upsert?: Nullable<OrderUpsertWithoutTransactionsInput>;
 }
 
 export class OrderUpdateOneWithoutLocationInput {
@@ -5336,33 +5119,15 @@ export class OrderUpdateWithoutLocationInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class OrderUpdateWithoutMpesa_paymentInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
-    owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
-    provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
-    quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
-    service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5371,15 +5136,14 @@ export class OrderUpdateWithoutOrganizationInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5388,15 +5152,14 @@ export class OrderUpdateWithoutOwnerInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5405,15 +5168,14 @@ export class OrderUpdateWithoutProviderInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5422,32 +5184,14 @@ export class OrderUpdateWithoutReceiptInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
     service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-}
-
-export class OrderUpdateWithoutSelcom_paymentInput {
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    deliveryMode?: Nullable<DeliveryMode[]>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
-    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
-    owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
-    provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
-    quantity?: Nullable<IntFieldUpdateOperationsInput>;
-    receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
 
@@ -5456,14 +5200,29 @@ export class OrderUpdateWithoutServiceInput {
     deliveryMode?: Nullable<DeliveryMode[]>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     location?: Nullable<LocationUpdateOneWithoutOrderInput>;
-    mpesa_payment?: Nullable<MpesaPaymentUpdateOneWithoutOrderInput>;
     notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
     organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
     owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
     provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
     quantity?: Nullable<IntFieldUpdateOperationsInput>;
     receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
-    selcom_payment?: Nullable<SelcomPaymentUpdateOneWithoutOrderInput>;
+    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    transactions?: Nullable<TransactionUpdateManyWithoutOrderInput>;
+    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+}
+
+export class OrderUpdateWithoutTransactionsInput {
+    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+    deliveryMode?: Nullable<DeliveryMode[]>;
+    id?: Nullable<StringFieldUpdateOperationsInput>;
+    location?: Nullable<LocationUpdateOneWithoutOrderInput>;
+    notes?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    organization?: Nullable<OrganizationUpdateOneRequiredWithoutOrdersInput>;
+    owner?: Nullable<UserUpdateOneRequiredWithoutOrdersInput>;
+    provider?: Nullable<UserUpdateOneWithoutProvidesInput>;
+    quantity?: Nullable<IntFieldUpdateOperationsInput>;
+    receipt?: Nullable<AttachmentUpdateOneWithoutOrdersInput>;
+    service?: Nullable<ServiceUpdateOneRequiredWithoutOrdersInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
 }
@@ -5508,14 +5267,9 @@ export class OrderUpsertWithoutLocationInput {
     update: OrderUncheckedUpdateWithoutLocationInput;
 }
 
-export class OrderUpsertWithoutMpesa_paymentInput {
-    create: OrderUncheckedCreateWithoutMpesa_paymentInput;
-    update: OrderUncheckedUpdateWithoutMpesa_paymentInput;
-}
-
-export class OrderUpsertWithoutSelcom_paymentInput {
-    create: OrderUncheckedCreateWithoutSelcom_paymentInput;
-    update: OrderUncheckedUpdateWithoutSelcom_paymentInput;
+export class OrderUpsertWithoutTransactionsInput {
+    create: OrderUncheckedCreateWithoutTransactionsInput;
+    update: OrderUncheckedUpdateWithoutTransactionsInput;
 }
 
 export class OrderWhereInput {
@@ -5527,7 +5281,6 @@ export class OrderWhereInput {
     id?: Nullable<StringFilter>;
     location?: Nullable<LocationWhereInput>;
     locationId?: Nullable<StringNullableFilter>;
-    mpesa_payment?: Nullable<MpesaPaymentWhereInput>;
     notes?: Nullable<StringNullableFilter>;
     organization?: Nullable<OrganizationWhereInput>;
     organizationId?: Nullable<StringFilter>;
@@ -5538,10 +5291,10 @@ export class OrderWhereInput {
     quantity?: Nullable<IntFilter>;
     receipt?: Nullable<AttachmentWhereInput>;
     receiptId?: Nullable<StringNullableFilter>;
-    selcom_payment?: Nullable<SelcomPaymentWhereInput>;
     service?: Nullable<ServiceWhereInput>;
     serviceId?: Nullable<StringFilter>;
     state?: Nullable<EnumStateFilter>;
+    transactions?: Nullable<TransactionListRelationFilter>;
     updatedAt?: Nullable<DateTimeFilter>;
 }
 
@@ -8117,7 +7870,6 @@ export class SelcomPaymentCountOrderByAggregateInput {
     id?: Nullable<SortOrder>;
     msisdn?: Nullable<SortOrder>;
     operator?: Nullable<SortOrder>;
-    orderId?: Nullable<SortOrder>;
     reference?: Nullable<SortOrder>;
     resultCode?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -8134,7 +7886,6 @@ export class SelcomPaymentCreateInput {
     id?: Nullable<string>;
     msisdn: string;
     operator?: Nullable<string>;
-    order: OrderCreateNestedOneWithoutSelcom_paymentInput;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -8152,7 +7903,6 @@ export class SelcomPaymentCreateManyInput {
     id?: Nullable<string>;
     msisdn: string;
     operator?: Nullable<string>;
-    orderId: string;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -8161,12 +7911,6 @@ export class SelcomPaymentCreateManyInput {
     updatedAt?: Nullable<DateTime>;
     utilityref: number;
     validation?: Nullable<SelcomPaymentStatus>;
-}
-
-export class SelcomPaymentCreateNestedOneWithoutOrderInput {
-    connect?: Nullable<SelcomPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<SelcomPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<SelcomPaymentUncheckedCreateWithoutOrderInput>;
 }
 
 export class SelcomPaymentCreateNestedOneWithoutTransactionInput {
@@ -8175,31 +7919,9 @@ export class SelcomPaymentCreateNestedOneWithoutTransactionInput {
     create?: Nullable<SelcomPaymentUncheckedCreateWithoutTransactionInput>;
 }
 
-export class SelcomPaymentCreateOrConnectWithoutOrderInput {
-    create: SelcomPaymentUncheckedCreateWithoutOrderInput;
-    where: SelcomPaymentWhereUniqueInput;
-}
-
 export class SelcomPaymentCreateOrConnectWithoutTransactionInput {
     create: SelcomPaymentUncheckedCreateWithoutTransactionInput;
     where: SelcomPaymentWhereUniqueInput;
-}
-
-export class SelcomPaymentCreateWithoutOrderInput {
-    amount: number;
-    createdAt?: Nullable<DateTime>;
-    id?: Nullable<string>;
-    msisdn: string;
-    operator?: Nullable<string>;
-    reference?: Nullable<string>;
-    resultCode?: Nullable<string>;
-    state?: Nullable<State>;
-    status?: Nullable<SelcomPaymentStatus>;
-    transId: string;
-    transaction?: Nullable<TransactionCreateNestedOneWithoutSelcomPaymentInput>;
-    updatedAt?: Nullable<DateTime>;
-    utilityref: number;
-    validation?: Nullable<SelcomPaymentStatus>;
 }
 
 export class SelcomPaymentCreateWithoutTransactionInput {
@@ -8208,7 +7930,6 @@ export class SelcomPaymentCreateWithoutTransactionInput {
     id?: Nullable<string>;
     msisdn: string;
     operator?: Nullable<string>;
-    order: OrderCreateNestedOneWithoutSelcom_paymentInput;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -8225,7 +7946,6 @@ export class SelcomPaymentMaxOrderByAggregateInput {
     id?: Nullable<SortOrder>;
     msisdn?: Nullable<SortOrder>;
     operator?: Nullable<SortOrder>;
-    orderId?: Nullable<SortOrder>;
     reference?: Nullable<SortOrder>;
     resultCode?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -8242,7 +7962,6 @@ export class SelcomPaymentMinOrderByAggregateInput {
     id?: Nullable<SortOrder>;
     msisdn?: Nullable<SortOrder>;
     operator?: Nullable<SortOrder>;
-    orderId?: Nullable<SortOrder>;
     reference?: Nullable<SortOrder>;
     resultCode?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -8259,7 +7978,6 @@ export class SelcomPaymentOrderByInput {
     id?: Nullable<SortOrder>;
     msisdn?: Nullable<SortOrder>;
     operator?: Nullable<SortOrder>;
-    orderId?: Nullable<SortOrder>;
     reference?: Nullable<SortOrder>;
     resultCode?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -8281,7 +7999,6 @@ export class SelcomPaymentOrderByWithAggregationInput {
     id?: Nullable<SortOrder>;
     msisdn?: Nullable<SortOrder>;
     operator?: Nullable<SortOrder>;
-    orderId?: Nullable<SortOrder>;
     reference?: Nullable<SortOrder>;
     resultCode?: Nullable<SortOrder>;
     state?: Nullable<SortOrder>;
@@ -8306,7 +8023,6 @@ export class SelcomPaymentScalarWhereWithAggregatesInput {
     id?: Nullable<StringWithAggregatesFilter>;
     msisdn?: Nullable<StringWithAggregatesFilter>;
     operator?: Nullable<StringNullableWithAggregatesFilter>;
-    orderId?: Nullable<StringWithAggregatesFilter>;
     reference?: Nullable<StringNullableWithAggregatesFilter>;
     resultCode?: Nullable<StringNullableWithAggregatesFilter>;
     state?: Nullable<EnumStateWithAggregatesFilter>;
@@ -8323,30 +8039,6 @@ export class SelcomPaymentSumOrderByAggregateInput {
 }
 
 export class SelcomPaymentUncheckedCreateInput {
-    amount: number;
-    createdAt?: Nullable<DateTime>;
-    id?: Nullable<string>;
-    msisdn: string;
-    operator?: Nullable<string>;
-    orderId: string;
-    reference?: Nullable<string>;
-    resultCode?: Nullable<string>;
-    state?: Nullable<State>;
-    status?: Nullable<SelcomPaymentStatus>;
-    transId: string;
-    transaction?: Nullable<TransactionUncheckedCreateNestedOneWithoutSelcomPaymentInput>;
-    updatedAt?: Nullable<DateTime>;
-    utilityref: number;
-    validation?: Nullable<SelcomPaymentStatus>;
-}
-
-export class SelcomPaymentUncheckedCreateNestedOneWithoutOrderInput {
-    connect?: Nullable<SelcomPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<SelcomPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<SelcomPaymentUncheckedCreateWithoutOrderInput>;
-}
-
-export class SelcomPaymentUncheckedCreateWithoutOrderInput {
     amount: number;
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
@@ -8369,7 +8061,6 @@ export class SelcomPaymentUncheckedCreateWithoutTransactionInput {
     id?: Nullable<string>;
     msisdn: string;
     operator?: Nullable<string>;
-    orderId: string;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -8386,7 +8077,6 @@ export class SelcomPaymentUncheckedUpdateInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     msisdn?: Nullable<StringFieldUpdateOperationsInput>;
     operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
     resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -8404,39 +8094,11 @@ export class SelcomPaymentUncheckedUpdateManyInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     msisdn?: Nullable<StringFieldUpdateOperationsInput>;
     operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
     resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
     status?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
     transId?: Nullable<StringFieldUpdateOperationsInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    utilityref?: Nullable<IntFieldUpdateOperationsInput>;
-    validation?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
-}
-
-export class SelcomPaymentUncheckedUpdateOneWithoutOrderInput {
-    connect?: Nullable<SelcomPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<SelcomPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<SelcomPaymentUncheckedCreateWithoutOrderInput>;
-    delete?: Nullable<boolean>;
-    disconnect?: Nullable<boolean>;
-    update?: Nullable<SelcomPaymentUncheckedUpdateWithoutOrderInput>;
-    upsert?: Nullable<SelcomPaymentUpsertWithoutOrderInput>;
-}
-
-export class SelcomPaymentUncheckedUpdateWithoutOrderInput {
-    amount?: Nullable<IntFieldUpdateOperationsInput>;
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    msisdn?: Nullable<StringFieldUpdateOperationsInput>;
-    operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    status?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
-    transId?: Nullable<StringFieldUpdateOperationsInput>;
-    transaction?: Nullable<TransactionUncheckedUpdateOneWithoutSelcomPaymentInput>;
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     utilityref?: Nullable<IntFieldUpdateOperationsInput>;
     validation?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
@@ -8448,7 +8110,6 @@ export class SelcomPaymentUncheckedUpdateWithoutTransactionInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     msisdn?: Nullable<StringFieldUpdateOperationsInput>;
     operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
     resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -8465,7 +8126,6 @@ export class SelcomPaymentUpdateInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     msisdn?: Nullable<StringFieldUpdateOperationsInput>;
     operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    order?: Nullable<OrderUpdateOneRequiredWithoutSelcom_paymentInput>;
     reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
     resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -8493,16 +8153,6 @@ export class SelcomPaymentUpdateManyMutationInput {
     validation?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
 }
 
-export class SelcomPaymentUpdateOneWithoutOrderInput {
-    connect?: Nullable<SelcomPaymentWhereUniqueInput>;
-    connectOrCreate?: Nullable<SelcomPaymentCreateOrConnectWithoutOrderInput>;
-    create?: Nullable<SelcomPaymentUncheckedCreateWithoutOrderInput>;
-    delete?: Nullable<boolean>;
-    disconnect?: Nullable<boolean>;
-    update?: Nullable<SelcomPaymentUncheckedUpdateWithoutOrderInput>;
-    upsert?: Nullable<SelcomPaymentUpsertWithoutOrderInput>;
-}
-
 export class SelcomPaymentUpdateOneWithoutTransactionInput {
     connect?: Nullable<SelcomPaymentWhereUniqueInput>;
     connectOrCreate?: Nullable<SelcomPaymentCreateOrConnectWithoutTransactionInput>;
@@ -8513,30 +8163,12 @@ export class SelcomPaymentUpdateOneWithoutTransactionInput {
     upsert?: Nullable<SelcomPaymentUpsertWithoutTransactionInput>;
 }
 
-export class SelcomPaymentUpdateWithoutOrderInput {
-    amount?: Nullable<IntFieldUpdateOperationsInput>;
-    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    id?: Nullable<StringFieldUpdateOperationsInput>;
-    msisdn?: Nullable<StringFieldUpdateOperationsInput>;
-    operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
-    status?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
-    transId?: Nullable<StringFieldUpdateOperationsInput>;
-    transaction?: Nullable<TransactionUpdateOneWithoutSelcomPaymentInput>;
-    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
-    utilityref?: Nullable<IntFieldUpdateOperationsInput>;
-    validation?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
-}
-
 export class SelcomPaymentUpdateWithoutTransactionInput {
     amount?: Nullable<IntFieldUpdateOperationsInput>;
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     msisdn?: Nullable<StringFieldUpdateOperationsInput>;
     operator?: Nullable<NullableStringFieldUpdateOperationsInput>;
-    order?: Nullable<OrderUpdateOneRequiredWithoutSelcom_paymentInput>;
     reference?: Nullable<NullableStringFieldUpdateOperationsInput>;
     resultCode?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -8545,11 +8177,6 @@ export class SelcomPaymentUpdateWithoutTransactionInput {
     updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     utilityref?: Nullable<IntFieldUpdateOperationsInput>;
     validation?: Nullable<EnumSelcomPaymentStatusFieldUpdateOperationsInput>;
-}
-
-export class SelcomPaymentUpsertWithoutOrderInput {
-    create: SelcomPaymentUncheckedCreateWithoutOrderInput;
-    update: SelcomPaymentUncheckedUpdateWithoutOrderInput;
 }
 
 export class SelcomPaymentUpsertWithoutTransactionInput {
@@ -8566,8 +8193,6 @@ export class SelcomPaymentWhereInput {
     id?: Nullable<StringFilter>;
     msisdn?: Nullable<StringFilter>;
     operator?: Nullable<StringNullableFilter>;
-    order?: Nullable<OrderWhereInput>;
-    orderId?: Nullable<StringFilter>;
     reference?: Nullable<StringNullableFilter>;
     resultCode?: Nullable<StringNullableFilter>;
     state?: Nullable<EnumStateFilter>;
@@ -9796,6 +9421,7 @@ export class TransactionCountOrderByAggregateInput {
     createdAt?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     mpesaPaymentId?: Nullable<SortOrder>;
+    orderId?: Nullable<SortOrder>;
     paymentMethodId?: Nullable<SortOrder>;
     selcomDisbursementId?: Nullable<SortOrder>;
     selcomPaymentId?: Nullable<SortOrder>;
@@ -9810,6 +9436,7 @@ export class TransactionCreateInput {
     id?: Nullable<string>;
     initiator: UserCreateNestedOneWithoutTransactionsInput;
     mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
     paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
     selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
@@ -9822,6 +9449,7 @@ export class TransactionCreateManyInitiatorInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -9839,6 +9467,7 @@ export class TransactionCreateManyInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -9848,10 +9477,29 @@ export class TransactionCreateManyInput {
     userId: string;
 }
 
+export class TransactionCreateManyOrderInput {
+    createdAt?: Nullable<DateTime>;
+    id?: Nullable<string>;
+    mpesaPaymentId?: Nullable<string>;
+    paymentMethodId: string;
+    selcomDisbursementId?: Nullable<string>;
+    selcomPaymentId?: Nullable<string>;
+    state?: Nullable<State>;
+    type: TransactionType;
+    updatedAt?: Nullable<DateTime>;
+    userId: string;
+}
+
+export class TransactionCreateManyOrderInputEnvelope {
+    data: TransactionCreateManyOrderInput[];
+    skipDuplicates?: Nullable<boolean>;
+}
+
 export class TransactionCreateManyPaymentMethodInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
     state?: Nullable<State>;
@@ -9870,6 +9518,13 @@ export class TransactionCreateNestedManyWithoutInitiatorInput {
     connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutInitiatorInput[]>;
     create?: Nullable<TransactionCreateWithoutInitiatorInput[]>;
     createMany?: Nullable<TransactionCreateManyInitiatorInputEnvelope>;
+}
+
+export class TransactionCreateNestedManyWithoutOrderInput {
+    connect?: Nullable<TransactionWhereUniqueInput[]>;
+    connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutOrderInput[]>;
+    create?: Nullable<TransactionCreateWithoutOrderInput[]>;
+    createMany?: Nullable<TransactionCreateManyOrderInputEnvelope>;
 }
 
 export class TransactionCreateNestedManyWithoutPaymentMethodInput {
@@ -9907,6 +9562,11 @@ export class TransactionCreateOrConnectWithoutMpesaPaymentInput {
     where: TransactionWhereUniqueInput;
 }
 
+export class TransactionCreateOrConnectWithoutOrderInput {
+    create: TransactionUncheckedCreateWithoutOrderInput;
+    where: TransactionWhereUniqueInput;
+}
+
 export class TransactionCreateOrConnectWithoutPaymentMethodInput {
     create: TransactionUncheckedCreateWithoutPaymentMethodInput;
     where: TransactionWhereUniqueInput;
@@ -9926,6 +9586,7 @@ export class TransactionCreateWithoutInitiatorInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
     paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
     selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
@@ -9938,6 +9599,20 @@ export class TransactionCreateWithoutMpesaPaymentInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     initiator: UserCreateNestedOneWithoutTransactionsInput;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
+    paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
+    selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
+    selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
+    state?: Nullable<State>;
+    type: TransactionType;
+    updatedAt?: Nullable<DateTime>;
+}
+
+export class TransactionCreateWithoutOrderInput {
+    createdAt?: Nullable<DateTime>;
+    id?: Nullable<string>;
+    initiator: UserCreateNestedOneWithoutTransactionsInput;
+    mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
     paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
     selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
@@ -9951,6 +9626,7 @@ export class TransactionCreateWithoutPaymentMethodInput {
     id?: Nullable<string>;
     initiator: UserCreateNestedOneWithoutTransactionsInput;
     mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
     selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
     state?: Nullable<State>;
@@ -9963,6 +9639,7 @@ export class TransactionCreateWithoutSelcomDisbursementInput {
     id?: Nullable<string>;
     initiator: UserCreateNestedOneWithoutTransactionsInput;
     mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
     paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
     selcomPayment?: Nullable<SelcomPaymentCreateNestedOneWithoutTransactionInput>;
     state?: Nullable<State>;
@@ -9975,6 +9652,7 @@ export class TransactionCreateWithoutSelcomPaymentInput {
     id?: Nullable<string>;
     initiator: UserCreateNestedOneWithoutTransactionsInput;
     mpesaPayment?: Nullable<MpesaPaymentCreateNestedOneWithoutTransactionInput>;
+    order: OrderCreateNestedOneWithoutTransactionsInput;
     paymentMethod: PaymentMethodCreateNestedOneWithoutTransactionsInput;
     selcomDisbursement?: Nullable<SelcomDisbursementCreateNestedOneWithoutTransactionInput>;
     state?: Nullable<State>;
@@ -9992,6 +9670,7 @@ export class TransactionMaxOrderByAggregateInput {
     createdAt?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     mpesaPaymentId?: Nullable<SortOrder>;
+    orderId?: Nullable<SortOrder>;
     paymentMethodId?: Nullable<SortOrder>;
     selcomDisbursementId?: Nullable<SortOrder>;
     selcomPaymentId?: Nullable<SortOrder>;
@@ -10005,6 +9684,7 @@ export class TransactionMinOrderByAggregateInput {
     createdAt?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     mpesaPaymentId?: Nullable<SortOrder>;
+    orderId?: Nullable<SortOrder>;
     paymentMethodId?: Nullable<SortOrder>;
     selcomDisbursementId?: Nullable<SortOrder>;
     selcomPaymentId?: Nullable<SortOrder>;
@@ -10018,6 +9698,7 @@ export class TransactionOrderByInput {
     createdAt?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     mpesaPaymentId?: Nullable<SortOrder>;
+    orderId?: Nullable<SortOrder>;
     paymentMethodId?: Nullable<SortOrder>;
     selcomDisbursementId?: Nullable<SortOrder>;
     selcomPaymentId?: Nullable<SortOrder>;
@@ -10034,6 +9715,7 @@ export class TransactionOrderByWithAggregationInput {
     createdAt?: Nullable<SortOrder>;
     id?: Nullable<SortOrder>;
     mpesaPaymentId?: Nullable<SortOrder>;
+    orderId?: Nullable<SortOrder>;
     paymentMethodId?: Nullable<SortOrder>;
     selcomDisbursementId?: Nullable<SortOrder>;
     selcomPaymentId?: Nullable<SortOrder>;
@@ -10055,6 +9737,7 @@ export class TransactionScalarWhereInput {
     createdAt?: Nullable<DateTimeFilter>;
     id?: Nullable<StringFilter>;
     mpesaPaymentId?: Nullable<StringNullableFilter>;
+    orderId?: Nullable<StringFilter>;
     paymentMethodId?: Nullable<StringFilter>;
     selcomDisbursementId?: Nullable<StringNullableFilter>;
     selcomPaymentId?: Nullable<StringNullableFilter>;
@@ -10071,6 +9754,7 @@ export class TransactionScalarWhereWithAggregatesInput {
     createdAt?: Nullable<DateTimeWithAggregatesFilter>;
     id?: Nullable<StringWithAggregatesFilter>;
     mpesaPaymentId?: Nullable<StringNullableWithAggregatesFilter>;
+    orderId?: Nullable<StringWithAggregatesFilter>;
     paymentMethodId?: Nullable<StringWithAggregatesFilter>;
     selcomDisbursementId?: Nullable<StringNullableWithAggregatesFilter>;
     selcomPaymentId?: Nullable<StringNullableWithAggregatesFilter>;
@@ -10084,6 +9768,7 @@ export class TransactionUncheckedCreateInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -10098,6 +9783,13 @@ export class TransactionUncheckedCreateNestedManyWithoutInitiatorInput {
     connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutInitiatorInput[]>;
     create?: Nullable<TransactionCreateWithoutInitiatorInput[]>;
     createMany?: Nullable<TransactionCreateManyInitiatorInputEnvelope>;
+}
+
+export class TransactionUncheckedCreateNestedManyWithoutOrderInput {
+    connect?: Nullable<TransactionWhereUniqueInput[]>;
+    connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutOrderInput[]>;
+    create?: Nullable<TransactionCreateWithoutOrderInput[]>;
+    createMany?: Nullable<TransactionCreateManyOrderInputEnvelope>;
 }
 
 export class TransactionUncheckedCreateNestedManyWithoutPaymentMethodInput {
@@ -10129,6 +9821,7 @@ export class TransactionUncheckedCreateWithoutInitiatorInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -10140,6 +9833,20 @@ export class TransactionUncheckedCreateWithoutInitiatorInput {
 export class TransactionUncheckedCreateWithoutMpesaPaymentInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
+    orderId: string;
+    paymentMethodId: string;
+    selcomDisbursementId?: Nullable<string>;
+    selcomPaymentId?: Nullable<string>;
+    state?: Nullable<State>;
+    type: TransactionType;
+    updatedAt?: Nullable<DateTime>;
+    userId: string;
+}
+
+export class TransactionUncheckedCreateWithoutOrderInput {
+    createdAt?: Nullable<DateTime>;
+    id?: Nullable<string>;
+    mpesaPaymentId?: Nullable<string>;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -10153,6 +9860,7 @@ export class TransactionUncheckedCreateWithoutPaymentMethodInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
     state?: Nullable<State>;
@@ -10165,6 +9873,7 @@ export class TransactionUncheckedCreateWithoutSelcomDisbursementInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomPaymentId?: Nullable<string>;
     state?: Nullable<State>;
@@ -10177,6 +9886,7 @@ export class TransactionUncheckedCreateWithoutSelcomPaymentInput {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId: string;
     paymentMethodId: string;
     selcomDisbursementId?: Nullable<string>;
     state?: Nullable<State>;
@@ -10189,6 +9899,7 @@ export class TransactionUncheckedUpdateInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -10202,6 +9913,7 @@ export class TransactionUncheckedUpdateManyInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -10225,6 +9937,20 @@ export class TransactionUncheckedUpdateManyWithoutInitiatorInput {
     upsert?: Nullable<TransactionUpsertWithWhereUniqueWithoutInitiatorInput[]>;
 }
 
+export class TransactionUncheckedUpdateManyWithoutOrderInput {
+    connect?: Nullable<TransactionWhereUniqueInput[]>;
+    connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutOrderInput[]>;
+    create?: Nullable<TransactionCreateWithoutOrderInput[]>;
+    createMany?: Nullable<TransactionCreateManyOrderInputEnvelope>;
+    delete?: Nullable<TransactionWhereUniqueInput[]>;
+    deleteMany?: Nullable<TransactionScalarWhereInput[]>;
+    disconnect?: Nullable<TransactionWhereUniqueInput[]>;
+    set?: Nullable<TransactionWhereUniqueInput[]>;
+    update?: Nullable<TransactionUpdateWithWhereUniqueWithoutOrderInput[]>;
+    updateMany?: Nullable<TransactionUpdateManyWithWhereWithoutOrderInput[]>;
+    upsert?: Nullable<TransactionUpsertWithWhereUniqueWithoutOrderInput[]>;
+}
+
 export class TransactionUncheckedUpdateManyWithoutPaymentMethodInput {
     connect?: Nullable<TransactionWhereUniqueInput[]>;
     connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutPaymentMethodInput[]>;
@@ -10243,6 +9969,7 @@ export class TransactionUncheckedUpdateManyWithoutTransactionsInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -10285,6 +10012,7 @@ export class TransactionUncheckedUpdateWithoutInitiatorInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -10296,6 +10024,20 @@ export class TransactionUncheckedUpdateWithoutInitiatorInput {
 export class TransactionUncheckedUpdateWithoutMpesaPaymentInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
+    paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
+    selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    type?: Nullable<EnumTransactionTypeFieldUpdateOperationsInput>;
+    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+    userId?: Nullable<StringFieldUpdateOperationsInput>;
+}
+
+export class TransactionUncheckedUpdateWithoutOrderInput {
+    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+    id?: Nullable<StringFieldUpdateOperationsInput>;
+    mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
@@ -10309,6 +10051,7 @@ export class TransactionUncheckedUpdateWithoutPaymentMethodInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10321,6 +10064,7 @@ export class TransactionUncheckedUpdateWithoutSelcomDisbursementInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10333,6 +10077,7 @@ export class TransactionUncheckedUpdateWithoutSelcomPaymentInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPaymentId?: Nullable<NullableStringFieldUpdateOperationsInput>;
+    orderId?: Nullable<StringFieldUpdateOperationsInput>;
     paymentMethodId?: Nullable<StringFieldUpdateOperationsInput>;
     selcomDisbursementId?: Nullable<NullableStringFieldUpdateOperationsInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10346,6 +10091,7 @@ export class TransactionUpdateInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
     mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
     paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
     selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
@@ -10367,6 +10113,11 @@ export class TransactionUpdateManyWithWhereWithoutInitiatorInput {
     where: TransactionScalarWhereInput;
 }
 
+export class TransactionUpdateManyWithWhereWithoutOrderInput {
+    data: TransactionUncheckedUpdateManyWithoutTransactionsInput;
+    where: TransactionScalarWhereInput;
+}
+
 export class TransactionUpdateManyWithWhereWithoutPaymentMethodInput {
     data: TransactionUncheckedUpdateManyWithoutTransactionsInput;
     where: TransactionScalarWhereInput;
@@ -10384,6 +10135,20 @@ export class TransactionUpdateManyWithoutInitiatorInput {
     update?: Nullable<TransactionUpdateWithWhereUniqueWithoutInitiatorInput[]>;
     updateMany?: Nullable<TransactionUpdateManyWithWhereWithoutInitiatorInput[]>;
     upsert?: Nullable<TransactionUpsertWithWhereUniqueWithoutInitiatorInput[]>;
+}
+
+export class TransactionUpdateManyWithoutOrderInput {
+    connect?: Nullable<TransactionWhereUniqueInput[]>;
+    connectOrCreate?: Nullable<TransactionCreateOrConnectWithoutOrderInput[]>;
+    create?: Nullable<TransactionCreateWithoutOrderInput[]>;
+    createMany?: Nullable<TransactionCreateManyOrderInputEnvelope>;
+    delete?: Nullable<TransactionWhereUniqueInput[]>;
+    deleteMany?: Nullable<TransactionScalarWhereInput[]>;
+    disconnect?: Nullable<TransactionWhereUniqueInput[]>;
+    set?: Nullable<TransactionWhereUniqueInput[]>;
+    update?: Nullable<TransactionUpdateWithWhereUniqueWithoutOrderInput[]>;
+    updateMany?: Nullable<TransactionUpdateManyWithWhereWithoutOrderInput[]>;
+    upsert?: Nullable<TransactionUpsertWithWhereUniqueWithoutOrderInput[]>;
 }
 
 export class TransactionUpdateManyWithoutPaymentMethodInput {
@@ -10435,6 +10200,11 @@ export class TransactionUpdateWithWhereUniqueWithoutInitiatorInput {
     where: TransactionWhereUniqueInput;
 }
 
+export class TransactionUpdateWithWhereUniqueWithoutOrderInput {
+    data: TransactionUncheckedUpdateWithoutOrderInput;
+    where: TransactionWhereUniqueInput;
+}
+
 export class TransactionUpdateWithWhereUniqueWithoutPaymentMethodInput {
     data: TransactionUncheckedUpdateWithoutPaymentMethodInput;
     where: TransactionWhereUniqueInput;
@@ -10444,6 +10214,7 @@ export class TransactionUpdateWithoutInitiatorInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
     paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
     selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
@@ -10456,6 +10227,20 @@ export class TransactionUpdateWithoutMpesaPaymentInput {
     createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
     id?: Nullable<StringFieldUpdateOperationsInput>;
     initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
+    paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
+    selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
+    selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
+    state?: Nullable<EnumStateFieldUpdateOperationsInput>;
+    type?: Nullable<EnumTransactionTypeFieldUpdateOperationsInput>;
+    updatedAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+}
+
+export class TransactionUpdateWithoutOrderInput {
+    createdAt?: Nullable<DateTimeFieldUpdateOperationsInput>;
+    id?: Nullable<StringFieldUpdateOperationsInput>;
+    initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
+    mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
     paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
     selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
@@ -10469,6 +10254,7 @@ export class TransactionUpdateWithoutPaymentMethodInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
     mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
     selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
     selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10481,6 +10267,7 @@ export class TransactionUpdateWithoutSelcomDisbursementInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
     mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
     paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
     selcomPayment?: Nullable<SelcomPaymentUpdateOneWithoutTransactionInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10493,6 +10280,7 @@ export class TransactionUpdateWithoutSelcomPaymentInput {
     id?: Nullable<StringFieldUpdateOperationsInput>;
     initiator?: Nullable<UserUpdateOneRequiredWithoutTransactionsInput>;
     mpesaPayment?: Nullable<MpesaPaymentUpdateOneWithoutTransactionInput>;
+    order?: Nullable<OrderUpdateOneRequiredWithoutTransactionsInput>;
     paymentMethod?: Nullable<PaymentMethodUpdateOneRequiredWithoutTransactionsInput>;
     selcomDisbursement?: Nullable<SelcomDisbursementUpdateOneWithoutTransactionInput>;
     state?: Nullable<EnumStateFieldUpdateOperationsInput>;
@@ -10503,6 +10291,12 @@ export class TransactionUpdateWithoutSelcomPaymentInput {
 export class TransactionUpsertWithWhereUniqueWithoutInitiatorInput {
     create: TransactionUncheckedCreateWithoutInitiatorInput;
     update: TransactionUncheckedUpdateWithoutInitiatorInput;
+    where: TransactionWhereUniqueInput;
+}
+
+export class TransactionUpsertWithWhereUniqueWithoutOrderInput {
+    create: TransactionUncheckedCreateWithoutOrderInput;
+    update: TransactionUncheckedUpdateWithoutOrderInput;
     where: TransactionWhereUniqueInput;
 }
 
@@ -10536,6 +10330,8 @@ export class TransactionWhereInput {
     initiator?: Nullable<UserWhereInput>;
     mpesaPayment?: Nullable<MpesaPaymentWhereInput>;
     mpesaPaymentId?: Nullable<StringNullableFilter>;
+    order?: Nullable<OrderWhereInput>;
+    orderId?: Nullable<StringFilter>;
     paymentMethod?: Nullable<PaymentMethodWhereInput>;
     paymentMethodId?: Nullable<StringFilter>;
     selcomDisbursement?: Nullable<SelcomDisbursementWhereInput>;
@@ -13375,7 +13171,6 @@ export class MpesaPayment {
     input_ServiceProviderCode: string;
     input_ThirdPartyConversationID: string;
     input_TransactionReference: string;
-    order: Order;
     output_ConversationID?: Nullable<string>;
     output_ResponseCode?: Nullable<string>;
     output_ResponseDesc?: Nullable<string>;
@@ -13526,12 +13321,12 @@ export class Notification {
 }
 
 export class Order {
+    _count?: Nullable<OrderCountOutputType>;
     createdAt: DateTime;
     deliveryMode: DeliveryMode[];
     id: string;
     location?: Nullable<Location>;
     locationId?: Nullable<string>;
-    mpesa_payment?: Nullable<MpesaPayment>;
     notes?: Nullable<string>;
     organization: Organization;
     organizationId: string;
@@ -13542,10 +13337,10 @@ export class Order {
     quantity: number;
     receipt?: Nullable<Attachment>;
     receiptId?: Nullable<string>;
-    selcom_payment?: Nullable<SelcomPayment>;
     service: Service;
     serviceId: string;
     state: State;
+    transactions: Transaction[];
     updatedAt: DateTime;
 }
 
@@ -13574,6 +13369,10 @@ export class OrderCountAggregateOutputType {
     serviceId: number;
     state: number;
     updatedAt: number;
+}
+
+export class OrderCountOutputType {
+    transactions: number;
 }
 
 export class OrderCountResponse {
@@ -14118,8 +13917,6 @@ export class SelcomPayment {
     id: string;
     msisdn: string;
     operator?: Nullable<string>;
-    order: Order;
-    orderId: string;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state: State;
@@ -14149,7 +13946,6 @@ export class SelcomPaymentCountAggregateOutputType {
     id: number;
     msisdn: number;
     operator: number;
-    orderId: number;
     reference: number;
     resultCode: number;
     state: number;
@@ -14178,7 +13974,6 @@ export class SelcomPaymentMaxAggregateOutputType {
     id?: Nullable<string>;
     msisdn?: Nullable<string>;
     operator?: Nullable<string>;
-    orderId?: Nullable<string>;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -14195,7 +13990,6 @@ export class SelcomPaymentMinAggregateOutputType {
     id?: Nullable<string>;
     msisdn?: Nullable<string>;
     operator?: Nullable<string>;
-    orderId?: Nullable<string>;
     reference?: Nullable<string>;
     resultCode?: Nullable<string>;
     state?: Nullable<State>;
@@ -14408,6 +14202,8 @@ export class Transaction {
     initiator: User;
     mpesaPayment?: Nullable<MpesaPayment>;
     mpesaPaymentId?: Nullable<string>;
+    order: Order;
+    orderId: string;
     paymentMethod: PaymentMethod;
     paymentMethodId: string;
     selcomDisbursement?: Nullable<SelcomDisbursement>;
@@ -14431,6 +14227,7 @@ export class TransactionCountAggregateOutputType {
     createdAt: number;
     id: number;
     mpesaPaymentId: number;
+    orderId: number;
     paymentMethodId: number;
     selcomDisbursementId: number;
     selcomPaymentId: number;
@@ -14456,6 +14253,7 @@ export class TransactionMaxAggregateOutputType {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId?: Nullable<string>;
     paymentMethodId?: Nullable<string>;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;
@@ -14469,6 +14267,7 @@ export class TransactionMinAggregateOutputType {
     createdAt?: Nullable<DateTime>;
     id?: Nullable<string>;
     mpesaPaymentId?: Nullable<string>;
+    orderId?: Nullable<string>;
     paymentMethodId?: Nullable<string>;
     selcomDisbursementId?: Nullable<string>;
     selcomPaymentId?: Nullable<string>;

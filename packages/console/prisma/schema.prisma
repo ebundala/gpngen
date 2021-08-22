@@ -48,7 +48,7 @@ model User {
   orders         Order[]
   organizations  Organization[] @relation("ownedBy")
   ratings        Rating[]       @relation("ratingsBy")
-  rated        Rating[]       @relation("ratedBy")
+  rated          Rating[]       @relation("ratedBy")
   staffOf        Organization[] 
   provides       Order[]        @relation("providedBy")
   invites        Invite[]   @relation("invitesBy")
@@ -143,8 +143,7 @@ model Order {
   service        Service      @relation(fields: [serviceId], references: [id])
   provider       User?   @relation("providedBy",fields: [providerId],references:[id])
   location       Location?    @relation("deliveryAt",fields: [locationId],references:[id])
-  mpesa_payment  MpesaPayment?
-  selcom_payment SelcomPayment?
+  transactions  Transaction[]
 
 }
 
@@ -231,6 +230,8 @@ model Transaction {
     type          TransactionType
     initiator     User @relation(fields:[userId],references:[id])
     userId        String
+    order        Order @relation(fields: [orderId],references:[id]) 
+    orderId      String
     mpesaPayment MpesaPayment? @relation(fields:[mpesaPaymentId],references:[id])
     mpesaPaymentId String?
     selcomPayment SelcomPayment? @relation(fields:[selcomPaymentId],references:[id])
@@ -256,7 +257,6 @@ model MpesaPayment {
   output_ResponseDesc             String?
   output_ThirdPartyConversationID String?
   output_TransactionID            String?
-  order                           Order @relation(fields: [input_ThirdPartyConversationID],references:[id])
   transaction Transaction?
   state                           State   @default(PENDING)
   createdAt     DateTime                  @default(now())
@@ -292,8 +292,6 @@ model SelcomPayment {
   status     SelcomPaymentStatus     @default(PENDING)
   utilityref Int
   validation SelcomPaymentStatus @default(PENDING)
-  order                           Order @relation(fields: [orderId],references:[id])
-  orderId       String
   transaction Transaction?
   state         State             @default(PENDING)
   createdAt     DateTime                  @default(now())

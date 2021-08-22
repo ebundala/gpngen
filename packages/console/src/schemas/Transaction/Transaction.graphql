@@ -5,6 +5,8 @@ type Transaction {
           type: TransactionType!
           initiator: User!
           userId: String!
+          order: Order!
+          orderId: String!
           mpesaPayment: MpesaPayment
           mpesaPaymentId: String
           selcomPayment: SelcomPayment
