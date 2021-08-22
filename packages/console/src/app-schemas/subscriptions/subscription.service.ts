@@ -11,12 +11,15 @@ import { AppLogger } from "@mechsoft/app-logger";
 export const ORDER_CHANGED = "ORDER_CHANGED";
 export const ORDER_RECEIVED = "ORDER_RECEIVED";
 export const INVITE_RECEIVED = "INVITE_RECEIVED";
+export const INVITE_CHANGED = "INVITE_CHANGED";
+
 export const FEEDBACK_RECEIVED = "FEEDBACK_RECEIVED";
 export const LOCATION_CHANGED = "LOCATION_CHANGED";
 
 @Injectable()
 @Bloc()
 export class SubscriptionService {
+
   constructor(
     private readonly pubSub: RedisPubSub,
     private readonly redisCache: RedisCache,
@@ -27,6 +30,7 @@ export class SubscriptionService {
     this.pubSub.subscribe(ORDER_RECEIVED, this.orderNotifications.bind(this));
     this.pubSub.subscribe(ORDER_CHANGED, this.orderChangeNotifications.bind(this));
     this.pubSub.subscribe(INVITE_RECEIVED, this.inviteNotifications.bind(this));
+    this.pubSub.subscribe(INVITE_CHANGED, this.inviteChangeNotifications.bind(this));
     this.pubSub.subscribe(FEEDBACK_RECEIVED, this.reviewNotifications.bind(this));
   }
 
@@ -181,6 +185,33 @@ export class SubscriptionService {
         priority: "high"
       }).catch(e => e);
   }
+  async   inviteChangeNotifications(data: { original: Invite, changed: Invite }) {
+    const { original, changed } = data;
+    if(original.state !== changed.state) {
+      const invite = await this.client.invite.findUnique({ where: { id: changed.id },include: { invitee: true,inviter:true,organization:true } })
+
+       if(changed.state == State.APPROVED) {
+        await this.client.organization.update({ where: { id: invite.organization.id },data:{
+          staffs:{
+            connect:{
+              id:invite.invitee.id
+            }
+          }
+         }});
+       }
+       else if(changed.state == State.REJECTED) {
+        await this.client.organization.update({ where: { id: invite.organization.id },data:{
+          staffs:{
+            disconnect:{
+              id:invite.invitee.id
+            }
+          }
+         }});
+       }
+      
+    }
+  }
+
 
   async reviewNotifications(data: { result: Rating }) {
     const { result } = data;
@@ -204,6 +235,8 @@ export class SubscriptionService {
         priority: "high"
       }).catch(e => e);
   }
+
+
   @PrismaAttach("Order", "create")
   async orderCreated(req: PrismaHookRequest<Order>, n: PrismaHookHandler) {
     const { result, prisma, params } = req;
@@ -234,6 +267,24 @@ export class SubscriptionService {
     const { result } = args;
 
     this.pubSub.publish(`${INVITE_RECEIVED}`, { id: result.id, result })
+    return n(args);
+  }
+
+
+  @PrismaAttach("Invite", "update",true)
+  async invitePreUpdated(req: PrismaHookRequest<Invite>, n: PrismaHookHandler) {
+   
+    const { result, prisma, params } = req;
+    const { action, args } = params;
+
+    //record  state before updating
+    req.context = await prisma.invite.findUnique({ where: args.where, select: args.select });
+    return n(args);
+  }
+  @PrismaAttach("Invite", "update")
+  async inviteUpdated(args: PrismaHookRequest<Invite>, n: PrismaHookHandler) {
+    const { result,context } = args;
+    this.pubSub.publish(`${INVITE_CHANGED}`, { id: result.id, original:context,changed:result })
     return n(args);
   }
 
