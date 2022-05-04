@@ -29,6 +29,40 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2    
       
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 10
+      - run: yarn install
+      - run: lerna run build      
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/apigen/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/firebase-admin/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/common/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/enforcer/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/mailer/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/business-rules-manager/package.json
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/prisma-client/package.json
+      # set up the server image build environment
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1  
       - name: Login to GitHub Container Registry
