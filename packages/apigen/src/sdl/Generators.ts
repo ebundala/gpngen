@@ -10,6 +10,7 @@ const projectRoot = pkgDir.sync() || process.cwd();
 
 export interface Options {
   models?: string[];
+  modelFieldTypeOverrides?: { [key: string]: string };
   output: string;
   javaScript?: boolean;
   excludeFields: string[];
@@ -34,6 +35,9 @@ export interface Options {
   };
   excludeQueriesAndMutations: QueriesAndMutations[];
   doNotUseFieldUpdateOperationsInput?: boolean;
+  filterInputs?: (input: DMMF.InputType) => DMMF.SchemaArg[];
+  dmmf?: DMMF.Document;
+
 }
 export class Generators {
   protected options: Options = {
@@ -68,21 +72,25 @@ export class Generators {
     this.isJS = this.options.javaScript;
   }
 
-  protected async dmmf(): Promise<DMMF.Document> {
+  protected async init(): Promise<DMMF.Document> {
     const schema = readFileSync(this.schemaPath, 'utf-8');
-    return await getDMMF({ datamodel: schema });
+    const dmmf= await getDMMF({ datamodel: schema });
+    if(this.options.dmmf!){
+      this.options.dmmf=dmmf;
+    }
+    return this.options.dmmf;
   }
 
-  protected async datamodel() {
-    const { datamodel }: { datamodel: DMMF.Datamodel } = await this.dmmf();
+  protected  datamodel() {
+    const { datamodel }: { datamodel: DMMF.Datamodel } = this.options.dmmf;
     return datamodel;
   }
-  protected async schema(){
-    const { schema }: { schema: DMMF.Schema } = await this.dmmf();
+  protected schema(){
+    const { schema }: { schema: DMMF.Schema } = this.options.dmmf;
     return schema;
   }
-  protected async models() {
-    const { schema }: { schema: DMMF.Schema } = await this.dmmf();
+  protected models() {
+    const { schema }: { schema: DMMF.Schema } = this.options.dmmf;
     return schema.outputObjectTypes.model.filter(
       (model) =>
         !this.options.models || this.options.models.includes(model.name),
@@ -97,6 +105,9 @@ export class Generators {
     return this.options.excludeFields.concat(
       this.options.excludeFieldsByModel[model],
     );
+  }
+  protected fieldTypeOverrides(fieldType: string): string {
+    return this.options.modelFieldTypeOverrides?.[fieldType] ?? fieldType;
   }
   /*protected excludeModels(model: string){
     return this.options.excludeModels[model]

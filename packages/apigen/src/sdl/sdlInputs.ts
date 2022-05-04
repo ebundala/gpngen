@@ -1,17 +1,12 @@
 import { DMMF } from '@prisma/client/runtime';
 import { GraphQLSchema } from 'graphql';
 import { writeFileSync } from 'fs';
+import { Options } from './Generators';
 
-interface OptionsType {
-  dmmf?: DMMF.Document;
-  excludeFields?: string[];
-  filterInputs?: (input: DMMF.InputType) => DMMF.SchemaArg[];
-  doNotUseFieldUpdateOperationsInput?: boolean;
-}
 
 const testedTypes: string[] = [];
 
-export const hasEmptyTypeFields = (type: string, options?: OptionsType) => {
+export const hasEmptyTypeFields = (type: string, options?: Options) => {
   let schema = options?.dmmf?.schema;
   if (!schema) {
     const { Prisma } = require('@prisma/client');
@@ -39,18 +34,22 @@ export const hasEmptyTypeFields = (type: string, options?: OptionsType) => {
   }
   return false;
 };
-
+export const fieldTypeOverrides=(fieldType: string,options: Options): string =>{
+  return options.modelFieldTypeOverrides?.[fieldType] ?? fieldType;
+}
 export const getInputType = (
   field: DMMF.SchemaArg,
-  options?: { doNotUseFieldUpdateOperationsInput?: boolean },
+  options?: Options,
 ) => {
   let index: number = 0;
+  let item;
   if (
     options?.doNotUseFieldUpdateOperationsInput &&
     field.inputTypes.length > 1 &&
     (field.inputTypes[1].type as string).endsWith('FieldUpdateOperationsInput')
   ) {
-    return field.inputTypes[index];
+    item = field.inputTypes[index]
+    item.type=fieldTypeOverrides(item.type,options);
   }
   if (
     field.inputTypes.length > 1 &&
@@ -58,16 +57,16 @@ export const getInputType = (
       field.inputTypes[1].isList)
   ) {
     index = 1;
+    item = field.inputTypes[index]
+    item.type=fieldTypeOverrides(item.type,options);
   }
-  return field.inputTypes[index];
+
+  return item;
 };
 
-function createInput(options?: OptionsType) {
-  let schema = options?.dmmf?.schema;
-  if (!schema) {
-    const { Prisma } = require('@prisma/client');
-    schema = Prisma.dmmf?.schema;
-  }
+function createInput(options: Options) {
+  let schema = options.dmmf.schema;
+  
   let fileContent = `
   scalar DateTime
   scalar Upload
@@ -149,11 +148,11 @@ function createInput(options?: OptionsType) {
   return fileContent;
 }
 
-export const sdlInputs = (options?: OptionsType) => {
+export const sdlInputs = (options?: Options) => {
   const gql = require('graphql-tag');
   return gql`
    ${createInput(options)}
-  `;
+`;
 };
 
 export const generateGraphQlSDLFile = (

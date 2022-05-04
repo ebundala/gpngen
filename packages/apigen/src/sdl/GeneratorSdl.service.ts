@@ -21,14 +21,16 @@ export class SdlGeneratorService extends Generators {
   //   await this.run();
   // }
   async run(): Promise<void> {
+    await this.init();
+    
     this.logger.log('creating models begin');
-    await this.createModels();
+    this.createModels();
     this.logger.log('c reating models finish\n');
     this.logger.log('creating inputs begin');
     this.createInputsTypes();
     this.logger.log('creating inputs finish\n');
     this.logger.log('creating modules begin');
-    await this.createModulesIndex();
+    this.createModulesIndex();
     this.logger.log('creating modules finish\n');
 
     //this.createMaster();
@@ -52,8 +54,8 @@ export class SdlGeneratorService extends Generators {
     : defaultTypeFile(this.isJS);
   private typeDefsExport: string[] = getCurrentExport(this.typeDefsIndex);
 
-  private async createModels() {
-    (await this.models()).forEach((model) => {
+  private createModels() {
+    (this.models()).forEach((model) => {
       this.logger.log(`creating ${model.name} model begin`);
       let fileContent = `type ${model.name} {`;
       const excludeFields = this.excludeFields(model.name);
@@ -72,7 +74,7 @@ export class SdlGeneratorService extends Generators {
               //Todo handle unions if applicable
               const i = arg.inputTypes[0];
               const isList = i.isList;
-              const type = i.type;
+              const type = this.fieldTypeOverrides(i.type);
               const v = isList
                 ? `[${type}${isNullable}]${isRequired}`
                 : `${type}${isRequired}`;
@@ -82,9 +84,10 @@ export class SdlGeneratorService extends Generators {
             });
             fileContent += ')';
           }
+          const outputType=this.fieldTypeOverrides(field.outputType.type);
           fileContent += `: ${field.outputType.isList
-            ? `[${field.outputType.type}!]!`
-            : field.outputType.type + (field?.isNullable ? '' : '!')
+            ? `[${outputType}!]!`
+            : outputType + (field?.isNullable ? '' : '!')
             }`;
         } else {
           this.logger.log(`skipping field ${model.name}:${field.name} `);
@@ -131,10 +134,10 @@ export class SdlGeneratorService extends Generators {
     });
   }
 
-  private async createInputsTypes() {
-    const schema = await this.dmmf();
+  private createInputsTypes() {
+    
     const typeDefs = `
-    ${print(mergeTypeDefs([sdlInputs({dmmf:schema})]))}
+    ${print(mergeTypeDefs([sdlInputs(this.options)]))}
      type Query{
        version:String
      }
@@ -149,6 +152,7 @@ export class SdlGeneratorService extends Generators {
     writeFileSync(this.output('common', `common.graphql`), typeDefs);
     this.logger.log(`writing inputs to files end`);
   }
+
   private getOperations(model: string) {
     const exclude = this.excludedOperations(model);
     return createQueriesAndMutations(
@@ -193,7 +197,7 @@ export class SdlGeneratorService extends Generators {
     );
   }
   private async createModulesIndex() {
-    const models = (await this.models()).map((t) => t.name);
+    const models = (this.models()).map((t) => t.name);
     const content = `${models
       .map(
         (model) => `import {${model}Module} from './${model}/${model}Module';`,
