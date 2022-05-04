@@ -106,7 +106,7 @@ export class Generators {
       this.options.excludeFieldsByModel[model],
     );
   }
-  protected fieldTypeOverrides(fieldType: string): string {
+  protected fieldTypeOverrides(fieldType: any): string {
     return this.options.modelFieldTypeOverrides?.[fieldType] ?? fieldType;
   }
   /*protected excludeModels(model: string){

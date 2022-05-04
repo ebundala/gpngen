@@ -34,7 +34,7 @@ export const hasEmptyTypeFields = (type: string, options?: Options) => {
   }
   return false;
 };
-export const fieldTypeOverrides=(fieldType: string,options: Options): string =>{
+export const fieldTypeOverrides=(fieldType:any,options: Options): string =>{
   return options.modelFieldTypeOverrides?.[fieldType] ?? fieldType;
 }
 export const getInputType = (
