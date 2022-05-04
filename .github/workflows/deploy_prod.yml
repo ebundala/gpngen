@@ -31,7 +31,7 @@ jobs:
       
       - uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 12.14.1
       - run: yarn install
       - run: lerna run build      
       - uses: JS-DevTools/npm-publish@v1
