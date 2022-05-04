@@ -55,7 +55,7 @@ export class SdlGeneratorService extends Generators {
   private typeDefsExport: string[] = getCurrentExport(this.typeDefsIndex);
 
   private createModels() {
-    (this.models()).forEach((model) => {
+    this.models().forEach((model) => {
       this.logger.log(`creating ${model.name} model begin`);
       let fileContent = `type ${model.name} {`;
       const excludeFields = this.excludeFields(model.name);
@@ -197,7 +197,7 @@ export class SdlGeneratorService extends Generators {
     );
   }
   private async createModulesIndex() {
-    const models = (this.models()).map((t) => t.name);
+    const models = this.models().map((t) => t.name);
     const content = `${models
       .map(
         (model) => `import {${model}Module} from './${model}/${model}Module';`,

@@ -75,7 +75,7 @@ export class Generators {
   protected async init(): Promise<DMMF.Document> {
     const schema = readFileSync(this.schemaPath, 'utf-8');
     const dmmf= await getDMMF({ datamodel: schema });
-    if(this.options.dmmf!){
+    if(!this.options.dmmf){
       this.options.dmmf=dmmf;
     }
     return this.options.dmmf;
