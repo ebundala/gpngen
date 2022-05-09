@@ -43,23 +43,46 @@ export const getInputType = (
 ) => {
   let index: number = 0;
   let item;
-  if (
-    options?.doNotUseFieldUpdateOperationsInput &&
-    field.inputTypes.length > 1 &&
-    (field.inputTypes[1].type as string).endsWith('FieldUpdateOperationsInput')
-  ) {
+  
+  const inputs = field.inputTypes.filter((e)=>e.location=="inputObjectTypes")
+  const listsInputs = inputs.filter((e)=>e.isList)
+  if(listsInputs.length>0){
+    item = listsInputs[index]
+    item.type=fieldTypeOverrides(item.type,options);
+  }
+  else if(inputs.length>0){
+    item = inputs[index]
+    item.type=fieldTypeOverrides(item.type,options);
+  }
+  else{
     item = field.inputTypes[index]
     item.type=fieldTypeOverrides(item.type,options);
   }
-  if (
-    field.inputTypes.length > 1 &&
-    (field.inputTypes[1].location === 'inputObjectTypes' ||
-      field.inputTypes[1].isList)
-  ) {
-    index = 1;
-    item = field.inputTypes[index]
-    item.type=fieldTypeOverrides(item.type,options);
-  }
+
+  // if (
+  //   options?.doNotUseFieldUpdateOperationsInput &&
+  //   field.inputTypes.length > 1 &&
+  //   (field.inputTypes[1].type as string).endsWith('FieldUpdateOperationsInput')
+  // ) {
+  //   item = field.inputTypes[index]
+  //   item.type=fieldTypeOverrides(item.type,options);
+  // }
+  // if (
+  //   field.inputTypes.length > 1 &&
+  //   (field.inputTypes[1].location === 'inputObjectTypes' /* ||
+  //     field.inputTypes[1].isList */)
+  // ) {
+  //   index = 1;
+  //   item = field.inputTypes[index]
+  //   item.type=fieldTypeOverrides(item.type,options);
+  // }
+  // else if(field.inputTypes.length == 1 &&
+  //   (field.inputTypes[0].location === 'inputObjectTypes' /* ||
+  //     field.inputTypes[0].isList */)){
+  //       item = field.inputTypes[index]
+  //   item.type=fieldTypeOverrides(item.type,options);
+
+  //     }
 
   return item;
 };
@@ -76,6 +99,7 @@ function createInput(options: Options) {
 }
 `;
   if (schema) {
+    
     const enums = [...schema.enumTypes.prisma];
     if (schema.enumTypes.model) enums.push(...schema.enumTypes.model);
     enums.forEach((item) => {
@@ -150,9 +174,7 @@ function createInput(options: Options) {
 
 export const sdlInputs = (options?: Options) => {
   const gql = require('graphql-tag');
-  return gql`
-   ${createInput(options)}
-`;
+  return gql`${createInput(options)}`;
 };
 
 export const generateGraphQlSDLFile = (

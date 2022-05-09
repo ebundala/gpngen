@@ -34,7 +34,7 @@ export interface Options {
     [modelName: string]: QueriesAndMutations[];
   };
   excludeQueriesAndMutations: QueriesAndMutations[];
-  doNotUseFieldUpdateOperationsInput?: boolean;
+ // doNotUseFieldUpdateOperationsInput?: boolean;
   filterInputs?: (input: DMMF.InputType) => DMMF.SchemaArg[];
   dmmf?: DMMF.Document;
 
@@ -73,9 +73,10 @@ export class Generators {
   }
 
   protected async init(): Promise<DMMF.Document> {
-    const schema = readFileSync(this.schemaPath, 'utf-8');
-    const dmmf= await getDMMF({ datamodel: schema });
+    
     if(!this.options.dmmf){
+      const schema = readFileSync(this.schemaPath, 'utf-8');
+      const dmmf= await getDMMF({ datamodel: schema });
       this.options.dmmf=dmmf;
     }
     return this.options.dmmf;

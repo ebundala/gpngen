@@ -53,8 +53,8 @@ export const options: SdlGeneratorServiceOptions = {
             return schema;
         },
         debug: true,
-        uploads: true,
-        playground: false,
+       // uploads: true,
+      //  playground: false,
         schemaDirectives: {
             file: UploadDirective,
         },
